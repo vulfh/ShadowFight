@@ -1,4 +1,4 @@
-import { Technique, TechniqueCategory, PriorityLevel, TargetLevel, Side } from '../types'
+import { Technique, TechniqueCategory, PriorityLevel } from '../types'
 
 export class TechniqueManager {
   private techniques: Technique[] = []

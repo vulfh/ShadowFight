@@ -1,4 +1,4 @@
-import { Technique, SessionConfig, UserConfig, ValidationResult, NotificationOptions } from './types'
+import { Technique, SessionConfig,  NotificationOptions } from './types'
 import { TechniqueManager } from './managers/TechniqueManager'
 import { AudioManager } from './managers/AudioManager'
 import { SessionManager } from './managers/SessionManager'
@@ -451,7 +451,7 @@ export class KravMagaTrainerApp {
         const audioSuccess = await this.sessionManager.announceTechniqueWithAudio(status.currentTechnique, this.audioManager)
         
         if (!audioSuccess) {
-          const failureCount = this.sessionManager.incrementAudioFailureCount()
+          // const failureCount = this.sessionManager.incrementAudioFailureCount()
           
           // Show error notification
           this.showNotification({

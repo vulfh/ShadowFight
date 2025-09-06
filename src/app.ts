@@ -1,0 +1,541 @@
+import { Technique, SessionConfig, UserConfig, ValidationResult, NotificationOptions } from './types'
+import { TechniqueManager } from './managers/TechniqueManager'
+import { AudioManager } from './managers/AudioManager'
+import { SessionManager } from './managers/SessionManager'
+import { ConfigManager } from './managers/ConfigManager'
+import { UIManager } from './managers/UIManager'
+import { 
+  UI_ELEMENTS, 
+  NOTIFICATION_TYPES, 
+  KEYBOARD_SHORTCUTS, 
+  ERROR_MESSAGES, 
+  SUCCESS_MESSAGES, 
+  INFO_MESSAGES, 
+  WARNING_MESSAGES,
+  STRATEGY_TYPES
+} from './utils/constants'
+
+export class KravMagaTrainerApp {
+  private techniqueManager: TechniqueManager
+  private audioManager: AudioManager
+  private sessionManager: SessionManager
+  private configManager: ConfigManager
+  private uiManager: UIManager
+  private isInitialized: boolean = false
+
+  constructor() {
+    this.techniqueManager = new TechniqueManager()
+    this.audioManager = new AudioManager()
+    this.sessionManager = new SessionManager()
+    this.configManager = new ConfigManager()
+    this.uiManager = new UIManager()
+  }
+
+  async init(): Promise<void> {
+    try {
+      console.log('Initializing Krav Maga Trainer App...')
+
+      // Initialize managers in order
+      await this.techniqueManager.init()
+      await this.audioManager.init()
+      await this.configManager.init()
+      await this.sessionManager.init()
+      await this.uiManager.init()
+
+      // Set up event listeners
+      this.setupEventListeners()
+
+      // Load initial configuration
+      await this.loadConfiguration()
+
+      // Check for existing session
+      if (this.sessionManager.hasExistingSession()) {
+        this.handleSessionRestoration()
+      }
+
+      // Preload audio files
+      await this.preloadAudioFiles()
+
+      this.isInitialized = true
+      console.log('Krav Maga Trainer App initialized successfully')
+
+      // Show welcome notification
+      this.showNotification({
+        message: SUCCESS_MESSAGES.WELCOME,
+        type: NOTIFICATION_TYPES.INFO
+      })
+
+    } catch (error) {
+      console.error('Failed to initialize app:', error)
+      this.showNotification({
+        message: ERROR_MESSAGES.FAILED_TO_INITIALIZE,
+        type: NOTIFICATION_TYPES.ERROR
+      })
+      throw error
+    }
+  }
+
+  private setupEventListeners(): void {
+    // Configuration form events
+    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
+    if (configForm) {
+      configForm.addEventListener('submit', (e) => this.handleConfigSubmit(e))
+    }
+
+    // Range slider events
+    this.setupRangeSliderEvents()
+
+    // Technique selection events
+    this.setupTechniqueSelectionEvents()
+
+    // Session control events
+    this.setupSessionControlEvents()
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e))
+
+    // Page visibility change events for session persistence
+    document.addEventListener('visibilitychange', () => this.handleVisibilityChange())
+    
+    // Before unload event to save session state
+    window.addEventListener('beforeunload', () => this.handleBeforeUnload())
+  }
+
+  private setupRangeSliderEvents(): void {
+    const durationSlider = document.getElementById(UI_ELEMENTS.FIGHT_DURATION) as HTMLInputElement
+    const delaySlider = document.getElementById(UI_ELEMENTS.ACTION_DELAY) as HTMLInputElement
+    const volumeSlider = document.getElementById(UI_ELEMENTS.VOLUME_CONTROL) as HTMLInputElement
+
+    if (durationSlider) {
+      durationSlider.addEventListener('input', (e) => this.handleDurationChange(e))
+    }
+
+    if (delaySlider) {
+      delaySlider.addEventListener('input', (e) => this.handleDelayChange(e))
+    }
+
+    if (volumeSlider) {
+      volumeSlider.addEventListener('input', (e) => this.handleVolumeChange(e))
+    }
+  }
+
+  private setupTechniqueSelectionEvents(): void {
+    const selectAllBtn = document.getElementById(UI_ELEMENTS.SELECT_ALL)
+    const deselectAllBtn = document.getElementById(UI_ELEMENTS.DESELECT_ALL)
+
+    if (selectAllBtn) {
+      selectAllBtn.addEventListener('click', () => this.handleSelectAll())
+    }
+
+    if (deselectAllBtn) {
+      deselectAllBtn.addEventListener('click', () => this.handleDeselectAll())
+    }
+  }
+
+  private setupSessionControlEvents(): void {
+    const startBtn = document.getElementById(UI_ELEMENTS.START_BTN)
+    const pauseBtn = document.getElementById(UI_ELEMENTS.PAUSE_BTN)
+    const stopBtn = document.getElementById(UI_ELEMENTS.STOP_BTN)
+
+    if (startBtn) {
+      startBtn.addEventListener('click', () => this.handleStartSession())
+    }
+
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', () => this.handlePauseSession())
+    }
+
+    if (stopBtn) {
+      stopBtn.addEventListener('click', () => this.handleStopSession())
+    }
+  }
+
+  private async loadConfiguration(): Promise<void> {
+    // Sync techniques from TechniqueManager to ConfigManager
+    const techniques = this.techniqueManager.getTechniques()
+    this.configManager.updateTechniques(techniques)
+    
+    const config = this.configManager.getConfig()
+    this.uiManager.updateConfigurationDisplay(config)
+    this.updateStartButtonState()
+    this.syncTimerWithDuration()
+  }
+
+  private syncTimerWithDuration(): void {
+    const config = this.configManager.getConfig()
+    const timerDisplay = document.getElementById(UI_ELEMENTS.TIMER_DISPLAY)
+    if (timerDisplay) {
+      const minutes = Math.floor(config.duration)
+      const seconds = 0
+      timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    }
+  }
+
+  private async preloadAudioFiles(): Promise<void> {
+    try {
+      const config = this.configManager.getConfig()
+      const selectedTechniques = config.techniques.filter((t: Technique) => t.selected)
+      const audioFiles = selectedTechniques.map((t: Technique) => t.file)
+
+      if (audioFiles.length > 0) {
+        this.showNotification({
+          message: INFO_MESSAGES.LOADING_AUDIO,
+          type: NOTIFICATION_TYPES.INFO
+        })
+
+        await this.audioManager.preloadAudio(audioFiles)
+
+        this.showNotification({
+          message: SUCCESS_MESSAGES.AUDIO_LOADED,
+          type: NOTIFICATION_TYPES.SUCCESS
+        })
+      }
+    } catch (error) {
+      console.warn('Failed to preload some audio files:', error)
+      this.showNotification({
+        message: WARNING_MESSAGES.AUDIO_LOAD_FAILED,
+        type: NOTIFICATION_TYPES.WARNING
+      })
+    }
+  }
+
+  private handleConfigSubmit(e: Event): void {
+    e.preventDefault()
+
+    const validation = this.configManager.validateConfig()
+    if (!validation.isValid) {
+      this.showNotification({
+        message: validation.errors.join(', '),
+        type: NOTIFICATION_TYPES.ERROR
+      })
+      return
+    }
+
+    if (validation.warnings.length > 0) {
+      this.showNotification({
+        message: validation.warnings.join(', '),
+        type: NOTIFICATION_TYPES.WARNING
+      })
+    }
+
+    this.configManager.saveConfig()
+    this.updateStartButtonState()
+    this.preloadAudioFiles()
+
+    this.showNotification({
+      message: SUCCESS_MESSAGES.CONFIG_SAVED,
+      type: NOTIFICATION_TYPES.SUCCESS
+    })
+  }
+
+  private handleDurationChange(e: Event): void {
+    const target = e.target as HTMLInputElement
+    const duration = parseInt(target.value)
+    
+    const durationValue = document.getElementById(UI_ELEMENTS.DURATION_VALUE)
+    if (durationValue) {
+      durationValue.textContent = duration.toString()
+    }
+
+    this.configManager.updateDuration(duration)
+    this.updateStartButtonState()
+    this.syncTimerWithDuration()
+  }
+
+  private handleDelayChange(e: Event): void {
+    const target = e.target as HTMLInputElement
+    const delay = parseFloat(target.value)
+    
+    const delayValue = document.getElementById(UI_ELEMENTS.DELAY_VALUE)
+    if (delayValue) {
+      delayValue.textContent = delay.toString()
+    }
+
+    this.configManager.updateDelay(delay)
+  }
+
+  private handleVolumeChange(e: Event): void {
+    const target = e.target as HTMLInputElement
+    const volume = parseInt(target.value)
+    
+    const volumeValue = document.getElementById(UI_ELEMENTS.VOLUME_VALUE)
+    if (volumeValue) {
+      volumeValue.textContent = volume.toString()
+    }
+
+    this.configManager.updateVolume(volume)
+    this.audioManager.setVolume(volume / 100)
+  }
+
+  private handleSelectAll(): void {
+    this.configManager.selectAllTechniques()
+    this.loadConfiguration()
+    this.showNotification({
+      message: SUCCESS_MESSAGES.ALL_TECHNIQUES_SELECTED,
+      type: NOTIFICATION_TYPES.SUCCESS
+    })
+  }
+
+  private handleDeselectAll(): void {
+    this.configManager.deselectAllTechniques()
+    this.loadConfiguration()
+    this.showNotification({
+      message: WARNING_MESSAGES.ALL_TECHNIQUES_DESELECTED,
+      type: NOTIFICATION_TYPES.WARNING
+    })
+  }
+
+  // Strategy selection method
+  public setTechniqueSelectionStrategy(strategyType: typeof STRATEGY_TYPES[keyof typeof STRATEGY_TYPES]): void {
+    this.sessionManager.setSelectionStrategy(strategyType)
+    this.showNotification({
+      message: `${INFO_MESSAGES.STRATEGY_CHANGED} ${this.sessionManager.getCurrentStrategyName()}`,
+      type: NOTIFICATION_TYPES.INFO
+    })
+  }
+
+  private handleVisibilityChange(): void {
+    if (document.hidden && this.sessionManager.isActive) {
+      // Page is hidden, save session state
+      console.log('Page hidden, saving session state')
+    } else if (!document.hidden && this.sessionManager.isActive) {
+      // Page is visible again, update UI
+      this.updateSessionUI()
+    }
+  }
+
+  private handleBeforeUnload(): void {
+    if (this.sessionManager.isActive) {
+      // Save session state before page unload
+      console.log('Page unloading, saving session state')
+    }
+  }
+
+  private async handleStartSession(): Promise<void> {
+    try {
+      const sessionConfig = this.configManager.getSessionConfig()
+
+      if (!this.sessionManager.isReadyToStart(sessionConfig)) {
+        this.showNotification({
+          message: ERROR_MESSAGES.CONFIGURE_SESSION,
+          type: NOTIFICATION_TYPES.ERROR
+        })
+        return
+      }
+
+      // Start the session
+      await this.sessionManager.startSession(sessionConfig)
+
+      // Update UI to reflect session state
+      this.updateSessionUI()
+      this.disableConfigurationControls()
+
+      // Start the technique announcement loop
+      this.startTechniqueAnnouncementLoop(sessionConfig)
+
+      this.showNotification({
+        message: SUCCESS_MESSAGES.SESSION_STARTED,
+        type: NOTIFICATION_TYPES.SUCCESS
+      })
+
+    } catch (error) {
+      console.error('Failed to start session:', error)
+      this.showNotification({
+        message: `${ERROR_MESSAGES.FAILED_TO_START_SESSION}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        type: NOTIFICATION_TYPES.ERROR
+      })
+    }
+  }
+
+  private handlePauseSession(): void {
+    if (this.sessionManager.isPaused) {
+      this.sessionManager.resumeSession()
+      this.showNotification({
+        message: INFO_MESSAGES.SESSION_RESUMED,
+        type: NOTIFICATION_TYPES.INFO
+      })
+    } else {
+      this.sessionManager.pauseSession()
+      this.showNotification({
+        message: WARNING_MESSAGES.SESSION_PAUSED,
+        type: NOTIFICATION_TYPES.WARNING
+      })
+    }
+    this.updateSessionUI()
+  }
+
+  private handleStopSession(): void {
+    this.sessionManager.stopSession()
+    this.enableConfigurationControls()
+    this.updateSessionUI()
+    this.showNotification({
+      message: INFO_MESSAGES.SESSION_STOPPED,
+      type: NOTIFICATION_TYPES.INFO
+    })
+  }
+
+  private handleKeyboardShortcuts(e: KeyboardEvent): void {
+    // Space bar to start/pause
+    if (e.code === KEYBOARD_SHORTCUTS.SPACE && !this.isFormElement(e.target)) {
+      e.preventDefault()
+      if (this.sessionManager.isActive) {
+        this.handlePauseSession()
+      } else {
+        this.handleStartSession()
+      }
+    }
+
+    // Escape to stop
+    if (e.code === KEYBOARD_SHORTCUTS.ESCAPE) {
+      if (this.sessionManager.isActive) {
+        this.handleStopSession()
+      }
+    }
+  }
+
+  private isFormElement(element: EventTarget | null): boolean {
+    if (!element) return false
+    const target = element as HTMLElement
+    return target.matches('input, textarea, select, button[type="submit"]')
+  }
+
+  private updateStartButtonState(): void {
+    const startBtn = document.getElementById(UI_ELEMENTS.START_BTN) as HTMLButtonElement
+    if (startBtn) {
+      const sessionConfig = this.configManager.getSessionConfig()
+      startBtn.disabled = !this.sessionManager.isReadyToStart(sessionConfig)
+    }
+  }
+
+  private showNotification(options: NotificationOptions): void {
+    this.uiManager.showNotification(options)
+  }
+
+  // UI Update Methods
+  private updateSessionUI(): void {
+    const status = this.sessionManager.getSessionStatus()
+    this.uiManager.updateSessionDisplay(status)
+  }
+
+  private disableConfigurationControls(): void {
+    const durationSlider = document.getElementById(UI_ELEMENTS.FIGHT_DURATION) as HTMLInputElement
+    const delaySlider = document.getElementById(UI_ELEMENTS.ACTION_DELAY) as HTMLInputElement
+    const volumeSlider = document.getElementById(UI_ELEMENTS.VOLUME_CONTROL) as HTMLInputElement
+    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
+
+    if (durationSlider) durationSlider.disabled = true
+    if (delaySlider) delaySlider.disabled = true
+    if (volumeSlider) volumeSlider.disabled = true
+    if (configForm) configForm.style.pointerEvents = 'none'
+  }
+
+  private enableConfigurationControls(): void {
+    const durationSlider = document.getElementById(UI_ELEMENTS.FIGHT_DURATION) as HTMLInputElement
+    const delaySlider = document.getElementById(UI_ELEMENTS.ACTION_DELAY) as HTMLInputElement
+    const volumeSlider = document.getElementById(UI_ELEMENTS.VOLUME_CONTROL) as HTMLInputElement
+    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
+
+    if (durationSlider) durationSlider.disabled = false
+    if (delaySlider) delaySlider.disabled = false
+    if (volumeSlider) volumeSlider.disabled = false
+    if (configForm) configForm.style.pointerEvents = 'auto'
+  }
+
+  private async startTechniqueAnnouncementLoop(config: SessionConfig): Promise<void> {
+    const announceNextTechnique = async () => {
+      if (!this.sessionManager.isActive) return
+
+      const status = this.sessionManager.getSessionStatus()
+      if (status.currentTechnique) {
+        // Play audio for the current technique
+        const audioSuccess = await this.sessionManager.announceTechniqueWithAudio(status.currentTechnique, this.audioManager)
+        
+        if (!audioSuccess) {
+          const failureCount = this.sessionManager.incrementAudioFailureCount()
+          
+          // Show error notification
+          this.showNotification({
+            message: `${ERROR_MESSAGES.AUDIO_FAILURE} ${status.currentTechnique.name}`,
+            type: NOTIFICATION_TYPES.ERROR,
+            duration: 3000
+          })
+
+          // Check if we should stop the session
+          if (this.sessionManager.shouldStopSessionDueToAudioFailures()) {
+            this.showNotification({
+              message: ERROR_MESSAGES.MULTIPLE_AUDIO_FAILURES,
+              type: NOTIFICATION_TYPES.ERROR,
+              duration: 5000
+            })
+            this.handleStopSession()
+            return
+          }
+        } else {
+          // Reset failure count on success
+          this.sessionManager.resetAudioFailureCount()
+        }
+        
+        // Update UI
+        this.updateSessionUI()
+      }
+
+      // Schedule next announcement if session is still active
+      if (this.sessionManager.isActive && !this.sessionManager.isPaused) {
+        setTimeout(announceNextTechnique, config.delay * 1000)
+      }
+    }
+
+    // Start the loop
+    announceNextTechnique()
+
+    // Start continuous UI updates for timer
+    this.startContinuousUIUpdates()
+  }
+
+  private handleSessionRestoration(): void {
+    const status = this.sessionManager.getSessionStatus()
+    
+    if (status.isActive) {
+      this.showNotification({
+        message: INFO_MESSAGES.PREVIOUS_SESSION_RESTORED,
+        type: NOTIFICATION_TYPES.INFO,
+        duration: 5000
+      })
+
+      // Update UI to reflect restored session state
+      this.updateSessionUI()
+      
+      if (status.isPaused) {
+        this.enableConfigurationControls()
+      } else {
+        this.disableConfigurationControls()
+        // Restart the technique announcement loop
+        const config = this.configManager.getSessionConfig()
+        this.startTechniqueAnnouncementLoop(config)
+      }
+    }
+  }
+
+  private startContinuousUIUpdates(): void {
+    const updateInterval = setInterval(() => {
+      if (this.sessionManager.isActive) {
+        this.updateSessionUI()
+      } else {
+        clearInterval(updateInterval)
+      }
+    }, 1000) // Update every second
+  }
+
+  // Public methods for external access
+  public getSessionStatus() {
+    return this.sessionManager.getSessionStatus()
+  }
+
+  public getConfig() {
+    return this.configManager.getConfig()
+  }
+
+  public isReady(): boolean {
+    return this.isInitialized
+  }
+}

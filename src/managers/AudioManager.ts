@@ -29,7 +29,8 @@ export class AudioManager {
     }
 
     try {
-      const response = await fetch(`/Sounds/${filename}`)
+      const base = (import.meta as any).env?.BASE_URL || '/'
+      const response = await fetch(`${base}Sounds/${filename}`)
       if (!response.ok) {
         throw new Error(`Failed to load audio file: ${filename}`)
       }

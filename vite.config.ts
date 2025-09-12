@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   root: '.',
   publicDir: 'public',
+  base: mode === 'production' ? './' : '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -29,7 +30,6 @@ export default defineConfig({
     host: true
   },
   plugins: [
-    copy({ targets: [{ src: 'manifest.json', dest: 'dist' }] })
   ] // PWA plugin can be added here if needed
   
-})
+}))

@@ -29,6 +29,7 @@ export default defineConfig({
     host: true
   },
   plugins: [
-    // PWA plugin can be added here if needed
-  ]
+    copy({ targets: [{ src: 'manifest.json', dest: 'dist' }] })
+  ] // PWA plugin can be added here if needed
+  
 })

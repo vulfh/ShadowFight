@@ -107,6 +107,7 @@ export const SUCCESS_MESSAGES = {
   AUDIO_LOADED: 'Audio files loaded successfully!',
   CONFIG_SAVED: 'Configuration saved successfully!',
   SESSION_STARTED: 'Session started successfully!',
+  SESSION_COMPLETED: 'Session completed successfully!',
   ALL_TECHNIQUES_SELECTED: 'All techniques selected!',
   ALL_TECHNIQUES_DESELECTED: 'All techniques deselected!'
 } as const

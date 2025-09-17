@@ -42,6 +42,9 @@ export class KravMagaTrainerApp {
       await this.sessionManager.init()
       await this.uiManager.init()
 
+      // Set up session completion callback
+      this.sessionManager.onSessionComplete = () => this.handleSessionComplete()
+
       // Set up event listeners
       this.setupEventListeners()
 
@@ -371,6 +374,16 @@ export class KravMagaTrainerApp {
     this.showNotification({
       message: INFO_MESSAGES.SESSION_STOPPED,
       type: NOTIFICATION_TYPES.INFO
+    })
+  }
+
+  private handleSessionComplete(): void {
+    // Session completed naturally - behave exactly like Stop button was pressed
+    this.enableConfigurationControls()
+    this.updateSessionUI()
+    this.showNotification({
+      message: SUCCESS_MESSAGES.SESSION_COMPLETED,
+      type: NOTIFICATION_TYPES.SUCCESS
     })
   }
 

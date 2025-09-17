@@ -25,6 +25,7 @@ export class SessionManager {
     sessionDuration: 0
   }
   private isInitialized: boolean = false
+  public onSessionComplete?: () => void
 
   async init(): Promise<void> {
     this.selectionStrategy = TechniqueSelectionStrategyFactory.createStrategy(STRATEGY_TYPES.RANDOM)
@@ -147,6 +148,8 @@ export class SessionManager {
   private completeSession(): void {
     this.sessionStats.sessionDuration = this.sessionDuration - this.remainingTime
     this.stopSession()
+    // Trigger session completion event
+    this.onSessionComplete?.()
   }
 
   isReadyToStart(config: SessionConfig): boolean {

@@ -17,6 +17,7 @@ export class TechniqueManager {
       { name: 'Right Straight Punch', file: 'yamin-egrof-lefanim.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
       { name: 'Left Back Fist', file: 'smol-makat-gav-yad.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
       { name: 'Right Back Fist', file: 'yamin-makat-gav-yad.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+      { name: 'Head Left Right', file: 'rosh-smol-yamin.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
       // { name: 'Cross Body Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       // { name: 'Hook Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
       // { name: 'Uppercut Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },

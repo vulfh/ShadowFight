@@ -57,14 +57,14 @@ export interface FightList {
   lastModified: string
 }
 
-export interface FightListTechnique {
+export type FightListTechnique {
   id: string
   techniqueId: string
   priority: number // 1-5 scale
   selected: boolean
 }
 
-export interface FightListManager {
+export type FightListManager {
   fightLists: FightList[]
   currentFightList: string | null
 }

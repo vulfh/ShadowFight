@@ -40,7 +40,7 @@ This document breaks down the Fight List feature implementation into specific, a
 **Priority: High | Estimated Time: 3 days**
 
 #### Task 1.2.1: Create FightListManager
-- [ ] **Create FightListManager class** (`src/managers/FightListManager.ts`)
+- [V] **Create FightListManager class** (`src/managers/FightListManager.ts`)
   - [ ] Implement `init()` method
   - [ ] Implement `createFightList()` method
   - [ ] Implement `updateFightList()` method

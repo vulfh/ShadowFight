@@ -30,7 +30,8 @@ export const ERROR_MESSAGES = {
   FIGHT_LIST_DELETE_CONFIRM: 'Are you sure you want to delete this fight list?',
   FIGHT_LIST_MAX_REACHED: 'Maximum number of fight lists reached (50)',
   TECHNIQUE_ALREADY_IN_LIST: 'This technique is already in the fight list',
-  NO_TECHNIQUES_IN_FIGHT_LIST: 'Please select at least one technique in the fight list'
+  NO_TECHNIQUES_IN_FIGHT_LIST: 'Please select at least one technique in the fight list',
+  MAX_TECHNIQUES_PER_LIST_REACHED: 'Maximum number of techniques per fight list reached (100)'
 } as const
 
 // Success messages

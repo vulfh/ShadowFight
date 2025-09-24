@@ -24,6 +24,50 @@ export type TechniqueCategory =
 
 export type PriorityLevel = 'high' | 'medium' | 'low'
 
+// Fight List Types
+export interface FightList {
+  id: string
+  name: string
+  techniques: FightListTechnique[]
+  createdAt: string
+  lastModified: string
+}
+
+export type FightListTechnique = {
+  id: string
+  techniqueId: string
+  priority: number // 1-5 scale
+  selected: boolean
+}
+
+export type FightListManager = {
+  fightLists: FightList[]
+  currentFightList: string | null
+}
+
+// UI State Extensions (using type for data structure)
+export type FightListUIState = {
+  isCreating: boolean
+  isEditing: boolean
+  selectedFightList: string | null
+  expandedFightLists: string[]
+}
+
+// Fight List Validation
+export interface FightListValidationResult extends ValidationResult {
+  isValid: boolean
+  errors: string[]
+  warnings: string[]
+}
+
+// Fight List Events
+export interface FightListEvent {
+  type: 'created' | 'updated' | 'deleted' | 'techniqueAdded' | 'techniqueRemoved'
+  fightListId: string
+  timestamp: number
+  data?: any
+}
+
 // Configuration types
 export interface SessionConfig {
   duration: number // minutes

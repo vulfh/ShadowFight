@@ -11,7 +11,7 @@ This document breaks down the Fight List feature implementation into specific, a
 **Priority: High | Estimated Time: 2 days**
 
 #### Task 1.1.1: Extend Type System
-- [ ] **Add Fight List Types** (`src/types/index.ts`)
+- [V] **Add Fight List Types** (`src/types/index.ts`)
   - [ ] Add `FightList` interface
   - [ ] Add `FightListTechnique` type
   - [ ] Add `FightListManager` type
@@ -22,7 +22,7 @@ This document breaks down the Fight List feature implementation into specific, a
 - [ ] **Create type tests** to ensure type safety
 
 #### Task 1.1.2: Refactor Constants Structure
-- [ ] **Create constants directory** (`src/constants/`)
+- [V] **Create constants directory** (`src/constants/`)
   - [ ] Create `src/constants/index.ts` (re-exports)
   - [ ] Create `src/constants/storage.ts`
   - [ ] Create `src/constants/ui-elements.ts`

@@ -1,6 +1,6 @@
 import { Technique, SessionConfig, SessionStatus, SessionStats } from '../types'
 import { ITechniqueSelectionStrategy, TechniqueSelectionStrategyFactory } from '../utils/TechniqueSelectionStrategy'
-import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../utils/constants'
+import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../constants'
 
 export class SessionManager {
   private selectionStrategy!: ITechniqueSelectionStrategy

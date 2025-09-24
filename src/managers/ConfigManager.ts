@@ -1,5 +1,5 @@
 import { UserConfig, SessionConfig, Technique, ValidationResult } from '../types'
-import { STORAGE_KEYS, SESSION_LIMITS, DEFAULT_CONFIG, ERROR_MESSAGES, WARNING_MESSAGES, PRIORITY_LEVELS } from '../utils/constants'
+import { STORAGE_KEYS, SESSION_LIMITS, DEFAULT_CONFIG, ERROR_MESSAGES, WARNING_MESSAGES, PRIORITY_LEVELS } from '../constants'
 
 export class ConfigManager {
   private config: UserConfig = {

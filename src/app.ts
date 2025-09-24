@@ -13,7 +13,7 @@ import {
   INFO_MESSAGES, 
   WARNING_MESSAGES,
   STRATEGY_TYPES
-} from './utils/constants'
+} from './constants'
 
 export class KravMagaTrainerApp {
   private techniqueManager: TechniqueManager

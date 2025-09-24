@@ -1,5 +1,16 @@
-import { UserConfig, SessionConfig, Technique, ValidationResult } from '../types'
-import { STORAGE_KEYS, SESSION_LIMITS, DEFAULT_CONFIG, ERROR_MESSAGES, WARNING_MESSAGES, PRIORITY_LEVELS } from '../constants'
+import { UserConfig,
+         SessionConfig,
+         Technique,
+         ValidationResult,
+         FightList, 
+         FightListTechnique } from '../types'
+import { STORAGE_KEYS,
+         SESSION_LIMITS,
+         DEFAULT_CONFIG, 
+         ERROR_MESSAGES, 
+         WARNING_MESSAGES, 
+         PRIORITY_LEVELS, 
+         FIGHT_LIST_LIMITS } from '../constants'
 
 export class ConfigManager {
   private config: UserConfig = {
@@ -7,7 +18,9 @@ export class ConfigManager {
     delay: DEFAULT_CONFIG.DELAY,
     volume: DEFAULT_CONFIG.VOLUME,
     techniques: [],
-    lastSaved: null
+    lastSaved: null,
+    fightLists: [],
+    currentFightListId: null
   }
   private isInitialized: boolean = false
 
@@ -22,10 +35,37 @@ export class ConfigManager {
       if (savedConfig) {
         const parsed = JSON.parse(savedConfig)
         this.config = { ...this.config, ...parsed }
+        if (!parsed.fightLists) {
+            this.migrateToFightLists()
+        }
+      } else {
+        this.migrateToFightLists() 
       }
     } catch (error) {
       console.warn('Failed to load config from localStorage:', error)
     }
+  }
+
+  private migrateToFightLists(): void {
+    const techniques = this.config.techniques || []
+    if (this.config.fightLists.length > 0) return;
+
+    const defaultFightList: FightList = {
+      id: crypto.randomUUID(),
+      name: 'My Techniques',
+      techniques: techniques.map(t => ({
+        id: crypto.randomUUID(),
+        techniqueId: t.name,
+        priority: 3,
+        selected: t.selected
+      })),
+      createdAt: new Date().toISOString(),
+      lastModified: new Date().toISOString()
+    }
+
+    this.config.fightLists = [defaultFightList]
+    this.config.currentFightListId = defaultFightList.id
+    this.saveConfig()
   }
 
   saveConfig(): void {
@@ -80,11 +120,18 @@ export class ConfigManager {
   }
 
   getSessionConfig(): SessionConfig {
+    const currentFightList = this.getCurrentFightList()
+    const techniques = currentFightList
+      ? this.config.techniques.filter(tech =>
+          currentFightList.techniques.some(flTech => flTech.techniqueId === tech.name && flTech.selected)
+        )
+      : this.config.techniques.filter(t => t.selected)
+
     return {
       duration: this.config.duration,
       delay: this.config.delay,
       volume: this.config.volume,
-      techniques: this.config.techniques
+      techniques
     }
   }
 
@@ -94,7 +141,9 @@ export class ConfigManager {
       delay: DEFAULT_CONFIG.DELAY,
       volume: DEFAULT_CONFIG.VOLUME,
       techniques: [],
-      lastSaved: null
+      lastSaved: null,
+      fightLists: [],
+      currentFightListId: null
     }
     this.saveConfig()
   }
@@ -147,10 +196,10 @@ export class ConfigManager {
     if (!Array.isArray(configToValidate.techniques)) {
       errors.push(ERROR_MESSAGES.TECHNIQUES_ARRAY)
     } else {
-      const selectedTechniques = configToValidate.techniques.filter(t => t.selected)
-      if (selectedTechniques.length === 0) {
-        warnings.push(WARNING_MESSAGES.NO_TECHNIQUES_SELECTED)
-      }
+        const selectedTechniques = this.getSessionConfig().techniques;
+        if (selectedTechniques.length === 0) {
+            warnings.push(WARNING_MESSAGES.NO_TECHNIQUES_SELECTED);
+        }
     }
 
     return {
@@ -169,6 +218,105 @@ export class ConfigManager {
 
   isReady(): boolean {
     return this.isInitialized
+  }
+
+  // Fight List Methods
+  getFightLists(): FightList[] {
+    return this.config.fightLists
+  }
+
+  getCurrentFightListId(): string | null {
+    return this.config.currentFightListId
+  }
+
+  getCurrentFightList(): FightList | undefined {
+    return this.config.fightLists.find(fl => fl.id === this.config.currentFightListId)
+  }
+
+  setCurrentFightListId(id: string | null): void {
+    this.config.currentFightListId = id
+  }
+
+  createFightList(name: string): ValidationResult {
+    const validation = this.validateFightListName(name)
+    if (!validation.isValid) {
+      return validation
+    }
+
+    const newFightList: FightList = {
+      id: crypto.randomUUID(),
+      name,
+      techniques: [],
+      createdAt: new Date().toISOString(),
+      lastModified: new Date().toISOString()
+    }
+
+    this.config.fightLists.push(newFightList)
+    return { isValid: true, errors: [], warnings: [] }
+  }
+
+  updateFightList(id: string, updates: Partial<Pick<FightList, 'name'>>): ValidationResult {
+    const fightList = this.config.fightLists.find(fl => fl.id === id)
+    if (!fightList) {
+      return { isValid: false, errors: ['Fight list not found.'], warnings: [] }
+    }
+
+    if (updates.name) {
+      const validation = this.validateFightListName(updates.name, id)
+      if (!validation.isValid) {
+        return validation
+      }
+      fightList.name = updates.name
+    }
+
+    fightList.lastModified = new Date().toISOString()
+    return { isValid: true, errors: [], warnings: [] }
+  }
+
+  deleteFightList(id: string): void {
+    this.config.fightLists = this.config.fightLists.filter(fl => fl.id !== id)
+    if (this.config.currentFightListId === id) {
+      this.config.currentFightListId = this.config.fightLists.length > 0 ? this.config.fightLists[0].id : null
+    }
+  }
+
+  addTechniqueToFightList(fightListId: string, techniqueId: string): void {
+    const fightList = this.config.fightLists.find(fl => fl.id === fightListId)
+    if (fightList && !fightList.techniques.some(t => t.techniqueId === techniqueId)) {
+      const newTechnique: FightListTechnique = {
+        id: crypto.randomUUID(),
+        techniqueId,
+        priority: 3,
+        selected: true
+      }
+      fightList.techniques.push(newTechnique)
+      fightList.lastModified = new Date().toISOString()
+    }
+  }
+
+  removeTechniqueFromFightList(fightListId: string, techniqueId: string): void {
+    const fightList = this.config.fightLists.find(fl => fl.id === fightListId)
+    if (fightList) {
+      fightList.techniques = fightList.techniques.filter(t => t.techniqueId !== techniqueId)
+      fightList.lastModified = new Date().toISOString()
+    }
+  }
+
+  validateFightListName(name: string, idToExclude?: string): ValidationResult {
+    const errors: string[] = []
+    if (name.length < FIGHT_LIST_LIMITS.MIN_NAME_LENGTH || name.length > FIGHT_LIST_LIMITS.MAX_NAME_LENGTH) {
+      errors.push(`Name must be between ${FIGHT_LIST_LIMITS.MIN_NAME_LENGTH} and ${FIGHT_LIST_LIMITS.MAX_NAME_LENGTH} characters.`)
+    }
+
+    const isDuplicate = this.config.fightLists.some(
+      fl => fl.name.toLowerCase() === name.toLowerCase() && fl.id !== idToExclude
+    )
+
+    if (isDuplicate) {
+      errors.push('A fight list with this name already exists.')
+    }
+
+    return { isValid: errors.length === 0, errors, warnings: [] }
   }
 }
 

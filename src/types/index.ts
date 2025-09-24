@@ -82,6 +82,8 @@ export interface UserConfig {
   volume: number
   techniques: Technique[]
   lastSaved: string | null
+  fightLists: FightList[]
+  currentFightListId: string | null
 }
 
 // Session types

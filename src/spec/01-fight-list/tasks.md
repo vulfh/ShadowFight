@@ -60,7 +60,7 @@ This document breaks down the Fight List feature implementation into specific, a
 - [ ] **Add JSDoc documentation**
 
 #### Task 1.2.2: Update ConfigManager
-- [ ] **Add fight list support** to ConfigManager
+- [V] **Add fight list support** to ConfigManager
   - [ ] Add fight list CRUD methods
   - [ ] Add fight list validation
   - [ ] Add fight list storage management

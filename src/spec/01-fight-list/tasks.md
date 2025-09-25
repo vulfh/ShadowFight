@@ -71,7 +71,7 @@ This document breaks down the Fight List feature implementation into specific, a
 - [ ] **Test backward compatibility**
 
 #### Task 1.2.3: Update SessionManager
-- [ ] **Add fight list support** to SessionManager
+- [V] **Add fight list support** to SessionManager
   - [ ] Add `startSessionWithFightList()` method
   - [ ] Add `getCurrentFightList()` method
   - [ ] Modify existing session methods

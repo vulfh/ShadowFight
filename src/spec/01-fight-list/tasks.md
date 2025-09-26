@@ -84,13 +84,14 @@ This document breaks down the Fight List feature implementation into specific, a
 **Priority: High | Estimated Time: 3 days**
 
 #### Task 1.3.1: Implement Fight List Storage Structure
-- [ ] **Define storage constants** (`src/constants/storage.ts`)
-  - [ ] Add `FIGHT_LISTS_KEY` for fight lists array storage
-  - [ ] Add `CURRENT_FIGHT_LIST_KEY` for active fight list ID
-  - [ ] Add `FIGHT_LIST_VERSION_KEY` for data structure version
-  - [ ] Add timestamp keys for last modified/created
-  - [ ] Document all new storage constants with JSDoc
-
+### Task 1.3.1.1 : **Define storage constants**
+- [V] **Define storage constants** (`src/constants/storage.ts`)
+  - [V] Add `FIGHT_LISTS_KEY` for fight lists array storage
+  - [V] Add `CURRENT_FIGHT_LIST_KEY` for active fight list ID
+  - [V] Add `FIGHT_LIST_VERSION_KEY` for data structure version
+  - [V] Add timestamp keys for last modified/created
+  - [V] Document all new storage constants with JSDoc
+#### Task 1.3.1.2 : **Design storage schema validation**
 - [ ] **Design storage schema validation**
   - [ ] Create fight list schema validator
   - [ ] Add version checking for data structure

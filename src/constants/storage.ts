@@ -39,7 +39,7 @@ export const STORAGE_KEYS = {
    * @type {string}
    * @constant
    */
-  FIGHT_LIST_VERSION: 'kravMagaFightListVersion'
+  //FIGHT_LIST_VERSION: 'kravMagaFightListVersion'
 } as const;
 
 /**
@@ -63,7 +63,7 @@ export const AUDIO_FILES = {
  * @type {string}
  * @constant
  */
-export const CURRENT_FIGHT_LIST_VERSION = '1.0.0';
+//export const CURRENT_FIGHT_LIST_VERSION = '1.0.0';
 
 /**
  * Keys for fight list timestamps.

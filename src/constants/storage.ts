@@ -2,6 +2,7 @@
  * Constants for local storage keys used throughout the application.
  * These keys are used to store and retrieve data from browser's localStorage.
  * @namespace STORAGE_KEYS
+ * @public
  */
 export const STORAGE_KEYS = {
   /** 
@@ -46,6 +47,7 @@ export const STORAGE_KEYS = {
  * Audio file names used in the application.
  * These constants ensure consistent reference to audio resources.
  * @namespace AUDIO_FILES
+ * @public
  */
 export const AUDIO_FILES = {
   /** 
@@ -62,14 +64,16 @@ export const AUDIO_FILES = {
  * Should be updated whenever the fight list data structure changes.
  * @type {string}
  * @constant
+ * @public
  */
-export const CURRENT_FIGHT_LIST_VERSION = '1.0.0';
+export const CURRENT_FIGHT_LIST_VERSION = '1.1.7';
 
 /**
  * Keys for fight list timestamps.
  * These keys are used in the fight list metadata to track creation and modification times.
  * Each fight list must maintain these timestamps for data integrity and tracking purposes.
  * @namespace FIGHT_LIST_TIMESTAMPS
+ * @public
  */
 export const FIGHT_LIST_TIMESTAMPS = {
   /** 

@@ -38,6 +38,15 @@ export function isFightList(value: unknown): value is FightList {
 }
 
 /**
+ * Validates a UUID string
+ * @param uuid - UUID string to validate
+ * @returns True if valid UUID
+ */
+function isValidUUID(uuid: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+}
+
+/**
  * Validates a fight list data structure
  * @param data - The fight list data to validate
  * @returns Validation result with success flag and any error messages
@@ -54,9 +63,8 @@ export function validateFightList(data: unknown): FightListValidationResult {
     return result;
   }
 
-  // Validate ID format (UUID v4)
-  const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  if (!uuidV4Regex.test(data.id)) {
+  // Validate ID format (UUID)
+  if (!isValidUUID(data.id)) {
     result.errors.push('Invalid fight list ID format');
   }
 
@@ -77,9 +85,7 @@ export function validateFightList(data: unknown): FightListValidationResult {
     
     if (isNaN(created) || isNaN(modified)) {
       result.errors.push('Invalid timestamp format');
-    }
-    
-    if (modified < created) {
+    } else if (modified < created) {
       result.errors.push('Last modified timestamp cannot be earlier than created timestamp');
     }
   } catch (e) {
@@ -102,11 +108,7 @@ export function validateFightListVersion(version: string): boolean {
   const providedVersion = version.split('.');
   
   // Check major version compatibility
-  if (currentVersion[0] !== providedVersion[0]) {
-    return false;
-  }
-  
-  return true;
+  return currentVersion[0] === providedVersion[0];
 }
 
 /**
@@ -116,22 +118,26 @@ export function validateFightListVersion(version: string): boolean {
  */
 export function checkFightListIntegrity(data: FightList): string[] {
   const issues: string[] = [];
-
-  // Check for duplicate technique IDs
   const techniqueIds = new Set<string>();
-  data.techniques.forEach(technique => {
+
+  // Check for technique-level issues
+  for (const technique of data.techniques) {
+    // Check for duplicate technique IDs
     if (techniqueIds.has(technique.techniqueId)) {
       issues.push(`Duplicate technique ID found: ${technique.techniqueId}`);
     }
     techniqueIds.add(technique.techniqueId);
-  });
 
-  // Check priority values are within valid range (1-5)
-  data.techniques.forEach(technique => {
+    // Check priority range
     if (technique.priority < 1 || technique.priority > 5) {
       issues.push(`Invalid priority value for technique ${technique.techniqueId}: ${technique.priority}`);
     }
-  });
+
+    // Validate technique ID format
+    if (!isValidUUID(technique.id)) {
+      issues.push(`Invalid technique UUID format: ${technique.id}`);
+    }
+  }
 
   return issues;
 }
@@ -152,22 +158,19 @@ export function validateFightListComplete(
     warnings: []
   };
 
-  // Check version compatibility
+  // Check version compatibility first
   if (!validateFightListVersion(version)) {
     result.errors.push(`Incompatible fight list version: ${version}`);
     return result;
   }
 
-  // Validate basic structure
-  const structureValidation = validateFightList(data);
-  if (!structureValidation.isValid) {
-    result.errors.push(...structureValidation.errors);
-    return result;
-  }
+  // Run basic validation
+  const basicValidation = validateFightList(data);
+  result.errors.push(...basicValidation.errors);
 
-  // Check data integrity
-  const integrityIssues = checkFightListIntegrity(data as FightList);
-  if (integrityIssues.length > 0) {
+  // Run integrity checks if data is a FightList, regardless of basic validation
+  if (isFightList(data)) {
+    const integrityIssues = checkFightListIntegrity(data);
     result.errors.push(...integrityIssues);
   }
 

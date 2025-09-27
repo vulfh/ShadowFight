@@ -302,54 +302,56 @@ export class StorageService {
     return data.startsWith('C:')
   }
 
-  ///**
-  // * Validates fight list data structure version
-  // * @returns true if version is current, false otherwise
-  // * @todo Implement version checking in data migration system
-  // */
-  //private validateVersion(): boolean {
-  //  const version = localStorage.getItem(STORAGE_KEYS.FIGHT_LIST_VERSION)
-  //  return version === CURRENT_FIGHT_LIST_VERSION
-  //}
+  /**
+   * Validates fight list data structure version
+   * @returns true if version is current, false otherwise
+   * @todo Implement version checking in data migration system
+   * @ts-ignore 
+   */
+  private validateVersion(): boolean {
+    const version = localStorage.getItem(STORAGE_KEYS.FIGHT_LIST_VERSION)
+    return version === CURRENT_FIGHT_LIST_VERSION
+  }
 
-//  /**
-//   * Validates a fight list's data structure
-//   * @param fightList The fight list to validate
-//   * @returns Validation result
-//   */
-//  public validateFightList(fightList: any): FightListValidationResult {
-//    const errors: string[] = []
-//    const warnings: string[] = []
+  /**
+   * Validates a fight list's data structure
+   * @param fightList The fight list to validate
+   * @returns Validation result
+   * @ts-ignore
+   */
+  public validateFightList(fightList: any): FightListValidationResult {
+    const errors: string[] = []
+    const warnings: string[] = []
 
-//    // Required fields
-//    if (!fightList.id) errors.push('Fight list must have an ID')
-//    if (!fightList.name) errors.push('Fight list must have a name')
-//    if (!Array.isArray(fightList.techniques)) {
-//      errors.push('Fight list must have a techniques array')
-//    }
+    // Required fields
+    if (!fightList.id) errors.push('Fight list must have an ID')
+    if (!fightList.name) errors.push('Fight list must have a name')
+    if (!Array.isArray(fightList.techniques)) {
+      errors.push('Fight list must have a techniques array')
+    }
 
-//    // Timestamps
-//    if (!fightList.createdAt) errors.push('Fight list must have a creation timestamp')
-//    if (!fightList.lastModified) warnings.push('Fight list should have a last modified timestamp')
+    // Timestamps
+    if (!fightList.createdAt) errors.push('Fight list must have a creation timestamp')
+    if (!fightList.lastModified) warnings.push('Fight list should have a last modified timestamp')
 
-//    // Validate techniques
-//    if (fightList.techniques) {
-//      fightList.techniques.forEach((technique: any, index: number) => {
-//        if (!technique.id) errors.push(`Technique at index ${index} must have an ID`)
-//        if (!technique.techniqueId) errors.push(`Technique at index ${index} must have a technique ID`)
-//        if (typeof technique.priority !== 'number' || technique.priority < 1 || technique.priority > 5) {
-//          errors.push(`Technique at index ${index} must have a priority between 1 and 5`)
-//        }
-//        if (typeof technique.selected !== 'boolean') {
-//          errors.push(`Technique at index ${index} must have a selected state`)
-//        }
-//      })
-//    }
+    // Validate techniques
+    if (fightList.techniques) {
+      fightList.techniques.forEach((technique: any, index: number) => {
+        if (!technique.id) errors.push(`Technique at index ${index} must have an ID`)
+        if (!technique.techniqueId) errors.push(`Technique at index ${index} must have a technique ID`)
+        if (typeof technique.priority !== 'number' || technique.priority < 1 || technique.priority > 5) {
+          errors.push(`Technique at index ${index} must have a priority between 1 and 5`)
+        }
+        if (typeof technique.selected !== 'boolean') {
+          errors.push(`Technique at index ${index} must have a selected state`)
+        }
+      })
+    }
 
-//    return {
-//      isValid: errors.length === 0,
-//      errors,
-//      warnings
-//    }
-//  }
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    }
+  }
 }

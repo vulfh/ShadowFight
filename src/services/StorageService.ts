@@ -308,7 +308,7 @@ export class StorageService {
    * @todo Implement version checking in data migration system
    * @ts-ignore 
    */
-  private validateVersion(): boolean {
+  public validateVersion(): boolean {
     const version = localStorage.getItem(STORAGE_KEYS.FIGHT_LIST_VERSION)
     return version === CURRENT_FIGHT_LIST_VERSION
   }

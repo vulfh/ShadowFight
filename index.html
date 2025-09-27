@@ -24,53 +24,61 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/src/styles/main.css">
+    <link rel="stylesheet" href="/src/styles/mobile.css">
 </head>
 <body>
     <div class="container-fluid">
         <!-- Header -->
         <header class="row bg-dark text-white py-3">
             <div class="col-12 text-center">
-                <h1><i class="fas fa-fist-raised me-2"></i>Krav Maga Shadow Fighting Trainer</h1>
-                <p class="mb-0">Enhance your training with unpredictable technique announcements</p>
+                <h1><i class="fas fa-fist-raised me-2"></i>Krav Maga Trainer</h1>
+                <p class="mb-0 d-none d-md-block">Enhance your training with unpredictable technique announcements</p>
             </div>
         </header>
 
         <!-- Main Content -->
         <main class="row">
             <!-- Configuration Panel -->
-            <div class="col-12 col-lg-6 p-4">
+            <div class="col-12 col-lg-6 p-4 swipe-area">
                 <div class="card h-100">
                     <div class="card-header bg-primary text-white">
-                        <h3><i class="fas fa-cog me-2"></i>Session Configuration</h3>
+                        <h3 class="mb-0"><i class="fas fa-cog me-2"></i>Configuration</h3>
                     </div>
                     <div class="card-body">
                         <form id="configForm">
                             <!-- Fight Duration -->
                             <div class="mb-4">
-                                <label for="fightDuration" class="form-label">
-                                    <i class="fas fa-clock me-2"></i>Fight Duration: <span id="durationValue">5</span> minutes
+                                <label for="fightDuration" class="form-label fs-6">
+                                    <i class="fas fa-clock me-2"></i>Duration: <span id="durationValue">5</span> min
                                 </label>
-                                <input type="range" class="form-range" id="fightDuration" min="1" max="30" value="5">
+                                <input type="range" class="form-range touch-friendly" id="fightDuration" min="1" max="30" value="5">
                             </div>
 
                             <!-- Delay Between Actions -->
                             <div class="mb-4">
-                                <label for="actionDelay" class="form-label">
-                                    <i class="fas fa-pause me-2"></i>Delay Between Actions: <span id="delayValue">3</span> seconds
+                                <label for="actionDelay" class="form-label fs-6">
+                                    <i class="fas fa-pause me-2"></i>Delay: <span id="delayValue">3</span> sec
                                 </label>
-                                <input type="range" class="form-range" id="actionDelay" min="1" max="10" step="0.5" value="3">
+                                <input type="range" class="form-range touch-friendly" id="actionDelay" min="1" max="10" step="0.5" value="3">
                             </div>
 
                             <!-- Volume Control -->
                             <div class="mb-4">
-                                <label for="volumeControl" class="form-label">
+                                <label for="volumeControl" class="form-label fs-6">
                                     <i class="fas fa-volume-up me-2"></i>Volume: <span id="volumeValue">80</span>%
                                 </label>
-                                <input type="range" class="form-range" id="volumeControl" min="0" max="100" value="80">
+                                <input type="range" class="form-range touch-friendly" id="volumeControl" min="0" max="100" value="80">
                             </div>
 
-                            <!-- Technique Selection -->
-                            <div class="mb-4">
+                            <!-- Technique Selection Button (Mobile) -->
+                            <div class="d-lg-none mb-4">
+                                <button type="button" class="btn btn-primary w-100" id="showTechniquesBtn">
+                                    <i class="fas fa-list me-2"></i>Select Techniques
+                                </button>
+                            </div>
+
+                            <!-- Technique Selection (Desktop) -->
+                            <div class="mb-4 d-none d-lg-block">
                                 <h5><i class="fas fa-list me-2"></i>Technique Selection</h5>
                                 <div class="row">
                                     <div class="col-12 mb-2">
@@ -90,7 +98,7 @@
                             <!-- Save Configuration -->
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-success btn-lg">
-                                    <i class="fas fa-save me-2"></i>Save Configuration
+                                    <i class="fas fa-save me-2"></i>Save
                                 </button>
                             </div>
                         </form>
@@ -99,31 +107,31 @@
             </div>
 
             <!-- Training Session Panel -->
-            <div class="col-12 col-lg-6 p-4">
+            <div class="col-12 col-lg-6 p-4 swipe-area">
                 <div class="card h-100">
                     <div class="card-header bg-success text-white">
-                        <h3><i class="fas fa-play me-2"></i>Training Session</h3>
+                        <h3 class="mb-0"><i class="fas fa-play me-2"></i>Training</h3>
                     </div>
                     <div class="card-body d-flex flex-column">
                         <!-- Session Status -->
                         <div class="text-center mb-4">
                             <div class="session-status" id="sessionStatus">
                                 <i class="fas fa-stop-circle fa-3x text-muted"></i>
-                                <h4 class="mt-2">Ready to Start</h4>
+                                <h4 class="mt-2">Ready</h4>
                             </div>
                         </div>
 
                         <!-- Timer Display -->
                         <div class="text-center mb-4">
                             <div class="timer-display">
-                                <h2 id="timerDisplay">05:00</h2>
+                                <h2 id="timerDisplay" class="display-4">05:00</h2>
                                 <p class="text-muted">Remaining Time</p>
                             </div>
                         </div>
 
                         <!-- Current Technique Display -->
                         <div class="text-center mb-4">
-                            <div class="technique-display" id="techniqueDisplay">
+                            <div class="technique-display animate-fade-in" id="techniqueDisplay">
                                 <h5 class="text-muted">No technique announced</h5>
                             </div>
                         </div>
@@ -132,36 +140,22 @@
                         <div class="session-controls mt-auto">
                             <div class="row g-2">
                                 <div class="col-4">
-                                    <button class="btn btn-success btn-lg w-100" id="startBtn" disabled>
-                                        <i class="fas fa-play me-2"></i>Start
+                                    <button class="btn btn-success w-100" id="startBtn" disabled>
+                                        <i class="fas fa-play d-block d-md-inline me-md-2"></i>
+                                        <span class="d-none d-md-inline">Start</span>
                                     </button>
                                 </div>
                                 <div class="col-4">
-                                    <button class="btn btn-warning btn-lg w-100" id="pauseBtn" disabled>
-                                        <i class="fas fa-pause me-2"></i>Pause
+                                    <button class="btn btn-warning w-100" id="pauseBtn" disabled>
+                                        <i class="fas fa-pause d-block d-md-inline me-md-2"></i>
+                                        <span class="d-none d-md-inline">Pause</span>
                                     </button>
                                 </div>
                                 <div class="col-4">
-                                    <button class="btn btn-danger btn-lg w-100" id="stopBtn" disabled>
-                                        <i class="fas fa-stop me-2"></i>Stop
+                                    <button class="btn btn-danger w-100" id="stopBtn" disabled>
+                                        <i class="fas fa-stop d-block d-md-inline me-md-2"></i>
+                                        <span class="d-none d-md-inline">Stop</span>
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Session Summary -->
-                        <div class="session-summary mt-4" id="sessionSummary" style="display: none;">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h5><i class="fas fa-chart-bar me-2"></i>Session Summary</h5>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <p><strong>Techniques Used:</strong> <span id="techniquesUsed">0</span></p>
-                                        </div>
-                                        <div class="col-6">
-                                            <p><strong>Session Duration:</strong> <span id="sessionDuration">0:00</span></p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -170,12 +164,37 @@
             </div>
         </main>
 
+        <!-- Technique Selection Bottom Sheet (Mobile) -->
+        <div class="technique-selection-sheet d-lg-none" id="techniqueSheet">
+            <div class="p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Select Techniques</h5>
+                    <button type="button" class="btn-close" id="closeTechniqueSheet"></button>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-primary w-100" id="selectAllMobile">
+                            <i class="fas fa-check-double me-1"></i>Select All
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-secondary w-100" id="deselectAllMobile">
+                            <i class="fas fa-times me-1"></i>Deselect All
+                        </button>
+                    </div>
+                </div>
+                <div id="techniqueMobileList" class="technique-grid">
+                    <!-- Techniques will be populated by TypeScript -->
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer class="row bg-dark text-white py-3 mt-4">
             <div class="col-12 text-center">
                 <p class="mb-0">
                     <i class="fas fa-shield-alt me-2"></i>
-                    Krav Maga Shadow Fighting Trainer PWA v1.1.9
+                    Krav Maga Shadow Fighting Trainer v1.1.10
                 </p>
             </div>
         </footer>

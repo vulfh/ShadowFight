@@ -1,0 +1,219 @@
+/* TechniqueAddModal Component */
+.technique-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.technique-item {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  transition: all 0.2s ease-in-out;
+  background-color: #fff;
+}
+
+.technique-item.selected {
+  border-color: #28a745;
+  background-color: #f8fff9;
+}
+
+.technique-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+}
+
+.technique-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.technique-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.technique-name {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.technique-category {
+  font-size: 0.875rem;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.technique-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.priority-select {
+  flex: 1;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  background-color: #fff;
+}
+
+.add-btn {
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Search and Filter Section */
+.search-filter-section {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  z-index: 1;
+}
+
+#techniqueSearch {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.category-filters {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-filter-btn {
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  background: #fff;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.category-filter-btn.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .technique-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .technique-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .priority-select,
+  .add-btn {
+    width: 100%;
+  }
+
+  .category-filters {
+    margin: 0 -1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Modal bottom sheet style */
+  .modal-dialog {
+    margin: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+  }
+
+  .modal.show .modal-dialog {
+    transform: translateY(0);
+  }
+
+  .modal-content {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  /* Touch-friendly sizes */
+  .add-btn,
+  .priority-select,
+  .category-filter-btn {
+    min-height: 44px;
+  }
+}
+
+/* Transitions and Animations */
+.technique-item {
+  transform-origin: center;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.technique-item:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.technique-item.selected {
+  animation: selectPulse 0.3s ease-out;
+}
+
+@keyframes selectPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Accessibility Improvements */
+.technique-item:focus-within {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.priority-select:focus,
+.add-btn:focus,
+#techniqueSearch:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* High Contrast Mode Support */
+@media (forced-colors: active) {
+  .technique-item.selected {
+    border: 2px solid SelectedItem;
+  }
+
+  .category-filter-btn.active {
+    border: 2px solid SelectedItem;
+  }
+}

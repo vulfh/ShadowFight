@@ -211,16 +211,16 @@ This document breaks down the Fight List feature implementation into specific, a
 - [ ] **Add accessibility support**
 
 #### Task 2.1.2: Create TechniqueAddModal Component
-- [ ] **Create TechniqueAddModal class** (`src/components/TechniqueAddModal.ts`)
-  - [ ] Implement technique selection interface
-  - [ ] Implement search and filtering
-  - [ ] Implement priority selection
-  - [ ] Implement mobile-optimized UI
-- [ ] **Add search functionality**
-- [ ] **Add filtering by category**
-- [ ] **Add priority selection**
-- [ ] **Add mobile touch interactions**
-- [ ] **Create unit tests**
+- [V] **Create TechniqueAddModal class** (`src/components/TechniqueAddModal.ts`)
+  - [V] Implement technique selection interface
+  - [V] Implement search and filtering
+  - [V] Implement priority selection
+  - [V] Implement mobile-optimized UI
+- [V] **Add search functionality**
+- [V] **Add filtering by category**
+- [V] **Add priority selection**
+- [V] **Add mobile touch interactions**
+- [V] **Create unit tests**
 
 #### Task 2.1.3: Update HTML Structure
 - [ ] **Add fight list panel** to `index.html`

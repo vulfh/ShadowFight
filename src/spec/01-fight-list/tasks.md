@@ -91,13 +91,15 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Add `FIGHT_LIST_VERSION_KEY` for data structure version
   - [V] Add timestamp keys for last modified/created
   - [V] Document all new storage constants with JSDoc
+  - 
 #### Task 1.3.1.2 : **Design storage schema validation**
-- [ ] **Design storage schema validation**
-  - [ ] Create fight list schema validator
-  - [ ] Add version checking for data structure
-  - [ ] Implement data integrity checks
-  - [ ] Add type guards for fight list data
+- [V] **Design storage schema validation**
+  - [V] Create fight list schema validator
+  - [V] Add version checking for data structure
+  - [V] Implement data integrity checks
+  - [V] Add type guards for fight list data
 
+#### Task 1.3.1.3 : **Implement localStorage operations**
 - [ ] **Implement localStorage operations** (`src/services/StorageService.ts`)
   - [ ] Create `saveFightList(fightList: FightList)` method
   - [ ] Create `getFightList(id: string)` method

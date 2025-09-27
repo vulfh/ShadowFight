@@ -277,15 +277,15 @@ This document breaks down the Fight List feature implementation into specific, a
 **Priority: High | Estimated Time: 2 days**
 
 #### Task 3.1.1: Implement Mobile-First UI
-- [ ] **Optimize for mobile devices** (320px - 768px)
-  - [ ] Single column layout
-  - [ ] Touch-friendly buttons (44px minimum)
-  - [ ] Swipe gestures for expand/collapse
-  - [ ] Bottom sheet for technique selection
-  - [ ] Large, readable fonts (16px minimum)
-- [ ] **Test on various mobile devices**
-- [ ] **Optimize touch interactions**
-- [ ] **Add mobile-specific animations**
+- [V] **Optimize for mobile devices** (320px - 768px)
+  - [V] Single column layout
+  - [V] Touch-friendly buttons (44px minimum)
+  - [V] Swipe gestures for expand/collapse
+  - [V] Bottom sheet for technique selection
+  - [V] Large, readable fonts (16px minimum)
+- [V] **Test on various mobile devices**
+- [V] **Optimize touch interactions**
+- [V] **Add mobile-specific animations**
 
 #### Task 3.1.2: Implement Tablet Optimizations
 - [ ] **Optimize for tablet devices** (768px - 1024px)

@@ -100,15 +100,13 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Add type guards for fight list data
 
 #### Task 1.3.1.3 : **Implement localStorage operations**
-- [ ] **Implement localStorage operations** (`src/services/StorageService.ts`)
-  - [ ] Create `saveFightList(fightList: FightList)` method
-  - [ ] Create `getFightList(id: string)` method
-  - [ ] Create `getAllFightLists()` method
-  - [ ] Create `deleteFightList(id: string)` method
-  - [ ] Create `setCurrentFightList(id: string)` method
-  - [ ] Add compression for large datasets
-  - [ ] Implement batch operations for performance
-  - [ ] Add storage quota management
+- [V] **Implement localStorage operations** (`src/services/StorageService.ts`)
+  - [V] Create `saveFightList(fightList: FightList)` method
+  - [V] Create `getFightList(id: string)` method
+  - [V] Create `getAllFightLists()` method
+  - [V] Create `deleteFightList(id: string)` method
+  - [V] Create `setCurrentFightList(id: string)` method
+
 
 #### Task 1.3.2: Implement Error Handling & Recovery
 - [ ] **Add storage error handlers**
@@ -430,6 +428,12 @@ This document breaks down the Fight List feature implementation into specific, a
 - [ ] **Test PWA functionality**
 - [ ] **Test offline functionality**
 - [ ] **Prepare deployment checklist**
+ 
+#### Task 5: Final check up
+- [ ] **Implement localStorage operations** (`src/services/StorageService.ts`)
+  - [ ] Add compression for large datasets
+  - [ ] Implement batch operations for performance
+  - [ ] Add storage quota management
 
 ---
 

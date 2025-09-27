@@ -197,18 +197,18 @@ This document breaks down the Fight List feature implementation into specific, a
 **Priority: High | Estimated Time: 3 days**
 
 #### Task 2.1.1: Create FightListUIManager
-- [ ] **Create FightListUIManager class** (`src/managers/FightListUIManager.ts`)
-  - [ ] Implement `renderFightLists()` method
-  - [ ] Implement `renderFightList()` method
-  - [ ] Implement `showTechniqueAddModal()` method
-  - [ ] Implement `hideTechniqueAddModal()` method
-  - [ ] Implement `updateFightListExpansion()` method
-  - [ ] Implement `handleMobileSwipe()` method
-  - [ ] Implement `renderResponsiveLayout()` method
-- [ ] **Add event handling** for fight list interactions
-- [ ] **Add mobile touch support**
-- [ ] **Create unit tests** for UI methods
-- [ ] **Add accessibility support**
+- [V] **Create FightListUIManager class** (`src/managers/FightListUIManager.ts`)
+  - [V] Implement `renderFightLists()` method
+  - [V] Implement `renderFightList()` method
+  - [V] Implement `showTechniqueAddModal()` method
+  - [V] Implement `hideTechniqueAddModal()` method
+  - [V] Implement `updateFightListExpansion()` method
+  - [V] Implement `handleMobileSwipe()` method
+  - [V] Implement `renderResponsiveLayout()` method
+- [V] **Add event handling** for fight list interactions
+- [V] **Add mobile touch support**
+- [V] **Create unit tests** for UI methods
+- [V] **Add accessibility support**
 
 #### Task 2.1.2: Create TechniqueAddModal Component
 - [ ] **Create TechniqueAddModal class** (`src/components/TechniqueAddModal.ts`)

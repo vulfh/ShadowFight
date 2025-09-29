@@ -223,10 +223,10 @@ This document breaks down the Fight List feature implementation into specific, a
 - [V] **Create unit tests**
 
 #### Task 2.1.3: Update HTML Structure
-- [ ] **Add fight list panel** to `index.html`
-- [ ] **Add technique add modal** to `index.html`
-- [ ] **Update existing HTML** for fight list integration
-- [ ] **Add responsive classes**
+- [V] **Add fight list panel** to `index.html`
+- [V] **Add technique add modal** to `index.html`
+- [V] **Update existing HTML** for fight list integration
+- [V] **Add responsive classes**
 - [ ] **Test HTML structure** across devices
 
 ### 2.2 Responsive Design Implementation

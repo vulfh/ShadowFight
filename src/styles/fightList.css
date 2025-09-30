@@ -1,0 +1,238 @@
+/* Fight List Styles */
+
+/* Container Styles */
+.fight-list-container {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+/* Fight List Item Styles */
+.fight-list-item {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+.fight-list-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.fight-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+  color: white;
+}
+
+.fight-list-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.fight-list-content {
+  padding: 1rem;
+}
+
+/* Technique Grid Styles */
+.technique-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.technique-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--light-color);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.technique-item:hover {
+  background: #e9ecef;
+}
+
+/* Mobile-First Design (320px - 768px) */
+@media (max-width: 768px) {
+  .fight-list-container {
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
+  }
+
+  .fight-list-header {
+    padding: 0.75rem;
+  }
+
+  .fight-list-title {
+    font-size: 1rem;
+  }
+
+  .fight-list-content {
+    padding: 0.75rem;
+  }
+
+  .technique-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Touch-friendly buttons */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Swipe gestures */
+  .fight-list-item {
+    touch-action: pan-y;
+    position: relative;
+  }
+
+  .swipe-actions {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    display: flex;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .swipe-actions.visible {
+    opacity: 1;
+  }
+
+  /* Bottom sheet for technique selection */
+  .technique-selector {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .technique-selector.open {
+    transform: translateY(0);
+  }
+}
+
+/* Tablet Design (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .fight-list-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Larger touch targets */
+  .btn {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Side panel for technique addition */
+  .technique-selector {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 400px;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .technique-selector.open {
+    transform: translateX(0);
+  }
+}
+
+/* Desktop Design (1024px+) */
+@media (min-width: 1024px) {
+  .fight-list-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .technique-item {
+    cursor: pointer;
+  }
+
+  /* Hover states */
+  .fight-list-item:hover {
+    transform: translateY(-2px);
+  }
+
+  .technique-item:hover {
+    background: #e9ecef;
+  }
+
+  /* Keyboard focus states */
+  .fight-list-item:focus-within {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  /* Drag and drop */
+  .technique-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+  }
+
+  .technique-item.drag-over {
+    border: 2px dashed var(--primary-color);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .fight-list-header {
+    background: black;
+    color: white;
+    border: 2px solid white;
+  }
+
+  .technique-item {
+    border: 2px solid black;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .fight-list-item,
+  .technique-item,
+  .technique-selector {
+    transition: none;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .fight-list-item {
+    background: #343a40;
+    color: white;
+  }
+
+  .technique-item {
+    background: #495057;
+    color: white;
+  }
+
+  .technique-item:hover {
+    background: #6c757d;
+  }
+}

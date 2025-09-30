@@ -233,13 +233,13 @@ This document breaks down the Fight List feature implementation into specific, a
 **Priority: High | Estimated Time: 2 days**
 
 #### Task 2.2.1: Create Responsive CSS
-- [ ] **Add mobile-first CSS** to `src/styles/main.css`
-  - [ ] Add fight list container styles
-  - [ ] Add fight list item styles
-  - [ ] Add technique grid styles
-  - [ ] Add mobile optimizations
-  - [ ] Add tablet optimizations
-  - [ ] Add desktop optimizations
+- [V] **Add mobile-first CSS** to `src/styles/main.css`
+  - [V] Add fight list container styles
+  - [V] Add fight list item styles
+  - [V] Add technique grid styles
+  - [V] Add mobile optimizations
+  - [V] Add tablet optimizations
+  - [V] Add desktop optimizations
 - [ ] **Add touch-friendly interactions**
 - [ ] **Add swipe gesture support**
 - [ ] **Test responsive design** across devices

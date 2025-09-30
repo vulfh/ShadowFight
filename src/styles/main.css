@@ -13,6 +13,7 @@
   --mobile-breakpoint: 768px;
   --tablet-breakpoint: 1024px;
   --touch-target-size: 44px;
+  --swipe-threshold: 50px;
 }
 
 * {
@@ -295,6 +296,172 @@ footer {
   
   .timer-display h2 {
     font-size: 1.75rem;
+  }
+}
+
+/* Enhanced Mobile Support */
+@media (max-width: var(--mobile-breakpoint)) {
+  /* Improved touch targets */
+  .btn,
+  .form-control,
+  .nav-link,
+  .technique-item {
+    min-height: var(--touch-target-size);
+    padding: 12px;
+  }
+
+  .form-range {
+    height: var(--touch-target-size);
+  }
+
+  .form-range::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .form-range::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Touch feedback states */
+  .touch-active {
+    transform: scale(0.95);
+    opacity: 0.8;
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+
+  /* Swipe animations */
+  .swipe-area {
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y pinch-zoom;
+    position: relative;
+    transition: transform 0.3s ease-out;
+  }
+
+  .swiping-left,
+  .swiping-right {
+    transition: transform 0.2s ease-out;
+  }
+
+  .swiping-left {
+    transform: translateX(calc(var(--swipe-progress, 0) * -100px));
+  }
+
+  .swiping-right {
+    transform: translateX(calc(var(--swipe-progress, 0) * 100px));
+  }
+
+  .animate-collapse {
+    animation: collapseAnimation 0.3s ease-out;
+  }
+
+  .animate-expand {
+    animation: expandAnimation 0.3s ease-out;
+  }
+
+  @keyframes collapseAnimation {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  @keyframes expandAnimation {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Bottom sheet enhancements */
+  .technique-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 1040;
+    transition: background-color 0.3s ease-out;
+  }
+
+  .technique-sheet-overlay.active {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .technique-selection-sheet {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 1050;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-out;
+  }
+
+  .technique-selection-sheet.active {
+    bottom: 0;
+  }
+
+  .animate-slide-in {
+    animation: slideInAnimation 0.3s ease-out forwards;
+  }
+
+  .animate-slide-out {
+    animation: slideOutAnimation 0.3s ease-out forwards;
+  }
+
+  @keyframes slideInAnimation {
+    0% { transform: translateY(100%); }
+    100% { transform: translateY(0); }
+  }
+
+  @keyframes slideOutAnimation {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100%); }
+  }
+
+  /* Improved scrolling */
+  .technique-grid,
+  .modal-body {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding-bottom: 60px;
+  }
+
+  /* Enhanced tap targets */
+  .technique-item {
+    margin-bottom: 12px;
+  }
+
+  .technique-checkbox {
+    transform: scale(1.2);
+    margin-right: 16px;
+  }
+
+  /* Active states */
+  .btn.active,
+  .technique-item.selected {
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(1.02);
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: var(--mobile-breakpoint)) and (max-width: var(--tablet-breakpoint)) {
+  .btn,
+  .form-control,
+  .nav-link {
+    min-height: 40px;
+  }
+
+  .technique-grid {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 }
 

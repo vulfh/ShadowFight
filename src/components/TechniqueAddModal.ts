@@ -2,6 +2,7 @@ import { Technique, FightListTechnique } from '../types';
 
 export interface TechniqueAddModalOptions {
   onTechniqueSelect: (technique: FightListTechnique) => void;
+  onAddAll?: (techniques: FightListTechnique[]) => void;
   onClose: () => void;
   existingTechniques?: FightListTechnique[];
 }
@@ -59,6 +60,9 @@ export class TechniqueAddModal {
               `<option value="${category}">${category}</option>`
             ).join('')}
           </select>
+          <button type="button" class="technique-add-modal__add-all" aria-label="Add all filtered">
+            Add All
+          </button>
         </div>
         <div class="technique-add-modal__list" role="listbox"></div>
       </div>
@@ -88,6 +92,12 @@ export class TechniqueAddModal {
 
     // Category filter
     this.categoryFilter.addEventListener('change', () => this.handleFilter());
+
+    // Add All
+    const addAllBtn = this.modal.querySelector('.technique-add-modal__add-all') as HTMLButtonElement | null;
+    if (addAllBtn) {
+      addAllBtn.addEventListener('click', () => this.handleAddAll());
+    }
 
     // Close on outside click
     this.modal.addEventListener('click', (e) => {
@@ -218,6 +228,17 @@ export class TechniqueAddModal {
 
     this.options.onTechniqueSelect(fightListTechnique);
     this.renderTechniqueList(); // Re-render to update UI
+  }
+
+  private handleAddAll(): void {
+    if (!this.options.onAddAll) return;
+    const toAdd: FightListTechnique[] = this.filteredTechniques
+      .filter(t => !this.options.existingTechniques?.some(et => et.techniqueId === t.name))
+      .map(t => ({ id: crypto.randomUUID(), techniqueId: t.name, priority: 3, selected: true }));
+    if (toAdd.length > 0) {
+      this.options.onAddAll(toAdd);
+      this.renderTechniqueList();
+    }
   }
 
   public show(): void {

@@ -269,11 +269,11 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Select/deselect techniques: update via `updateFightList`
   - [V] Remove technique: `removeTechniqueFromFightList`
   - [ ] Open technique modal: `showTechniqueAddModal(fightListId)`
-- [ ] Task 2.3.1.3 **Integrate TechniqueAddModal**
-  - [ ] Populate with techniques not in selected list
-  - [ ] Add single technique with chosen priority via `addTechniqueToFightList`
-  - [ ] "Add All" adds all filtered techniques, then close modal
-  - [ ] Ensure search/filter operates on available set
+- [V] Task 2.3.1.3 **Integrate TechniqueAddModal**
+  - [V] Populate with techniques not in selected list
+  - [V] Add single technique with chosen priority via `addTechniqueToFightList`
+  - [V] "Add All" adds all filtered techniques, then close modal
+  - [V] Ensure search/filter operates on available set
 - [ ] Task 2.3.1.4 **Connect SessionManager to fight lists**
   - [ ] Start: `startSessionWithFightList(fightListId)` from list or panel
   - [ ] Validate at least one selected technique; show toast if none

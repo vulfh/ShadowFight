@@ -1,7 +1,9 @@
-import { FightList, FightListTechnique, FightListUIState, NotificationOptions } from '../types'
-import { UI_ELEMENTS, FIGHT_LIST_UI_ELEMENTS as UI } from '../constants/ui-elements'
+import { FightList, FightListTechnique, FightListUIState, NotificationOptions, Technique } from '../types'
+import { FIGHT_LIST_UI_ELEMENTS as UI } from '../constants/ui-elements'
 import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
+import { TechniqueAddModal } from '../components/TechniqueAddModal'
+import { TechniqueManager } from './TechniqueManager'
 
 /**
  * Manages the UI components and interactions for fight lists
@@ -20,7 +22,8 @@ export class FightListUIManager {
 
   constructor(
     private readonly fightListManager: FightListManager,
-    private readonly uiManager: UIManager
+    private readonly uiManager: UIManager,
+    private readonly techniqueManager: TechniqueManager = new TechniqueManager()
   ) {}
 
   /**
@@ -28,6 +31,9 @@ export class FightListUIManager {
    */
   async init(): Promise<void> {
     try {
+      if (!this.techniqueManager.isReady()) {
+        await this.techniqueManager.init()
+      }
       this.setupEventListeners()
       this.setupResponsiveHandling()
       await this.renderFightLists()
@@ -333,23 +339,48 @@ export class FightListUIManager {
    * Show the technique add modal
    */
   private showTechniqueAddModal(fightList: FightList): void {
-    // Store fight list ID for when modal is implemented
     this.uiState.selectedFightList = fightList.id
 
-    const modal = document.getElementById(UI_ELEMENTS.TECHNIQUE_ADD_MODAL)
-    if (!modal) {
-      this.showNotification({
-        message: 'Technique add modal is not available',
-        type: 'error'
-      })
-      return
-    }
+    const allTechniques: Technique[] = this.techniqueManager.getTechniques()
+    const existing = fightList.techniques
 
-    // Implementation will be added when TechniqueAddModal component is created
-    this.showNotification({
-      message: 'Technique add modal implementation coming soon',
-      type: 'info'
+    const modal = new TechniqueAddModal(allTechniques, {
+      existingTechniques: existing,
+      onTechniqueSelect: (flt: FightListTechnique) => {
+        try {
+          // Convert FightListTechnique to full addition via manager by mapping techniqueId back to Technique
+          const base = allTechniques.find(t => t.name === flt.techniqueId)
+          if (!base) return
+          this.fightListManager.addTechniqueToFightList(fightList.id, base, flt.priority)
+          // Update UI copy
+          const updated = this.fightListManager.getFightList(fightList.id)
+          if (updated) {
+            this.uiState.selectedFightList = updated.id
+            this.renderFightLists()
+          }
+          this.showNotification({ message: 'Technique added', type: 'success' })
+        } catch (error) {
+          this.showNotification({ message: error instanceof Error ? error.message : 'Failed to add technique', type: 'error' })
+        }
+      },
+      onAddAll: (items: FightListTechnique[]) => {
+        try {
+          items.forEach(item => {
+            const base = allTechniques.find(t => t.name === item.techniqueId)
+            if (base) this.fightListManager.addTechniqueToFightList(fightList.id, base, item.priority)
+          })
+          this.renderFightLists()
+          this.showNotification({ message: 'Techniques added', type: 'success' })
+        } catch (error) {
+          this.showNotification({ message: error instanceof Error ? error.message : 'Failed to add techniques', type: 'error' })
+        }
+      },
+      onClose: () => {
+        // noop for now
+      }
     })
+
+    modal.show()
   }
 
   /**

@@ -269,39 +269,39 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Select/deselect techniques: update via `updateFightList`
   - [V] Remove technique: `removeTechniqueFromFightList`
   - [ ] Open technique modal: `showTechniqueAddModal(fightListId)`
-- [ ] Task 2.3.1.2 **Integrate TechniqueAddModal**
+- [ ] Task 2.3.1.3 **Integrate TechniqueAddModal**
   - [ ] Populate with techniques not in selected list
   - [ ] Add single technique with chosen priority via `addTechniqueToFightList`
   - [ ] "Add All" adds all filtered techniques, then close modal
   - [ ] Ensure search/filter operates on available set
-- [ ] Task 2.3.1.3 **Connect SessionManager to fight lists**
+- [ ] Task 2.3.1.4 **Connect SessionManager to fight lists**
   - [ ] Start: `startSessionWithFightList(fightListId)` from list or panel
   - [ ] Validate at least one selected technique; show toast if none
   - [ ] Stop: stop session and clear `currentFightList` in storage; update UI
   - [ ] Fallback: prompt when no current list; Yes = all techniques, No = back
   - [ ] Resume/Pause: ensure controls work and restoration reads current list
-- [ ] Task 2.3.1.4 **Event flow contracts**
+- [ ] Task 2.3.1.5 **Event flow contracts**
   - [ ] Define callbacks: UI→Manager (CRUD, select, set current, modal)
   - [ ] Manager→UI (lists changed, current changed)
   - [ ] Session→UI (started, stopped, paused, resumed)
   - [ ] Avoid circular dependencies; keep UI manager presentation-only
-- [ ] Task 2.3.1.5 **Storage & persistence wiring**
+- [ ] Task 2.3.1.6 **Storage & persistence wiring**
   - [ ] Use `FIGHT_LISTS_KEY` and `CURRENT_FIGHT_LIST_KEY` via `StorageService`
   - [ ] Save on all mutations; reflect immediately in UI
   - [ ] Guard corrupt/missing data with validator
-- [ ] Task 2.3.1.6 **Integration error handling & feedback**
+- [ ] Task 2.3.1.7 **Integration error handling & feedback**
   - [ ] Map errors to `messages.ts` (duplicate/invalid name, delete last list, empty selection)
   - [ ] Show non-blocking toasts; keep modal open on validation errors
-- [ ] Task 2.3.1.7 **Responsive/mobile interaction checks**
+- [ ] Task 2.3.1.8 **Responsive/mobile interaction checks**
   - [ ] Ensure swipe expand/collapse updates UI state without conflicts
   - [ ] Technique modal renders correctly on mobile and desktop
-- [ ] Task 2.3.1.8 **Integration testing checklist**
+- [ ] Task 2.3.1.9 **Integration testing checklist**
   - [ ] Create/rename/delete/set current; add/remove/select/deselect techniques
   - [ ] Expand/collapse behavior and persistence
   - [ ] Start/stop session; fallback prompt flow; restoration with current list
   - [ ] Modal: search/filter, add single/all, no duplicates
   - [ ] Persistence across reload for lists and current list
-- [ ] Task 2.3.1.9 **Non-functional checks**
+- [ ] Task 2.3.1.10 **Non-functional checks**
   - [ ] Basic performance on large lists; minimal re-render work
   - [ ] Cleanup event listeners on re-renders
   - [ ] Basic accessibility for buttons and modal focus

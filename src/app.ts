@@ -4,6 +4,8 @@ import { AudioManager } from './managers/AudioManager'
 import { SessionManager } from './managers/SessionManager'
 import { ConfigManager } from './managers/ConfigManager'
 import { UIManager } from './managers/UIManager'
+import { FightListManager } from './managers/FightListManager'
+import { FightListUIManager } from './managers/FightListUIManager'
 import { 
   UI_ELEMENTS, 
   NOTIFICATION_TYPES, 
@@ -21,6 +23,8 @@ export class KravMagaTrainerApp {
   private sessionManager: SessionManager
   private configManager: ConfigManager
   private uiManager: UIManager
+  private fightListManager: FightListManager
+  private fightListUIManager: FightListUIManager
   private isInitialized: boolean = false
 
   constructor() {
@@ -29,6 +33,8 @@ export class KravMagaTrainerApp {
     this.sessionManager = new SessionManager()
     this.configManager = new ConfigManager()
     this.uiManager = new UIManager()
+    this.fightListManager = new FightListManager()
+    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager)
   }
 
   async init(): Promise<void> {
@@ -41,6 +47,10 @@ export class KravMagaTrainerApp {
       await this.configManager.init()
       await this.sessionManager.init()
       await this.uiManager.init()
+
+      // Initialize Fight List managers and hydrate UI
+      await this.fightListManager.init()
+      await this.fightListUIManager.init()
 
       // Set up session completion callback
       this.sessionManager.onSessionComplete = () => this.handleSessionComplete()

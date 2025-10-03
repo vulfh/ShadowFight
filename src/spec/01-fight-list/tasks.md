@@ -285,10 +285,10 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Manager→UI (lists changed, current changed)
   - [V] Session→UI (started, stopped, paused, resumed)
   - [V] Avoid circular dependencies; keep UI manager presentation-only
-- [ ] Task 2.3.1.6 **Storage & persistence wiring**
-  - [ ] Use `FIGHT_LISTS_KEY` and `CURRENT_FIGHT_LIST_KEY` via `StorageService`
-  - [ ] Save on all mutations; reflect immediately in UI
-  - [ ] Guard corrupt/missing data with validator
+- [V] Task 2.3.1.6 **Storage & persistence wiring**
+  - [V] Use `FIGHT_LISTS_KEY` and `CURRENT_FIGHT_LIST_KEY` via `StorageService`
+  - [V] Save on all mutations; reflect immediately in UI
+  - [V] Guard corrupt/missing data with validator
 - [ ] Task 2.3.1.7 **Integration error handling & feedback**
   - [ ] Map errors to `messages.ts` (duplicate/invalid name, delete last list, empty selection)
   - [ ] Show non-blocking toasts; keep modal open on validation errors

@@ -264,6 +264,14 @@ export class FightListManager {
   }
 
   /**
+   * Clear the current active fight list
+   */
+  clearCurrentFightList(): void {
+    this.currentFightListId = null
+    this.saveCurrentFightList()
+  }
+
+  /**
    * Get the current active fight list
    * @returns The current fight list or null if none set
    */

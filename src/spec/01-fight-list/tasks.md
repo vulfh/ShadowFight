@@ -274,12 +274,12 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Add single technique with chosen priority via `addTechniqueToFightList`
   - [V] "Add All" adds all filtered techniques, then close modal
   - [V] Ensure search/filter operates on available set
-- [ ] Task 2.3.1.4 **Connect SessionManager to fight lists**
-  - [ ] Start: `startSessionWithFightList(fightListId)` from list or panel
-  - [ ] Validate at least one selected technique; show toast if none
-  - [ ] Stop: stop session and clear `currentFightList` in storage; update UI
-  - [ ] Fallback: prompt when no current list; Yes = all techniques, No = back
-  - [ ] Resume/Pause: ensure controls work and restoration reads current list
+- [V] Task 2.3.1.4 **Connect SessionManager to fight lists**
+  - [V] Start: `startSessionWithFightList(fightListId)` from list or panel
+  - [V] Validate at least one selected technique; show toast if none
+  - [V] Stop: stop session and clear `currentFightList` in storage; update UI
+  - [V] Fallback: prompt when no current list; Yes = all techniques, No = back
+  - [V] Resume/Pause: ensure controls work and restoration reads current list
 - [ ] Task 2.3.1.5 **Event flow contracts**
   - [ ] Define callbacks: UI→Manager (CRUD, select, set current, modal)
   - [ ] Manager→UI (lists changed, current changed)

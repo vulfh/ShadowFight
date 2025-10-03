@@ -327,17 +327,45 @@ export class KravMagaTrainerApp {
   private async handleStartSession(): Promise<void> {
     try {
       const sessionConfig = this.configManager.getSessionConfig()
+      const currentFightList = this.fightListManager.getCurrentFightList()
 
-      if (!this.sessionManager.isReadyToStart(sessionConfig)) {
-        this.showNotification({
-          message: ERROR_MESSAGES.CONFIGURE_SESSION,
-          type: NOTIFICATION_TYPES.ERROR
-        })
-        return
+      // Check if we have a current fight list
+      if (currentFightList) {
+        // Validate fight list has selected techniques
+        if (!this.sessionManager.isReadyToStartWithFightList(currentFightList)) {
+          this.showNotification({
+            message: `Please select at least one technique in ${currentFightList.name}`,
+            type: NOTIFICATION_TYPES.ERROR
+          })
+          return
+        }
+
+        // Start session with fight list
+        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList)
+      } else {
+        // No current fight list - show fallback prompt
+        const useAllTechniques = confirm('There is no selected fight list. Do you want to run over all available techniques?')
+        
+        if (!useAllTechniques) {
+          this.showNotification({
+            message: 'Please select a fight list first',
+            type: NOTIFICATION_TYPES.INFO
+          })
+          return
+        }
+
+        // Validate regular session
+        if (!this.sessionManager.isReadyToStart(sessionConfig)) {
+          this.showNotification({
+            message: ERROR_MESSAGES.CONFIGURE_SESSION,
+            type: NOTIFICATION_TYPES.ERROR
+          })
+          return
+        }
+
+        // Start regular session with all techniques
+        await this.sessionManager.startSession(sessionConfig)
       }
-
-      // Start the session
-      await this.sessionManager.startSession(sessionConfig)
 
       // Update UI to reflect session state
       this.updateSessionUI()
@@ -381,6 +409,10 @@ export class KravMagaTrainerApp {
     this.sessionManager.stopSession()
     this.enableConfigurationControls()
     this.updateSessionUI()
+    
+    // Clear current fight list from storage when session stops
+    this.fightListManager.clearCurrentFightList();
+    
     this.showNotification({
       message: INFO_MESSAGES.SESSION_STOPPED,
       type: NOTIFICATION_TYPES.INFO
@@ -391,6 +423,10 @@ export class KravMagaTrainerApp {
     // Session completed naturally - behave exactly like Stop button was pressed
     this.enableConfigurationControls()
     this.updateSessionUI()
+    
+    // Clear current fight list from storage when session completes
+    this.fightListManager.clearCurrentFightList();
+    
     this.showNotification({
       message: SUCCESS_MESSAGES.SESSION_COMPLETED,
       type: NOTIFICATION_TYPES.SUCCESS

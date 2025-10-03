@@ -68,6 +68,34 @@ export interface FightListEvent {
   data?: any
 }
 
+// Event Flow Contracts
+export interface FightListUICallbacks {
+  onCreateFightList: (name: string) => Promise<FightList>
+  onUpdateFightList: (id: string, updates: Partial<FightList>) => Promise<void>
+  onDeleteFightList: (id: string) => Promise<void>
+  onSetCurrentFightList: (id: string | null) => Promise<void>
+  onAddTechnique: (fightListId: string, technique: Technique, priority: number) => Promise<void>
+  onRemoveTechnique: (fightListId: string, techniqueId: string) => Promise<void>
+  onShowTechniqueModal: (fightListId: string) => void
+  onValidateFightListName: (name: string) => FightListValidationResult
+}
+
+export interface FightListManagerCallbacks {
+  onFightListsChanged: (fightLists: FightList[]) => void
+  onCurrentFightListChanged: (fightListId: string | null) => void
+  onFightListExpanded: (fightListId: string, expanded: boolean) => void
+  onNotification: (options: NotificationOptions) => void
+}
+
+export interface SessionUICallbacks {
+  onSessionStarted: (fightListId?: string) => void
+  onSessionStopped: () => void
+  onSessionPaused: () => void
+  onSessionResumed: () => void
+  onSessionCompleted: () => void
+  onTechniqueAnnounced: (technique: Technique) => void
+}
+
 // Configuration types
 export interface SessionConfig {
   duration: number // minutes

@@ -280,11 +280,11 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Stop: stop session and clear `currentFightList` in storage; update UI
   - [V] Fallback: prompt when no current list; Yes = all techniques, No = back
   - [V] Resume/Pause: ensure controls work and restoration reads current list
-- [ ] Task 2.3.1.5 **Event flow contracts**
-  - [ ] Define callbacks: UI→Manager (CRUD, select, set current, modal)
-  - [ ] Manager→UI (lists changed, current changed)
-  - [ ] Session→UI (started, stopped, paused, resumed)
-  - [ ] Avoid circular dependencies; keep UI manager presentation-only
+- [V] Task 2.3.1.5 **Event flow contracts**
+  - [V] Define callbacks: UI→Manager (CRUD, select, set current, modal)
+  - [V] Manager→UI (lists changed, current changed)
+  - [V] Session→UI (started, stopped, paused, resumed)
+  - [V] Avoid circular dependencies; keep UI manager presentation-only
 - [ ] Task 2.3.1.6 **Storage & persistence wiring**
   - [ ] Use `FIGHT_LISTS_KEY` and `CURRENT_FIGHT_LIST_KEY` via `StorageService`
   - [ ] Save on all mutations; reflect immediately in UI

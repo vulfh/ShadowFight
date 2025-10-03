@@ -1,4 +1,7 @@
-import { Technique, SessionConfig,  NotificationOptions } from './types'
+import { Technique,
+        SessionConfig, 
+        NotificationOptions,
+        FightListManagerCallbacks } from './types'
 import { TechniqueManager } from './managers/TechniqueManager'
 import { AudioManager } from './managers/AudioManager'
 import { SessionManager } from './managers/SessionManager'
@@ -52,6 +55,9 @@ export class KravMagaTrainerApp {
       await this.fightListManager.init()
       await this.fightListUIManager.init()
 
+      // Set up event flow contracts
+      this.setupEventFlowContracts()
+
       // Set up session completion callback
       this.sessionManager.onSessionComplete = () => this.handleSessionComplete()
 
@@ -86,6 +92,34 @@ export class KravMagaTrainerApp {
       })
       throw error
     }
+  }
+
+  private setupEventFlowContracts(): void {
+    // Set up Manager→UI callbacks for FightListUIManager
+    const managerCallbacks: FightListManagerCallbacks = {
+      onFightListsChanged: () => {
+        // Re-render fight lists when they change
+        this.fightListUIManager.renderFightLists()
+      },
+      onCurrentFightListChanged: () => {
+        // Update UI when current fight list changes
+        this.updateStartButtonState()
+        this.fightListUIManager.renderFightLists()
+      },
+      onFightListExpanded: (fightListId, expanded) => {
+        // Handle fight list expansion state
+        console.log(`Fight list ${fightListId} ${expanded ? 'expanded' : 'collapsed'}`)
+      },
+      onNotification: (options) => {
+        // Forward notifications to UIManager
+        this.uiManager.showNotification(options)
+      }
+    }
+    this.fightListUIManager.setManagerCallbacks(managerCallbacks)
+
+    // Set up Session→UI callbacks (defined for future use)
+    // These callbacks define the contract for session events
+    // Currently handled by existing methods in the app
   }
 
   private setupEventListeners(): void {

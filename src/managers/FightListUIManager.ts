@@ -1,4 +1,11 @@
-import { FightList, FightListTechnique, FightListUIState, NotificationOptions, Technique } from '../types'
+import { FightList, 
+        FightListTechnique,
+        FightListUIState, 
+        NotificationOptions, 
+        Technique, 
+        FightListUICallbacks,
+        FightListManagerCallbacks, 
+        FightListValidationResult } from '../types'
 import { FIGHT_LIST_UI_ELEMENTS as UI } from '../constants/ui-elements'
 import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
@@ -19,6 +26,9 @@ export class FightListUIManager {
 
   private touchStartX: number = 0
   private touchStartY: number = 0
+
+  // Event flow callbacks
+  private managerCallbacks: FightListManagerCallbacks | null = null
 
   constructor(
     private readonly fightListManager: FightListManager,
@@ -41,6 +51,29 @@ export class FightListUIManager {
     } catch (error) {
       console.error('Failed to initialize FightListUIManager:', error)
       throw new Error('Failed to initialize FightListUIManager')
+    }
+  }
+
+  /**
+   * Set up manager callbacks for event flow
+   */
+  setManagerCallbacks(callbacks: FightListManagerCallbacks): void {
+    this.managerCallbacks = callbacks
+  }
+
+  /**
+   * Get UI callbacks for external components
+   */
+  getUICallbacks(): FightListUICallbacks {
+    return {
+      onCreateFightList: this.createFightList.bind(this),
+      onUpdateFightList: this.updateFightList.bind(this),
+      onDeleteFightList: this.deleteFightList.bind(this),
+      onSetCurrentFightList: this.setCurrentFightList.bind(this),
+      onAddTechnique: this.addTechnique.bind(this),
+      onRemoveTechnique: this.removeTechnique.bind(this),
+      onShowTechniqueModal: this.showTechniqueModal.bind(this),
+      onValidateFightListName: this.validateFightListName.bind(this)
     }
   }
 
@@ -102,7 +135,7 @@ export class FightListUIManager {
   /**
    * Render all fight lists in the container
    */
-  private async renderFightLists(): Promise<void> {
+  async renderFightLists(): Promise<void> {
     const container = document.getElementById(UI.CONTAINER)
     if (!container) return
 
@@ -522,5 +555,105 @@ export class FightListUIManager {
     // Adjust font sizes and spacing
     container.style.setProperty('--base-font-size', isMobile ? '0.875rem' : '1rem')
     container.style.setProperty('--spacing-unit', isMobile ? '0.5rem' : '1rem')
+  }
+
+  // UI→Manager Callback Implementations
+  private async createFightList(name: string): Promise<FightList> {
+    try {
+      const fightList = this.fightListManager.createFightList(name)
+      this.managerCallbacks?.onFightListsChanged(this.fightListManager.getFightLists())
+      this.showNotification({ message: 'Fight list created', type: 'success' })
+      return fightList
+    } catch (error) {
+      this.showNotification({ 
+        message: error instanceof Error ? error.message : 'Failed to create fight list', 
+        type: 'error' 
+      })
+      throw error
+    }
+  }
+
+  private async updateFightList(id: string, updates: Partial<FightList>): Promise<void> {
+    try {
+      this.fightListManager.updateFightList(id, updates)
+      this.managerCallbacks?.onFightListsChanged(this.fightListManager.getFightLists())
+      this.showNotification({ message: 'Fight list updated', type: 'success' })
+    } catch (error) {
+      this.showNotification({ 
+        message: error instanceof Error ? error.message : 'Failed to update fight list', 
+        type: 'error' 
+      })
+      throw error
+    }
+  }
+
+  private async deleteFightList(id: string): Promise<void> {
+    try {
+      this.fightListManager.deleteFightList(id)
+      this.managerCallbacks?.onFightListsChanged(this.fightListManager.getFightLists())
+      this.showNotification({ message: 'Fight list deleted', type: 'success' })
+    } catch (error) {
+      this.showNotification({ 
+        message: error instanceof Error ? error.message : 'Failed to delete fight list', 
+        type: 'error' 
+      })
+      throw error
+    }
+  }
+
+  private async setCurrentFightList(id: string | null): Promise<void> {
+    try {
+      this.fightListManager.setCurrentFightList(id)
+      this.managerCallbacks?.onCurrentFightListChanged(id)
+      this.showNotification({ 
+        message: id ? 'Current fight list updated' : 'Current fight list cleared', 
+        type: 'info' 
+      })
+    } catch (error) {
+      this.showNotification({ 
+        message: error instanceof Error ? error.message : 'Failed to set current fight list', 
+        type: 'error' 
+      })
+      throw error
+    }
+  }
+
+  private async addTechnique(fightListId: string, technique: Technique, priority: number): Promise<void> {
+    try {
+      this.fightListManager.addTechniqueToFightList(fightListId, technique, priority)
+      this.managerCallbacks?.onFightListsChanged(this.fightListManager.getFightLists())
+      this.showNotification({ message: 'Technique added', type: 'success' })
+    } catch (error) {
+      this.showNotification({ 
+        message: error instanceof Error ? error.message : 'Failed to add technique', 
+        type: 'error' 
+      })
+      throw error
+    }
+  }
+
+  private async removeTechnique(fightListId: string, techniqueId: string): Promise<void> {
+    try {
+      this.fightListManager.removeTechniqueFromFightList(fightListId, techniqueId)
+      this.managerCallbacks?.onFightListsChanged(this.fightListManager.getFightLists())
+      this.showNotification({ message: 'Technique removed', type: 'success' })
+    } catch (error) {
+      this.showNotification({ 
+        message: error instanceof Error ? error.message : 'Failed to remove technique', 
+        type: 'error' 
+      })
+      throw error
+    }
+  }
+
+  private showTechniqueModal(fightListId: string): void {
+    const fightList = this.fightListManager.getFightList(fightListId)
+    if (fightList) {
+      this.showTechniqueAddModal(fightList)
+    }
+  }
+
+  private validateFightListName(name: string): FightListValidationResult {
+    return this.fightListManager.validateFightListName(name)
   }
 }

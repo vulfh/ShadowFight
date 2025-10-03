@@ -6,6 +6,7 @@ import {
   ValidationResult 
 } from '../types'
 import { STORAGE_KEYS, FIGHT_LIST_LIMITS, ERROR_MESSAGES } from '../constants'
+import { StorageService } from '../services/StorageService'
 
 /**
  * Manages fight lists - collections of techniques for training sessions
@@ -15,6 +16,11 @@ export class FightListManager {
   private fightLists: FightList[] = []
   private currentFightListId: string | null = null
   private isInitialized: boolean = false
+  private storageService: StorageService
+
+  constructor() {
+    this.storageService = new StorageService()
+  }
 
   /**
    * Initialize the FightListManager
@@ -38,62 +44,86 @@ export class FightListManager {
   }
 
   /**
-   * Load fight lists from localStorage
+   * Load fight lists from localStorage using StorageService
    */
   private loadFightLists(): void {
     try {
-      const savedFightLists = localStorage.getItem(STORAGE_KEYS.FIGHT_LISTS)
-      if (savedFightLists) {
-        const parsed = JSON.parse(savedFightLists)
-        if (Array.isArray(parsed)) {
-          this.fightLists = parsed
+      const fightLists = this.storageService.getAllFightLists()
+      
+      // Validate each fight list
+      const validFightLists: FightList[] = fightLists.map(fightList => {
+        if (!fightList) {
+          return null as unknown as FightList
         }
-      }
+        const validation = this.storageService.validateFightList(fightList)
+        if (validation.isValid) {
+          return fightList
+        } else {
+          console.warn(`Invalid fight list ${fightList.id}:`, validation.errors)
+          return null as unknown as FightList
+        }
+      }) ?? [];
+      
+      this.fightLists = validFightLists
     } catch (error) {
-      console.warn('Failed to load fight lists from localStorage:', error)
+      console.warn('Failed to load fight lists from storage:', error)
       this.fightLists = []
     }
   }
 
   /**
-   * Load current fight list ID from localStorage
+   * Load current fight list ID from localStorage using StorageService
    */
   private loadCurrentFightList(): void {
     try {
-      const savedCurrent = localStorage.getItem(STORAGE_KEYS.CURRENT_FIGHT_LIST)
-      if (savedCurrent) {
-        this.currentFightListId = savedCurrent
-      }
+      const currentFightList = this.storageService.getCurrentFightList()
+      this.currentFightListId = currentFightList?.id || null
     } catch (error) {
-      console.warn('Failed to load current fight list from localStorage:', error)
+      console.warn('Failed to load current fight list from storage:', error)
       this.currentFightListId = null
     }
   }
 
   /**
-   * Save fight lists to localStorage
+   * Save fight lists to localStorage using StorageService
    */
   private saveFightLists(): void {
     try {
-      localStorage.setItem(STORAGE_KEYS.FIGHT_LISTS, JSON.stringify(this.fightLists))
+      // Validate all fight lists before saving
+      for (const fightList of this.fightLists) {
+        const validation = this.storageService.validateFightList(fightList)
+        if (!validation.isValid) {
+          throw new Error(`Invalid fight list ${fightList.id}: ${validation.errors.join(', ')}`)
+        }
+      }
+      
+      // Use batch save for better performance
+      const savedCount = this.storageService.saveFightListsBatch(this.fightLists)
+      if (savedCount !== this.fightLists.length) {
+        throw new Error(`Only saved ${savedCount} out of ${this.fightLists.length} fight lists`)
+      }
     } catch (error) {
-      console.error('Failed to save fight lists to localStorage:', error)
+      console.error('Failed to save fight lists to storage:', error)
       throw new Error('Failed to save fight lists')
     }
   }
 
   /**
-   * Save current fight list ID to localStorage
+   * Save current fight list ID to localStorage using StorageService
    */
   private saveCurrentFightList(): void {
     try {
       if (this.currentFightListId) {
-        localStorage.setItem(STORAGE_KEYS.CURRENT_FIGHT_LIST, this.currentFightListId)
+        const success = this.storageService.setCurrentFightList(this.currentFightListId)
+        if (!success) {
+          throw new Error('Failed to set current fight list - fight list not found')
+        }
       } else {
+        // Clear current fight list
         localStorage.removeItem(STORAGE_KEYS.CURRENT_FIGHT_LIST)
       }
     } catch (error) {
-      console.error('Failed to save current fight list to localStorage:', error)
+      console.error('Failed to save current fight list to storage:', error)
       throw new Error('Failed to save current fight list')
     }
   }
@@ -152,7 +182,15 @@ export class FightListManager {
     }
 
     this.fightLists.push(fightList)
-    this.saveFightLists()
+    
+    // Save individual fight list using StorageService
+    try {
+      this.storageService.saveFightList(fightList)
+    } catch (error) {
+      // Remove from memory if storage failed
+      this.fightLists.pop()
+      throw error
+    }
     
     return fightList
   }
@@ -180,13 +218,22 @@ export class FightListManager {
       }
     }
 
-    this.fightLists[fightListIndex] = {
+    const updatedFightList = {
       ...this.fightLists[fightListIndex],
       ...updates,
       lastModified: new Date().toISOString()
     }
 
-    this.saveFightLists()
+    this.fightLists[fightListIndex] = updatedFightList
+
+    // Save updated fight list using StorageService
+    try {
+      this.storageService.saveFightList(updatedFightList)
+    } catch (error) {
+      // Revert changes if storage failed
+      this.fightLists[fightListIndex] = this.fightLists[fightListIndex]
+      throw error
+    }
   }
 
   /**
@@ -207,6 +254,13 @@ export class FightListManager {
       throw new Error('Fight list not found')
     }
 
+    // Delete from storage first
+    try {
+      this.storageService.deleteFightList(id)
+    } catch (error) {
+      throw new Error('Failed to delete fight list from storage')
+    }
+
     this.fightLists.splice(fightListIndex, 1)
 
     // Clear current fight list if it was deleted
@@ -214,8 +268,6 @@ export class FightListManager {
       this.currentFightListId = this.fightLists.length > 0 ? this.fightLists[0].id : null
       this.saveCurrentFightList()
     }
-
-    this.saveFightLists()
   }
 
   /**
@@ -283,6 +335,7 @@ export class FightListManager {
     return this.currentFightListId ? this.getFightList(this.currentFightListId) : null
   }
 
+
   /**
    * Add a technique to a fight list
    * @param fightListId - ID of the fight list
@@ -319,7 +372,15 @@ export class FightListManager {
     fightList.techniques.push(fightListTechnique)
     fightList.lastModified = new Date().toISOString()
     
-    this.saveFightLists()
+    // Save updated fight list immediately
+    try {
+      this.storageService.saveFightList(fightList)
+    } catch (error) {
+      // Remove technique if storage failed
+      fightList.techniques.pop()
+      fightList.lastModified = new Date().toISOString()
+      throw error
+    }
   }
 
   /**
@@ -345,7 +406,15 @@ export class FightListManager {
     fightList.techniques.splice(techniqueIndex, 1)
     fightList.lastModified = new Date().toISOString()
     
-    this.saveFightLists()
+    // Save updated fight list immediately
+    try {
+      this.storageService.saveFightList(fightList)
+    } catch (error) {
+      // Restore technique if storage failed
+      fightList.techniques.splice(techniqueIndex, 0, fightList.techniques[techniqueIndex])
+      fightList.lastModified = new Date().toISOString()
+      throw error
+    }
   }
 
   /**

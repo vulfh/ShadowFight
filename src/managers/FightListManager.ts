@@ -246,7 +246,7 @@ export class FightListManager {
     }
 
     if (this.fightLists.length <= 1) {
-      throw new Error('Cannot delete the last remaining fight list')
+      throw new Error(ERROR_MESSAGES.CANNOT_DELETE_LAST_FIGHT_LIST)
     }
 
     const fightListIndex = this.fightLists.findIndex(fl => fl.id === id)
@@ -426,33 +426,24 @@ export class FightListManager {
     const errors: string[] = []
     const warnings: string[] = []
 
-    if (!name || typeof name !== 'string') {
-      errors.push('Fight list name is required')
-      return { isValid: false, errors, warnings }
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      errors.push(ERROR_MESSAGES.FIGHT_LIST_NAME_REQUIRED)
     }
 
-    const trimmedName = name.trim()
-
-    if (trimmedName.length < FIGHT_LIST_LIMITS.MIN_NAME_LENGTH) {
-      errors.push(`Fight list name must be at least ${FIGHT_LIST_LIMITS.MIN_NAME_LENGTH} character long`)
+    if (name.length > FIGHT_LIST_LIMITS.MAX_NAME_LENGTH) {
+      errors.push(ERROR_MESSAGES.FIGHT_LIST_NAME_TOO_LONG)
     }
 
-    if (trimmedName.length > FIGHT_LIST_LIMITS.MAX_NAME_LENGTH) {
-      errors.push(`Fight list name must be no more than ${FIGHT_LIST_LIMITS.MAX_NAME_LENGTH} characters long`)
-    }
-
-    // Check for special characters (allow spaces, hyphens, underscores)
     const validNamePattern = /^[a-zA-Z0-9\s\-_]+$/
-    if (!validNamePattern.test(trimmedName)) {
-      errors.push('Fight list name can only contain letters, numbers, spaces, hyphens, and underscores')
+    if (!validNamePattern.test(name)) {
+      errors.push(ERROR_MESSAGES.FIGHT_LIST_INVALID_NAME)
     }
 
-    // Check for uniqueness (case-insensitive)
     const existingFightList = this.fightLists.find(fl => 
-      fl.name.toLowerCase() === trimmedName.toLowerCase()
+      fl.name.toLowerCase() === name.toLowerCase()
     )
     if (existingFightList) {
-      errors.push('A fight list with this name already exists')
+      errors.push(ERROR_MESSAGES.FIGHT_LIST_NAME_EXISTS)
     }
 
     return {

@@ -289,9 +289,9 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Use `FIGHT_LISTS_KEY` and `CURRENT_FIGHT_LIST_KEY` via `StorageService`
   - [V] Save on all mutations; reflect immediately in UI
   - [V] Guard corrupt/missing data with validator
-- [ ] Task 2.3.1.7 **Integration error handling & feedback**
-  - [ ] Map errors to `messages.ts` (duplicate/invalid name, delete last list, empty selection)
-  - [ ] Show non-blocking toasts; keep modal open on validation errors
+- [V] Task 2.3.1.7 **Integration error handling & feedback**
+  - [V] Map errors to `messages.ts` (duplicate/invalid name, delete last list, empty selection)
+  - [V] Show non-blocking toasts; keep modal open on validation errors
 - [ ] Task 2.3.1.8 **Responsive/mobile interaction checks**
   - [ ] Ensure swipe expand/collapse updates UI state without conflicts
   - [ ] Technique modal renders correctly on mobile and desktop

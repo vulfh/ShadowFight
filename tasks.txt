@@ -1,243 +1,50 @@
-Based on the Software Requirements Document for the Krav Maga Shadow Fighting Trainer PWA, here's a comprehensive task breakdown:
+Please implement:
+```
+Task 2.3.1.3 **Integrate TechniqueAddModal**
+```
+from tasks.md
+please take as referece : planning.md and  requirements.md
+Please verify it passes build and all tests.
+Once implemented please mark the Task 2.3.1.3 and all its sub tasks by [V] in the tasks.md
+Please upgrade the version in the index.html to 1.1.16
 
-## Task Breakdown for Krav Maga Shadow Fighting Trainer PWA
+Please break task 
+```
+#### Task 2.3.1: Integrate Components
+```
+from tasks.md to more detailed granual tasks
+please take as referece : planning.md and  requirements.md
+ and earlier tasks that are marked as [V]
+ 
 
-### Phase 1: Project Setup and Foundation
-**Duration: 1-2 days**
 
-1. **Project Structure Setup**
-   - Create project directory structure
-   - Set up version control (Git)
-   - Initialize package management (if needed)
-   - Create basic file organization
+Implement buttons:
+###
+Start button:
+ - When Start button is enabled Pause and stop buttons are disabled
+ - When Start button is renabled The remaining time in tableau shoud be synced with Fight duration slider
+ - When Start button is pressed:
+	- Start button becomes disabled
+	- Stop and Pause buttons became enabled
+	- All the sliders becomes disabled
+	- The application start count down of remaining time
+	- The application randomly chooses a technique, plays its wav file and waites the delay between techniques time and the repeats the action until remaining time ends
+	- The implementaion of random choice of techniques should done such way, that it can be extended with other choice strategies with minimum changes (OCP principle)
+	
+###
+Requirements
+ - Obey SOLID principles
+ - split the functionality to SRP functions
+ - Ask me question you need for implementation
 
-2. **Development Environment Setup**
-   - Set up local development server
-   - Configure build tools (if needed)
-   - Set up linting and code formatting
-   - Create development documentation
 
-### Phase 2: Core Application Architecture
-**Duration: 3-4 days**
-
-3. **HTML Structure Development**
-   - Create main `index.html` file
-   - Implement responsive layout structure
-   - Set up PWA manifest references
-   - Add service worker registration
-
-4. **CSS Framework and Styling**
-   - Implement Tailwind CSS integration
-   - Create mobile-first responsive design
-   - Develop custom CSS for app-specific styling
-   - Implement accessibility features (ARIA labels, high-contrast mode)
-
-5. **TypeScript Architecture Design**
-   - Design modular TypeScript structure
-   - Create core application classes
-   - Implement event handling system
-   - Set up configuration management
-
-### Phase 3: Technique Library Management
-**Duration: 2-3 days**
-
-6. **Technique Data Structure**
-   - Create technique database (JSON format)
-   - Implement technique categorization system
-   - Set up technique priority weighting system
-   - Create technique selection interface
-
-7. **Audio File Management**
-   - Set up audio file organization
-   - Implement Web Audio API integration
-   - Create audio loading and caching system
-   - Implement audio error handling
-
-8. **Technique Selection Interface**
-   - Create technique checklist UI
-   - Implement priority dropdown system
-   - Add select all/deselect all functionality
-   - Create technique category grouping
-
-### Phase 4: User Configuration System
-**Duration: 2-3 days**
-
-9. **Configuration Interface Development**
-   - Create fight duration slider (1-30 minutes)
-   - Implement delay between actions slider (1-10 seconds)
-   - Add volume control interface
-   - Create configuration form validation
-
-10. **Local Storage Implementation**
-    - Implement configuration persistence
-    - Create configuration save/load system
-    - Add configuration export/import functionality
-    - Implement configuration reset functionality
-
-11. **Configuration Validation**
-    - Add input validation for all parameters
-    - Implement error handling for invalid configurations
-    - Create user feedback for configuration changes
-    - Add configuration preview functionality
-
-### Phase 5: Training Session Engine
-**Duration: 3-4 days**
-
-12. **Session Management System**
-    - Create session state management
-    - Implement session timer functionality
-    - Add session progress tracking
-    - Create session statistics collection
-
-13. **Random Technique Selection**
-    - Implement weighted random selection algorithm
-    - Create technique priority distribution system
-    - Add technique selection validation
-    - Implement fallback selection logic
-
-14. **Audio Playback System**
-    - Implement audio file loading and playback
-    - Create audio queue management
-    - Add audio error recovery
-    - Implement audio volume control
-
-15. **Session Controls**
-    - Create Start/Pause/Stop button functionality
-    - Implement session state transitions
-    - Add keyboard shortcuts (Space, Escape)
-    - Create session interruption handling
-
-### Phase 6: User Interface Development
-**Duration: 3-4 days**
-
-16. **Main Application Interface**
-    - Create configuration panel layout
-    - Implement training session panel
-    - Add session status display
-    - Create technique announcement display
-
-17. **Timer and Progress Display**
-    - Implement countdown timer display
-    - Create session progress indicators
-    - Add remaining time visualization
-    - Implement session completion notifications
-
-18. **Session Summary Interface**
-    - Create end-of-session summary display
-    - Implement technique usage statistics
-    - Add session duration tracking
-    - Create session history (if required)
-
-19. **Responsive Design Implementation**
-    - Ensure mobile-first design compliance
-    - Test and optimize for different screen sizes
-    - Implement touch-friendly controls
-    - Add mobile-specific UI enhancements
-
-### Phase 7: PWA Features Implementation
-**Duration: 2-3 days**
-
-20. **Service Worker Development**
-    - Create service worker for offline functionality
-    - Implement asset caching strategy
-    - Add background sync capabilities
-    - Create cache management system
-
-21. **PWA Manifest Configuration**
-    - Create comprehensive PWA manifest
-    - Add app icons and splash screens
-    - Implement install prompts
-    - Configure PWA display modes
-
-22. **Offline Functionality**
-    - Implement offline audio playback
-    - Create offline configuration management
-    - Add offline session tracking
-    - Implement offline error handling
-
-### Phase 8: Audio System Enhancement
-**Duration: 2-3 days**
-
-23. **Audio File Integration**
-    - Integrate existing WAV files (`download.wav`, `regel_magal_yamin.wav`)
-    - Create audio file naming convention
-    - Implement audio file validation
-    - Add audio file preloading system
-
-24. **Audio Performance Optimization**
-    - Implement audio buffer management
-    - Create audio caching system
-    - Optimize audio loading times
-    - Add audio quality controls
-
-25. **Audio Error Handling**
-    - Implement graceful audio failure handling
-    - Create audio fallback mechanisms
-    - Add audio loading indicators
-    - Implement audio troubleshooting features
-
-### Phase 9: Testing and Quality Assurance
-**Duration: 3-4 days**
-
-26. **Unit Testing**
-    - Create tests for random selection algorithm
-    - Implement technique weighting tests
-    - Add configuration validation tests
-    - Create session management tests
-
-27. **Integration Testing**
-    - Test audio playback integration
-    - Validate PWA functionality
-    - Test offline capabilities
-    - Verify cross-browser compatibility
-
-28. **Usability Testing**
-    - Test mobile device compatibility
-    - Validate touch interface functionality
-    - Test accessibility features
-    - Perform user experience testing
-
-29. **Performance Testing**
-    - Test audio playback latency (< 100ms requirement)
-    - Validate app load times (< 5 seconds)
-    - Test memory usage optimization
-    - Verify offline performance
-
-### Phase 10: Documentation and Deployment
-**Duration: 1-2 days**
-
-30. **Documentation Creation**
-    - Create comprehensive README file
-    - Document API and component usage
-    - Create user manual
-    - Add developer documentation
-
-31. **Deployment Preparation**
-    - Optimize assets for production
-    - Configure HTTPS for PWA requirements
-    - Set up hosting environment
-    - Create deployment scripts
-
-32. **Final Testing and Validation**
-    - Perform end-to-end testing
-    - Validate all requirements compliance
-    - Test PWA installation process
-    - Verify offline functionality
-
-## Estimated Timeline
-- **Total Duration**: 20-30 days
-- **Critical Path**: Phases 1-7 (Core functionality)
-- **Dependencies**: Audio files must be available before Phase 5
-
-## Risk Factors
-1. **Audio File Availability**: Need WAV files for all techniques
-2. **Browser Compatibility**: PWA features vary by browser
-3. **Mobile Performance**: Audio latency requirements on mobile devices
-4. **Offline Functionality**: Complex caching and sync requirements
-
-## Success Criteria
-- All functional requirements implemented
-- Non-functional requirements met (performance, usability, reliability)
-- PWA installable on target devices
-- Offline functionality working
-- Cross-browser compatibility verified
+###
+	1 - yes. In the future user will be able to choose trategy(whether it is random or other)
+	2- Audio call manager is prefered. In general I would apriciate obey the Separation of concerns principle
+	3 - Should general state manager
+	4 - Explicit update call : in general isolation and abstraction is prefered
+	5- an error floating toaster should be displayed. If more than 3 files in row failed to play stop the session and show an error message
+	6 - yes
+	
+	
+	

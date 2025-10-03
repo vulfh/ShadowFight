@@ -26,12 +26,14 @@ export const ERROR_MESSAGES = {
   FIGHT_LIST_NAME_REQUIRED: 'Fight list name is required',
   FIGHT_LIST_NAME_TOO_LONG: 'Fight list name must be 50 characters or less',
   FIGHT_LIST_NAME_EXISTS: 'A fight list with this name already exists',
+  FIGHT_LIST_INVALID_NAME: 'Fight list name can only contain letters, numbers, spaces, hyphens, and underscores',
   FIGHT_LIST_NOT_FOUND: 'Fight list not found',
   FIGHT_LIST_DELETE_CONFIRM: 'Are you sure you want to delete this fight list?',
   FIGHT_LIST_MAX_REACHED: 'Maximum number of fight lists reached (50)',
   TECHNIQUE_ALREADY_IN_LIST: 'This technique is already in the fight list',
   NO_TECHNIQUES_IN_FIGHT_LIST: 'Please select at least one technique in the fight list',
-  MAX_TECHNIQUES_PER_LIST_REACHED: 'Maximum number of techniques per fight list reached (100)'
+  MAX_TECHNIQUES_PER_LIST_REACHED: 'Maximum number of techniques per fight list reached (100)',
+  CANNOT_DELETE_LAST_FIGHT_LIST: 'Cannot delete the last remaining fight list'
 } as const
 
 // Success messages

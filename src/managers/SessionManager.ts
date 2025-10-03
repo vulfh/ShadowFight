@@ -79,6 +79,7 @@ export class SessionManager {
     await this.startSession(fightListConfig)
   }
 
+
   getCurrentFightList(): FightList | null {
     return this.currentFightList
   }

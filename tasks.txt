@@ -1,12 +1,13 @@
 Please implement:
 ```
-Task 2.3.1.3 **Integrate TechniqueAddModal**
+Task 2.3.1.4 **Connect SessionManager to fight lists**
 ```
 from tasks.md
 please take as referece : planning.md and  requirements.md
+Please upgrade the version in the index.html to 1.1.17
 Please verify it passes build and all tests.
-Once implemented please mark the Task 2.3.1.3 and all its sub tasks by [V] in the tasks.md
-Please upgrade the version in the index.html to 1.1.16
+Once implemented please mark the Task 2.3.1.4 and all its sub tasks by [V] in the tasks.md
+
 
 Please break task 
 ```

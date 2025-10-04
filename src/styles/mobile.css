@@ -1,5 +1,5 @@
 /* Mobile-First Design Styles */
-@media screen and (max-width: 768px) {
+@media screen and (min-width: 0px) {
     /* Single Column Layout */
     .container-fluid {
         padding: 0;
@@ -127,7 +127,7 @@
     }
 }
 /* Tablet Design (768px - 1024px) */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
+@media screen and (min-width: 9999px) and (max-width: 9999px) {
     /* Two-column layout for tablet */
     main .row > div {
         padding: 1rem !important;

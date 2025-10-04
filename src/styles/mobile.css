@@ -126,3 +126,190 @@
         animation: fadeIn 0.3s ease-out;
     }
 }
+/* Tablet Design (768px - 1024px) */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    /* Two-column layout for tablet */
+    main .row > div {
+        padding: 1rem !important;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Larger touch targets for tablet - 48px minimum */
+    .btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 0.75rem 1.25rem;
+        margin: 0.25rem 0;
+    }
+
+    /* Typography for tablet */
+    body {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    /* Form controls optimization */
+    .form-range {
+        height: 48px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Grid optimization for tablet */
+    .technique-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .technique-grid .form-check {
+        margin: 0;
+        padding: 1rem;
+    }
+
+    .technique-grid .form-check-input {
+        width: 24px;
+        height: 24px;
+        margin-right: 0.75rem;
+    }
+
+    /* Side panel for technique selection on tablet */
+    .technique-selection-sheet {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 400px;
+        background: white;
+        border-radius: 0;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 1000;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .technique-selection-sheet.active {
+        transform: translateX(0);
+    }
+
+    /* Landscape orientation optimizations */
+    @media (orientation: landscape) {
+        .technique-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .technique-selection-sheet {
+            width: 450px;
+        }
+    }
+
+    /* Portrait orientation optimizations */
+    @media (orientation: portrait) {
+        .technique-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .technique-selection-sheet {
+            width: 380px;
+        }
+    }
+
+    /* Touch interaction improvements */
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .card:active {
+        transform: scale(0.99);
+    }
+
+    /* Hover states for devices with mouse/trackpad */
+    @media (hover: hover) {
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+    }
+
+    /* Spacing optimizations */
+    .mb-3 {
+        margin-bottom: 1.25rem !important;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.75rem !important;
+    }
+
+    .p-4 {
+        padding: 1.5rem !important;
+    }
+
+    /* Card header and body spacing */
+    .card-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* List group optimizations */
+    .list-group-item {
+        padding: 1rem 1.25rem;
+        min-height: 60px;
+    }
+
+    /* Input group optimizations */
+    .input-group {
+        min-height: 48px;
+    }
+
+    .input-group > .form-control,
+    .input-group > .btn {
+        min-height: 48px;
+    }
+
+    /* Modal optimizations for tablet */
+    .modal-dialog {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    .modal-lg {
+        max-width: 700px;
+    }
+
+    /* Session controls optimization */
+    .session-controls .btn {
+        font-size: 1rem;
+    }
+
+    .session-controls .row {
+        gap: 0.75rem;
+    }
+}

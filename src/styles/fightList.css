@@ -125,7 +125,6 @@
     transform: translateY(100%);
     transition: transform 0.3s ease;
   }
-
   .technique-selector.open {
     transform: translateY(0);
   }
@@ -133,14 +132,47 @@
 
 /* Tablet Design (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
+  /* Two-column layout for fight lists */
   .fight-list-container {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem;
   }
 
-  /* Larger touch targets */
+  /* Larger touch targets for tablet */
   .btn {
     min-height: 48px;
     min-width: 48px;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  /* Fight list item optimizations */
+  .fight-list-item {
+    min-height: 120px;
+  }
+
+  .fight-list-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .fight-list-title {
+    font-size: 1.125rem;
+  }
+
+  .fight-list-content {
+    padding: 1rem;
+  }
+
+  /* Technique grid for tablet */
+  .technique-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .technique-item {
+    padding: 1rem;
+    min-height: 60px;
   }
 
   /* Side panel for technique addition */
@@ -155,10 +187,206 @@
     z-index: 1000;
     transform: translateX(100%);
     transition: transform 0.3s ease;
+    overflow-y: auto;
   }
 
   .technique-selector.open {
     transform: translateX(0);
+  }
+
+  /* Modal optimizations for tablet */
+  .modal-dialog {
+    max-width: 600px;
+    margin: 2rem auto;
+  }
+
+  .modal-lg {
+    max-width: 700px;
+  }
+
+  /* Technique add modal tablet styles */
+  .technique-add-modal__content {
+    max-width: 700px;
+  }
+
+  .technique-add-modal__search {
+    flex-direction: row;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .technique-add-modal__search-input {
+    flex: 2;
+    min-height: 48px;
+  }
+
+  .technique-add-modal__category-filter {
+    flex: 1;
+    min-height: 48px;
+  }
+
+  .technique-add-modal__add-all {
+    min-height: 48px;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .technique-add-modal__item {
+    padding: 1rem 1.25rem;
+    min-height: 72px;
+  }
+
+  .technique-item__add {
+    min-height: 48px;
+    min-width: 120px;
+  }
+
+  /* Card layout optimizations */
+  .card {
+    margin-bottom: 1.5rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  /* Form controls for tablet */
+  .form-control,
+  .form-select {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  /* Touch-friendly checkboxes and radio buttons */
+  .form-check-input {
+    width: 24px;
+    height: 24px;
+    margin-top: 0.125rem;
+  }
+
+  .form-check-label {
+    padding-left: 0.5rem;
+    font-size: 1rem;
+  }
+
+  /* Priority select for tablet */
+  .priority-select {
+    min-height: 48px;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+  }
+
+  /* Action buttons spacing */
+  .fight-list-actions {
+    gap: 0.75rem;
+  }
+
+  .fight-list-actions .btn {
+    min-width: 48px;
+  }
+
+  /* Landscape orientation optimizations */
+  @media (orientation: landscape) {
+    .fight-list-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .technique-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .technique-selector {
+      width: 450px;
+    }
+  }
+
+  /* Portrait orientation optimizations */
+  @media (orientation: portrait) {
+    .fight-list-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .technique-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-dialog {
+      max-width: 90%;
+    }
+  }
+
+  /* Touch interaction improvements */
+  .fight-list-item:active {
+    transform: scale(0.98);
+  }
+
+  .btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Hover states for tablet with mouse/trackpad */
+  @media (hover: hover) {
+    .fight-list-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .technique-item:hover {
+      background: #e9ecef;
+      border-color: var(--primary-color);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Spacing optimizations */
+  .mb-3 {
+    margin-bottom: 1.25rem !important;
+  }
+
+  .mb-4 {
+    margin-bottom: 1.75rem !important;
+  }
+
+  /* Typography adjustments */
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+  }
+
+  /* Icon sizing */
+  .fas,
+  .far,
+  .fab {
+    font-size: 1.125rem;
+  }
+
+  /* List group optimizations */
+  .list-group-item {
+    padding: 1rem 1.25rem;
+    min-height: 60px;
+  }
+
+  /* Input group optimizations */
+  .input-group > .form-control,
+  .input-group > .btn {
+    min-height: 48px;
   }
 }
 

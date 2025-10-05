@@ -123,17 +123,14 @@ export class KravMagaTrainerApp {
   }
 
   private setupEventListeners(): void {
-    // Configuration form events
-    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
-    if (configForm) {
-      configForm.addEventListener('submit', (e) => this.handleConfigSubmit(e))
+    // Time configuration form events
+    const timeConfigForm = document.getElementById('timeConfigForm') as HTMLFormElement
+    if (timeConfigForm) {
+      timeConfigForm.addEventListener('submit', (e) => this.handleConfigSubmit(e))
     }
 
     // Range slider events
     this.setupRangeSliderEvents()
-
-    // Technique selection events
-    this.setupTechniqueSelectionEvents()
 
     // Session control events
     this.setupSessionControlEvents()
@@ -166,18 +163,6 @@ export class KravMagaTrainerApp {
     }
   }
 
-  private setupTechniqueSelectionEvents(): void {
-    const selectAllBtn = document.getElementById(UI_ELEMENTS.SELECT_ALL)
-    const deselectAllBtn = document.getElementById(UI_ELEMENTS.DESELECT_ALL)
-
-    if (selectAllBtn) {
-      selectAllBtn.addEventListener('click', () => this.handleSelectAll())
-    }
-
-    if (deselectAllBtn) {
-      deselectAllBtn.addEventListener('click', () => this.handleDeselectAll())
-    }
-  }
 
   private setupSessionControlEvents(): void {
     const startBtn = document.getElementById(UI_ELEMENTS.START_BTN)
@@ -314,23 +299,6 @@ export class KravMagaTrainerApp {
     this.audioManager.setVolume(volume / 100)
   }
 
-  private handleSelectAll(): void {
-    this.configManager.selectAllTechniques()
-    this.loadConfiguration()
-    this.showNotification({
-      message: SUCCESS_MESSAGES.ALL_TECHNIQUES_SELECTED,
-      type: NOTIFICATION_TYPES.SUCCESS
-    })
-  }
-
-  private handleDeselectAll(): void {
-    this.configManager.deselectAllTechniques()
-    this.loadConfiguration()
-    this.showNotification({
-      message: WARNING_MESSAGES.ALL_TECHNIQUES_DESELECTED,
-      type: NOTIFICATION_TYPES.WARNING
-    })
-  }
 
   // Strategy selection method
   public setTechniqueSelectionStrategy(strategyType: typeof STRATEGY_TYPES[keyof typeof STRATEGY_TYPES]): void {
@@ -514,24 +482,24 @@ export class KravMagaTrainerApp {
     const durationSlider = document.getElementById(UI_ELEMENTS.FIGHT_DURATION) as HTMLInputElement
     const delaySlider = document.getElementById(UI_ELEMENTS.ACTION_DELAY) as HTMLInputElement
     const volumeSlider = document.getElementById(UI_ELEMENTS.VOLUME_CONTROL) as HTMLInputElement
-    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
+    const timeConfigForm = document.getElementById('timeConfigForm') as HTMLFormElement
 
     if (durationSlider) durationSlider.disabled = true
     if (delaySlider) delaySlider.disabled = true
     if (volumeSlider) volumeSlider.disabled = true
-    if (configForm) configForm.style.pointerEvents = 'none'
+    if (timeConfigForm) timeConfigForm.style.pointerEvents = 'none'
   }
 
   private enableConfigurationControls(): void {
     const durationSlider = document.getElementById(UI_ELEMENTS.FIGHT_DURATION) as HTMLInputElement
     const delaySlider = document.getElementById(UI_ELEMENTS.ACTION_DELAY) as HTMLInputElement
     const volumeSlider = document.getElementById(UI_ELEMENTS.VOLUME_CONTROL) as HTMLInputElement
-    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
+    const timeConfigForm = document.getElementById('timeConfigForm') as HTMLFormElement
 
     if (durationSlider) durationSlider.disabled = false
     if (delaySlider) delaySlider.disabled = false
     if (volumeSlider) volumeSlider.disabled = false
-    if (configForm) configForm.style.pointerEvents = 'auto'
+    if (timeConfigForm) timeConfigForm.style.pointerEvents = 'auto'
   }
 
   private async startTechniqueAnnouncementLoop(config: SessionConfig): Promise<void> {

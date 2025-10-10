@@ -24,6 +24,78 @@ export type TechniqueCategory =
 
 export type PriorityLevel = 'high' | 'medium' | 'low'
 
+// Fight List Types
+export interface FightList {
+  id: string
+  name: string
+  techniques: FightListTechnique[]
+  createdAt: string
+  lastModified: string
+}
+
+export type FightListTechnique = {
+  id: string
+  techniqueId: string
+  priority: number // 1-5 scale
+  selected: boolean
+}
+
+export type FightListManager = {
+  fightLists: FightList[]
+  currentFightList: string | null
+}
+
+// UI State Extensions (using type for data structure)
+export type FightListUIState = {
+  isCreating: boolean
+  isEditing: boolean
+  selectedFightList: string | null
+  expandedFightLists: string[]
+}
+
+// Fight List Validation
+export interface FightListValidationResult extends ValidationResult {
+  isValid: boolean
+  errors: string[]
+  warnings: string[]
+}
+
+// Fight List Events
+export interface FightListEvent {
+  type: 'created' | 'updated' | 'deleted' | 'techniqueAdded' | 'techniqueRemoved'
+  fightListId: string
+  timestamp: number
+  data?: any
+}
+
+// Event Flow Contracts
+export interface FightListUICallbacks {
+  onCreateFightList: (name: string) => Promise<FightList>
+  onUpdateFightList: (id: string, updates: Partial<FightList>) => Promise<void>
+  onDeleteFightList: (id: string) => Promise<void>
+  onSetCurrentFightList: (id: string | null) => Promise<void>
+  onAddTechnique: (fightListId: string, technique: Technique, priority: number) => Promise<void>
+  onRemoveTechnique: (fightListId: string, techniqueId: string) => Promise<void>
+  onShowTechniqueModal: (fightListId: string) => void
+  onValidateFightListName: (name: string) => FightListValidationResult
+}
+
+export interface FightListManagerCallbacks {
+  onFightListsChanged: (fightLists: FightList[]) => void
+  onCurrentFightListChanged: (fightListId: string | null) => void
+  onFightListExpanded: (fightListId: string, expanded: boolean) => void
+  onNotification: (options: NotificationOptions) => void
+}
+
+export interface SessionUICallbacks {
+  onSessionStarted: (fightListId?: string) => void
+  onSessionStopped: () => void
+  onSessionPaused: () => void
+  onSessionResumed: () => void
+  onSessionCompleted: () => void
+  onTechniqueAnnounced: (technique: Technique) => void
+}
+
 // Configuration types
 export interface SessionConfig {
   duration: number // minutes
@@ -38,6 +110,8 @@ export interface UserConfig {
   volume: number
   techniques: Technique[]
   lastSaved: string | null
+  fightLists: FightList[]
+  currentFightListId: string | null
 }
 
 // Session types

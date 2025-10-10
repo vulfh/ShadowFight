@@ -1,0 +1,2 @@
+Please read the spec/01-fight-list/planning.md. This is a plan of development of the "fight list" feature.
+According to this planning, please create task breakdown and store it in the spec/01-fight-list/tasks.md

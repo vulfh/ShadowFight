@@ -1,5 +1,5 @@
 import { Technique } from '../types'
-import { STRATEGY_TYPES, PRIORITY_LEVELS, ERROR_MESSAGES } from './constants'
+import { STRATEGY_TYPES, PRIORITY_LEVELS, ERROR_MESSAGES } from '../constants'
 
 // Strategy interface for technique selection (OCP principle)
 export interface ITechniqueSelectionStrategy {

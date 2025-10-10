@@ -4,7 +4,7 @@ import { resolve } from 'path'
 export default defineConfig(({ mode }) => ({
   root: '.',
   publicDir: 'public',
-  base: mode === 'production' ? './' : '/',
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

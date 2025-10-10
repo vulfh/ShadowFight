@@ -1,9 +1,15 @@
-import { Technique, SessionConfig,  NotificationOptions } from './types'
+import { Technique,
+        SessionConfig, 
+        NotificationOptions,
+        FightListManagerCallbacks } from './types'
 import { TechniqueManager } from './managers/TechniqueManager'
 import { AudioManager } from './managers/AudioManager'
 import { SessionManager } from './managers/SessionManager'
 import { ConfigManager } from './managers/ConfigManager'
 import { UIManager } from './managers/UIManager'
+import { FightListManager } from './managers/FightListManager'
+import { FightListUIManager } from './managers/FightListUIManager'
+import { ConfirmModal } from './components/ConfirmModal'
 import { 
   UI_ELEMENTS, 
   NOTIFICATION_TYPES, 
@@ -13,7 +19,7 @@ import {
   INFO_MESSAGES, 
   WARNING_MESSAGES,
   STRATEGY_TYPES
-} from './utils/constants'
+} from './constants'
 
 export class KravMagaTrainerApp {
   private techniqueManager: TechniqueManager
@@ -21,6 +27,8 @@ export class KravMagaTrainerApp {
   private sessionManager: SessionManager
   private configManager: ConfigManager
   private uiManager: UIManager
+  private fightListManager: FightListManager
+  private fightListUIManager: FightListUIManager
   private isInitialized: boolean = false
 
   constructor() {
@@ -29,6 +37,8 @@ export class KravMagaTrainerApp {
     this.sessionManager = new SessionManager()
     this.configManager = new ConfigManager()
     this.uiManager = new UIManager()
+    this.fightListManager = new FightListManager()
+    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager)
   }
 
   async init(): Promise<void> {
@@ -41,6 +51,13 @@ export class KravMagaTrainerApp {
       await this.configManager.init()
       await this.sessionManager.init()
       await this.uiManager.init()
+
+      // Initialize Fight List managers and hydrate UI
+      await this.fightListManager.init()
+      await this.fightListUIManager.init()
+
+      // Set up event flow contracts
+      this.setupEventFlowContracts()
 
       // Set up session completion callback
       this.sessionManager.onSessionComplete = () => this.handleSessionComplete()
@@ -78,18 +95,43 @@ export class KravMagaTrainerApp {
     }
   }
 
+  private setupEventFlowContracts(): void {
+    // Set up Manager→UI callbacks for FightListUIManager
+    const managerCallbacks: FightListManagerCallbacks = {
+      onFightListsChanged: () => {
+        // Re-render fight lists when they change
+        this.fightListUIManager.renderFightLists()
+      },
+      onCurrentFightListChanged: () => {
+        // Update UI when current fight list changes
+        this.updateStartButtonState()
+        this.fightListUIManager.renderFightLists()
+      },
+      onFightListExpanded: (fightListId, expanded) => {
+        // Handle fight list expansion state
+        console.log(`Fight list ${fightListId} ${expanded ? 'expanded' : 'collapsed'}`)
+      },
+      onNotification: (options) => {
+        // Forward notifications to UIManager
+        this.uiManager.showNotification(options)
+      }
+    }
+    this.fightListUIManager.setManagerCallbacks(managerCallbacks)
+
+    // Set up Session→UI callbacks (defined for future use)
+    // These callbacks define the contract for session events
+    // Currently handled by existing methods in the app
+  }
+
   private setupEventListeners(): void {
-    // Configuration form events
-    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
-    if (configForm) {
-      configForm.addEventListener('submit', (e) => this.handleConfigSubmit(e))
+    // Time configuration form events
+    const timeConfigForm = document.getElementById('timeConfigForm') as HTMLFormElement
+    if (timeConfigForm) {
+      timeConfigForm.addEventListener('submit', (e) => this.handleConfigSubmit(e))
     }
 
     // Range slider events
     this.setupRangeSliderEvents()
-
-    // Technique selection events
-    this.setupTechniqueSelectionEvents()
 
     // Session control events
     this.setupSessionControlEvents()
@@ -122,18 +164,6 @@ export class KravMagaTrainerApp {
     }
   }
 
-  private setupTechniqueSelectionEvents(): void {
-    const selectAllBtn = document.getElementById(UI_ELEMENTS.SELECT_ALL)
-    const deselectAllBtn = document.getElementById(UI_ELEMENTS.DESELECT_ALL)
-
-    if (selectAllBtn) {
-      selectAllBtn.addEventListener('click', () => this.handleSelectAll())
-    }
-
-    if (deselectAllBtn) {
-      deselectAllBtn.addEventListener('click', () => this.handleDeselectAll())
-    }
-  }
 
   private setupSessionControlEvents(): void {
     const startBtn = document.getElementById(UI_ELEMENTS.START_BTN)
@@ -270,23 +300,6 @@ export class KravMagaTrainerApp {
     this.audioManager.setVolume(volume / 100)
   }
 
-  private handleSelectAll(): void {
-    this.configManager.selectAllTechniques()
-    this.loadConfiguration()
-    this.showNotification({
-      message: SUCCESS_MESSAGES.ALL_TECHNIQUES_SELECTED,
-      type: NOTIFICATION_TYPES.SUCCESS
-    })
-  }
-
-  private handleDeselectAll(): void {
-    this.configManager.deselectAllTechniques()
-    this.loadConfiguration()
-    this.showNotification({
-      message: WARNING_MESSAGES.ALL_TECHNIQUES_DESELECTED,
-      type: NOTIFICATION_TYPES.WARNING
-    })
-  }
 
   // Strategy selection method
   public setTechniqueSelectionStrategy(strategyType: typeof STRATEGY_TYPES[keyof typeof STRATEGY_TYPES]): void {
@@ -317,17 +330,64 @@ export class KravMagaTrainerApp {
   private async handleStartSession(): Promise<void> {
     try {
       const sessionConfig = this.configManager.getSessionConfig()
+      const currentFightList = this.fightListManager.getCurrentFightList()
 
-      if (!this.sessionManager.isReadyToStart(sessionConfig)) {
-        this.showNotification({
-          message: ERROR_MESSAGES.CONFIGURE_SESSION,
-          type: NOTIFICATION_TYPES.ERROR
+      // Check if we have a current fight list
+      if (currentFightList) {
+        // Validate fight list has selected techniques
+        if (!this.sessionManager.isReadyToStartWithFightList(currentFightList)) {
+          this.showNotification({
+            message: `Please select at least one technique in ${currentFightList.name}`,
+            type: NOTIFICATION_TYPES.ERROR
+          })
+          return
+        }
+
+        // Start session with fight list
+        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList)
+      } else {
+        // No current fight list - show fallback prompt
+        const modal = new ConfirmModal({
+          title: 'No Fight List Selected',
+          message: 'There is no selected fight list. Do you want to run over all available techniques?',
+          confirmButtonText: 'Use All Techniques',
+          cancelButtonText: 'Cancel',
+          confirmButtonClass: 'primary',
+          onConfirm: async () => {
+            // Validate regular session
+            if (!this.sessionManager.isReadyToStart(sessionConfig)) {
+              this.showNotification({
+                message: ERROR_MESSAGES.CONFIGURE_SESSION,
+                type: NOTIFICATION_TYPES.ERROR
+              })
+              return
+            }
+
+            // Start regular session with all techniques
+            await this.sessionManager.startSession(sessionConfig)
+            
+            // Update UI to reflect session state
+            this.updateSessionUI()
+            this.disableConfigurationControls()
+
+            // Start the technique announcement loop
+            this.startTechniqueAnnouncementLoop(sessionConfig)
+
+            this.showNotification({
+              message: SUCCESS_MESSAGES.SESSION_STARTED,
+              type: NOTIFICATION_TYPES.SUCCESS
+            })
+          },
+          onCancel: () => {
+            this.showNotification({
+              message: 'Please select a fight list first',
+              type: NOTIFICATION_TYPES.INFO
+            })
+          }
         })
+        modal.show()
         return
       }
-
-      // Start the session
-      await this.sessionManager.startSession(sessionConfig)
 
       // Update UI to reflect session state
       this.updateSessionUI()
@@ -371,6 +431,10 @@ export class KravMagaTrainerApp {
     this.sessionManager.stopSession()
     this.enableConfigurationControls()
     this.updateSessionUI()
+    
+    // Clear current fight list from storage when session stops
+    this.fightListManager.clearCurrentFightList();
+    
     this.showNotification({
       message: INFO_MESSAGES.SESSION_STOPPED,
       type: NOTIFICATION_TYPES.INFO
@@ -381,6 +445,10 @@ export class KravMagaTrainerApp {
     // Session completed naturally - behave exactly like Stop button was pressed
     this.enableConfigurationControls()
     this.updateSessionUI()
+    
+    // Clear current fight list from storage when session completes
+    this.fightListManager.clearCurrentFightList();
+    
     this.showNotification({
       message: SUCCESS_MESSAGES.SESSION_COMPLETED,
       type: NOTIFICATION_TYPES.SUCCESS
@@ -434,24 +502,24 @@ export class KravMagaTrainerApp {
     const durationSlider = document.getElementById(UI_ELEMENTS.FIGHT_DURATION) as HTMLInputElement
     const delaySlider = document.getElementById(UI_ELEMENTS.ACTION_DELAY) as HTMLInputElement
     const volumeSlider = document.getElementById(UI_ELEMENTS.VOLUME_CONTROL) as HTMLInputElement
-    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
+    const timeConfigForm = document.getElementById('timeConfigForm') as HTMLFormElement
 
     if (durationSlider) durationSlider.disabled = true
     if (delaySlider) delaySlider.disabled = true
     if (volumeSlider) volumeSlider.disabled = true
-    if (configForm) configForm.style.pointerEvents = 'none'
+    if (timeConfigForm) timeConfigForm.style.pointerEvents = 'none'
   }
 
   private enableConfigurationControls(): void {
     const durationSlider = document.getElementById(UI_ELEMENTS.FIGHT_DURATION) as HTMLInputElement
     const delaySlider = document.getElementById(UI_ELEMENTS.ACTION_DELAY) as HTMLInputElement
     const volumeSlider = document.getElementById(UI_ELEMENTS.VOLUME_CONTROL) as HTMLInputElement
-    const configForm = document.getElementById(UI_ELEMENTS.CONFIG_FORM) as HTMLFormElement
+    const timeConfigForm = document.getElementById('timeConfigForm') as HTMLFormElement
 
     if (durationSlider) durationSlider.disabled = false
     if (delaySlider) delaySlider.disabled = false
     if (volumeSlider) volumeSlider.disabled = false
-    if (configForm) configForm.style.pointerEvents = 'auto'
+    if (timeConfigForm) timeConfigForm.style.pointerEvents = 'auto'
   }
 
   private async startTechniqueAnnouncementLoop(config: SessionConfig): Promise<void> {

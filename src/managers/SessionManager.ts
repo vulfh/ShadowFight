@@ -1,6 +1,6 @@
-import { Technique, SessionConfig, SessionStatus, SessionStats } from '../types'
+import { Technique, SessionConfig, SessionStatus, SessionStats, FightList } from '../types'
 import { ITechniqueSelectionStrategy, TechniqueSelectionStrategyFactory } from '../utils/TechniqueSelectionStrategy'
-import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../utils/constants'
+import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../constants'
 
 export class SessionManager {
   private selectionStrategy!: ITechniqueSelectionStrategy
@@ -12,6 +12,7 @@ export class SessionManager {
   private sessionDuration: number = 0
   private currentTechnique: Technique | null = null
   private techniquesUsed: number = 0
+  private currentFightList: FightList | null = null
   private sessionStats: SessionStats = {
     totalTechniques: 0,
     techniquesByCategory: {
@@ -51,6 +52,38 @@ export class SessionManager {
     this.scheduleNextTechnique(config)
   }
 
+  async startSessionWithFightList(config: SessionConfig, fightList: FightList): Promise<void> {
+    if (this._isActive) {
+      throw new Error(ERROR_MESSAGES.SESSION_ALREADY_ACTIVE)
+    }
+
+    if (!fightList.techniques.some(t => t.selected)) {
+      throw new Error(`Please select at least one technique in ${fightList.name}`)
+    }
+
+    // Get selected techniques from fight list
+    const selectedTechniques = fightList.techniques
+      .filter(t => t.selected)
+      .map(flTechnique => {
+        const technique = config.techniques.find(t => t.name === flTechnique.techniqueId)
+        if (!technique) return null
+        return {
+          ...technique,
+          weight: flTechnique.priority // Use fight list priority as weight
+        }
+      })
+      .filter((t): t is Technique => t !== null)
+
+    this.currentFightList = fightList
+    const fightListConfig = { ...config, techniques: selectedTechniques }
+    await this.startSession(fightListConfig)
+  }
+
+
+  getCurrentFightList(): FightList | null {
+    return this.currentFightList
+  }
+
   pauseSession(): void {
     if (!this._isActive) return
 
@@ -72,6 +105,7 @@ export class SessionManager {
     this.stopSessionTimer()
     this.stopTechniqueTimer()
     this.currentTechnique = null
+    this.currentFightList = null
     this.clearSessionState()
   }
 
@@ -156,6 +190,10 @@ export class SessionManager {
     return config.techniques.filter(t => t.selected).length > 0
   }
 
+  isReadyToStartWithFightList(fightList: FightList): boolean {
+    return fightList.techniques.filter(t => t.selected).length > 0
+  }
+
   getSessionStatus(): SessionStatus {
     return {
       isActive: this._isActive,
@@ -235,6 +273,7 @@ export class SessionManager {
         sessionDuration: this.sessionDuration,
         techniquesUsed: this.techniquesUsed,
         sessionStats: this.sessionStats,
+        currentFightList: this.currentFightList,
         timestamp: Date.now()
       }
       localStorage.setItem(STORAGE_KEYS.KRAV_MAGA_SESSION_STATE, JSON.stringify(sessionState))
@@ -258,6 +297,7 @@ export class SessionManager {
           this.sessionDuration = state.sessionDuration
           this.techniquesUsed = state.techniquesUsed
           this.sessionStats = state.sessionStats
+          this.currentFightList = state.currentFightList
           return true
         }
       }

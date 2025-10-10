@@ -1,4 +1,6 @@
 import './styles/main.css'
+import './styles/inputModal.css'
+import './styles/confirmModal.css'
 import { KravMagaTrainerApp } from './app'
 
 // Initialize the application when DOM is ready

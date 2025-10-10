@@ -10,6 +10,8 @@ import { FIGHT_LIST_UI_ELEMENTS as UI } from '../constants/ui-elements'
 import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
 import { TechniqueAddModal } from '../components/TechniqueAddModal'
+import { InputModal } from '../components/InputModal'
+import { ConfirmModal } from '../components/ConfirmModal'
 import { TechniqueManager } from './TechniqueManager'
 
 /**
@@ -145,11 +147,11 @@ export class FightListUIManager {
     container.innerHTML = ''
 
     // Add "Create New" button
-    const newButton = document.createElement('button')
-    newButton.id = UI.NEW_BTN
-    newButton.className = 'btn btn-primary mb-3'
-    newButton.innerHTML = '<i class="fas fa-plus"></i> Create New Fight List'
-    container.appendChild(newButton)
+    // const newButton = document.createElement('button')
+    // newButton.id = UI.NEW_BTN
+    // newButton.className = 'btn btn-primary mb-3'
+    // newButton.innerHTML = '<i class="fas fa-plus"></i> Create New Fight List'
+    // container.appendChild(newButton)
 
     // Render each fight list
     fightLists.forEach(fightList => {
@@ -431,21 +433,32 @@ export class FightListUIManager {
    * Show delete confirmation dialog
    */
   private showDeleteConfirmation(fightList: FightList): void {
-    if (confirm(`Are you sure you want to delete "${fightList.name}"?`)) {
-      try {
-        this.fightListManager.deleteFightList(fightList.id)
-        this.renderFightLists()
-        this.showNotification({
-          message: 'Fight list deleted successfully',
-          type: 'success'
-        })
-      } catch (error) {
-        this.showNotification({
-          message: error instanceof Error ? error.message : 'Failed to delete fight list',
-          type: 'error'
-        })
+    const modal = new ConfirmModal({
+      title: 'Delete Fight List',
+      message: `Are you sure you want to delete "${fightList.name}"? This action cannot be undone.`,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonClass: 'danger',
+      onConfirm: () => {
+        try {
+          this.fightListManager.deleteFightList(fightList.id)
+          this.renderFightLists()
+          this.showNotification({
+            message: 'Fight list deleted successfully',
+            type: 'success'
+          })
+        } catch (error) {
+          this.showNotification({
+            message: error instanceof Error ? error.message : 'Failed to delete fight list',
+            type: 'error'
+          })
+        }
+      },
+      onCancel: () => {
+        // User cancelled, no action needed
       }
-    }
+    })
+    modal.show()
   }
 
   /**
@@ -473,31 +486,51 @@ export class FightListUIManager {
   }
 
   /**
+   * Show modal to create a new fight list
+   */
+  private showCreateFightListModal(): void {
+    const modal = new InputModal({
+      title: 'Create New Fight List',
+      placeholder: 'Enter fight list name',
+      inputLabel: 'Fight List Name',
+      confirmButtonText: 'Create',
+      cancelButtonText: 'Cancel',
+      maxLength: 50,
+      validator: (value: string) => {
+        const validation = this.fightListManager.validateFightListName(value)
+        return {
+          isValid: validation.isValid,
+          error: validation.errors.join(', ')
+        }
+      },
+      onConfirm: (name: string) => {
+        this.uiState.isCreating = true
+        try {
+          const created = this.fightListManager.createFightList(name)
+          this.fightListManager.setCurrentFightList(created.id)
+          this.renderFightLists()
+          this.showNotification({ message: 'Fight list created', type: 'success' })
+        } catch (error) {
+          this.showNotification({ message: error instanceof Error ? error.message : 'Failed to create list', type: 'error' })
+        } finally {
+          this.uiState.isCreating = false
+        }
+      },
+      onCancel: () => {
+        this.uiState.isCreating = false
+      }
+    })
+    modal.show()
+  }
+
+  /**
    * Setup global event listeners
    */
   private setupEventListeners(): void {
     // New fight list button
     const newBtn = document.getElementById(UI.NEW_BTN)
     newBtn?.addEventListener('click', () => {
-      this.uiState.isCreating = true
-      const name = prompt('Please provide name for the new fight list')
-      if (!name) { this.uiState.isCreating = false; return }
-      try {
-        const validation = this.fightListManager.validateFightListName(name)
-        if (!validation.isValid) {
-          this.showNotification({ message: validation.errors.join(', '), type: 'error' })
-          this.uiState.isCreating = false
-          return
-        }
-        const created = this.fightListManager.createFightList(name)
-        this.fightListManager.setCurrentFightList(created.id)
-        this.renderFightLists()
-        this.showNotification({ message: 'Fight list created', type: 'success' })
-      } catch (error) {
-        this.showNotification({ message: error instanceof Error ? error.message : 'Failed to create list', type: 'error' })
-      } finally {
-        this.uiState.isCreating = false
-      }
+      this.showCreateFightListModal()
     })
 
     // Collapse all button

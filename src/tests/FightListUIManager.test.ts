@@ -36,7 +36,6 @@ describe('FightListUIManager', () => {
 
     fightListUIManager = new FightListUIManager(mockFightListManager, mockUIManager)
   })
-
   afterEach(() => {
     document.body.innerHTML = ''
     vi.clearAllMocks()
@@ -58,15 +57,20 @@ describe('FightListUIManager', () => {
 
     expect(fightListUIManager.isReady()).toBe(true)
     expect(mockFightListManager.getFightLists).toHaveBeenCalled()
-    expect(mockContainer.innerHTML).toContain('Create New Fight List')
     expect(mockContainer.innerHTML).toContain('Test List')
+    expect(mockContainer.querySelector('.fight-list-item')).toBeTruthy()
   })
 
   it('should handle fight list expansion', async () => {
     const mockFightLists: FightList[] = [{
       id: '1',
       name: 'Test List',
-      techniques: [],
+      techniques: [{
+        id: 'tech1',
+        techniqueId: 'Test Technique',
+        priority: 3,
+        selected: true
+      }],
       createdAt: new Date().toISOString(),
       lastModified: new Date().toISOString()
     }]
@@ -165,13 +169,19 @@ describe('FightListUIManager', () => {
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
     await fightListUIManager.init()
 
-    // Mock confirm dialog
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
-
     const deleteButton = mockContainer.querySelector('.delete') as HTMLElement
     deleteButton.click()
 
-    expect(confirmSpy).toHaveBeenCalledWith('Are you sure you want to delete "Test List"?')
+    // Check that the confirm modal was created and is in the DOM
+    const confirmModal = document.querySelector('.confirm-modal')
+    expect(confirmModal).toBeTruthy()
+    expect(confirmModal?.textContent).toContain('Delete Fight List')
+    expect(confirmModal?.textContent).toContain('Test List')
+
+    // Simulate clicking the confirm button in the modal
+    const confirmBtn = confirmModal?.querySelector('.confirm-modal__button--confirm') as HTMLElement
+    confirmBtn.click()
+
     expect(mockFightListManager.deleteFightList).toHaveBeenCalledWith('1')
   })
 
@@ -182,7 +192,12 @@ describe('FightListUIManager', () => {
     const mockFightLists: FightList[] = [{
       id: '1',
       name: 'Test List',
-      techniques: [],
+      techniques: [{
+        id: 'tech1',
+        techniqueId: 'Test Technique',
+        priority: 3,
+        selected: true
+      }],
       createdAt: new Date().toISOString(),
       lastModified: new Date().toISOString()
     }]
@@ -226,13 +241,22 @@ describe('FightListUIManager', () => {
     window.dispatchEvent(new Event('resize'))
 
     expect(mockContainer.classList.contains('mobile-layout')).toBe(true)
-    expect(mockContainer.querySelector('.btn')?.classList.contains('btn-sm')).toBe(true)
+    // Check buttons within fight list items (excluding .btn-link which is excluded in the implementation)
+    const actionButtons = mockContainer.querySelectorAll('.fight-list-item .btn:not(.btn-link)')
+    expect(actionButtons.length).toBeGreaterThan(0)
+    actionButtons.forEach(btn => {
+      expect(btn.classList.contains('btn-sm')).toBe(true)
+    })
 
     // Mock desktop viewport
     Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true })
     window.dispatchEvent(new Event('resize'))
 
     expect(mockContainer.classList.contains('desktop-layout')).toBe(true)
-    expect(mockContainer.querySelector('.btn')?.classList.contains('btn-sm')).toBe(false)
+    const desktopButtons = mockContainer.querySelectorAll('.fight-list-item .btn:not(.btn-link)')
+    expect(desktopButtons.length).toBeGreaterThan(0)
+    desktopButtons.forEach(btn => {
+      expect(btn.classList.contains('btn-sm')).toBe(false)
+    })
   })
 })

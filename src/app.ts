@@ -9,6 +9,7 @@ import { ConfigManager } from './managers/ConfigManager'
 import { UIManager } from './managers/UIManager'
 import { FightListManager } from './managers/FightListManager'
 import { FightListUIManager } from './managers/FightListUIManager'
+import { ConfirmModal } from './components/ConfirmModal'
 import { 
   UI_ELEMENTS, 
   NOTIFICATION_TYPES, 
@@ -346,27 +347,46 @@ export class KravMagaTrainerApp {
         await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList)
       } else {
         // No current fight list - show fallback prompt
-        const useAllTechniques = confirm('There is no selected fight list. Do you want to run over all available techniques?')
-        
-        if (!useAllTechniques) {
-          this.showNotification({
-            message: 'Please select a fight list first',
-            type: NOTIFICATION_TYPES.INFO
-          })
-          return
-        }
+        const modal = new ConfirmModal({
+          title: 'No Fight List Selected',
+          message: 'There is no selected fight list. Do you want to run over all available techniques?',
+          confirmButtonText: 'Use All Techniques',
+          cancelButtonText: 'Cancel',
+          confirmButtonClass: 'primary',
+          onConfirm: async () => {
+            // Validate regular session
+            if (!this.sessionManager.isReadyToStart(sessionConfig)) {
+              this.showNotification({
+                message: ERROR_MESSAGES.CONFIGURE_SESSION,
+                type: NOTIFICATION_TYPES.ERROR
+              })
+              return
+            }
 
-        // Validate regular session
-        if (!this.sessionManager.isReadyToStart(sessionConfig)) {
-          this.showNotification({
-            message: ERROR_MESSAGES.CONFIGURE_SESSION,
-            type: NOTIFICATION_TYPES.ERROR
-          })
-          return
-        }
+            // Start regular session with all techniques
+            await this.sessionManager.startSession(sessionConfig)
+            
+            // Update UI to reflect session state
+            this.updateSessionUI()
+            this.disableConfigurationControls()
 
-        // Start regular session with all techniques
-        await this.sessionManager.startSession(sessionConfig)
+            // Start the technique announcement loop
+            this.startTechniqueAnnouncementLoop(sessionConfig)
+
+            this.showNotification({
+              message: SUCCESS_MESSAGES.SESSION_STARTED,
+              type: NOTIFICATION_TYPES.SUCCESS
+            })
+          },
+          onCancel: () => {
+            this.showNotification({
+              message: 'Please select a fight list first',
+              type: NOTIFICATION_TYPES.INFO
+            })
+          }
+        })
+        modal.show()
+        return
       }
 
       // Update UI to reflect session state

@@ -21,6 +21,7 @@ export type TechniqueCategory =
   | 'Knees'
   | 'Defenses/Grabs'
   | 'Weapons'
+  | 'Hand-Grip'
 
 export type PriorityLevel = 'high' | 'medium' | 'low'
 
@@ -110,7 +111,6 @@ export interface UserConfig {
   volume: number
   techniques: Technique[]
   lastSaved: string | null
-  fightLists: FightList[]
   currentFightListId: string | null
 }
 

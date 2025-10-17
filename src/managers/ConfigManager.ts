@@ -1,16 +1,12 @@
-import { UserConfig,
-         SessionConfig,
-         Technique,
-         ValidationResult,
-         FightList, 
-         FightListTechnique } from '../types'
-import { STORAGE_KEYS,
-         SESSION_LIMITS,
-         DEFAULT_CONFIG, 
-         ERROR_MESSAGES, 
-         WARNING_MESSAGES, 
-         PRIORITY_LEVELS, 
-         FIGHT_LIST_LIMITS } from '../constants'
+import { UserConfig, Technique, ValidationResult, SessionConfig } from '../types'
+import { 
+  STORAGE_KEYS, 
+  SESSION_LIMITS, 
+  DEFAULT_CONFIG, 
+  PRIORITY_LEVELS, 
+  ERROR_MESSAGES,
+  WARNING_MESSAGES 
+} from '../constants'
 
 export class ConfigManager {
   private config: UserConfig = {
@@ -19,59 +15,44 @@ export class ConfigManager {
     volume: DEFAULT_CONFIG.VOLUME,
     techniques: [],
     lastSaved: null,
-    fightLists: [],
     currentFightListId: null
   }
   private isInitialized: boolean = false
 
+  constructor() {}
+
   async init(): Promise<void> {
-    this.loadConfig()
+    await this.loadConfig()
     this.isInitialized = true
   }
 
-  private loadConfig(): void {
+  private async loadConfig(): Promise<void> {
     try {
       const savedConfig = localStorage.getItem(STORAGE_KEYS.KRAV_MAGA_CONFIG)
       if (savedConfig) {
         const parsed = JSON.parse(savedConfig)
-        this.config = { ...this.config, ...parsed }
-        if (!parsed.fightLists) {
-            this.migrateToFightLists()
+        // Only load the properties we want to keep in ConfigManager
+        const { duration, delay, volume, techniques, lastSaved, currentFightListId } = parsed
+        this.config = { 
+          duration: duration ?? DEFAULT_CONFIG.DURATION,
+          delay: delay ?? DEFAULT_CONFIG.DELAY,
+          volume: volume ?? DEFAULT_CONFIG.VOLUME,
+          techniques: techniques ?? [],
+          lastSaved: lastSaved ?? null,
+          currentFightListId: currentFightListId ?? null
         }
-      } else {
-        this.migrateToFightLists() 
       }
     } catch (error) {
       console.warn('Failed to load config from localStorage:', error)
     }
   }
 
-  private migrateToFightLists(): void {
-    const techniques = this.config.techniques || []
-    if (this.config.fightLists.length > 0) return;
-
-    const defaultFightList: FightList = {
-      id: crypto.randomUUID(),
-      name: 'My Techniques',
-      techniques: techniques.map(t => ({
-        id: crypto.randomUUID(),
-        techniqueId: t.name,
-        priority: 3,
-        selected: t.selected
-      })),
-      createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
-    }
-
-    this.config.fightLists = [defaultFightList]
-    this.config.currentFightListId = defaultFightList.id
-    this.saveConfig()
-  }
-
   saveConfig(): void {
     try {
       this.config.lastSaved = new Date().toISOString()
-      localStorage.setItem(STORAGE_KEYS.KRAV_MAGA_CONFIG, JSON.stringify(this.config))
+      // Only save the properties we want to keep in ConfigManager
+      const { fightLists, ...configToSave } = this.config as any
+      localStorage.setItem(STORAGE_KEYS.KRAV_MAGA_CONFIG, JSON.stringify(configToSave))
     } catch (error) {
       console.error('Failed to save config to localStorage:', error)
     }
@@ -120,18 +101,11 @@ export class ConfigManager {
   }
 
   getSessionConfig(): SessionConfig {
-    const currentFightList = this.getCurrentFightList()
-    const techniques = currentFightList
-      ? this.config.techniques.filter(tech =>
-          currentFightList.techniques.some(flTech => flTech.techniqueId === tech.name && flTech.selected)
-        )
-      : this.config.techniques.filter(t => t.selected)
-
     return {
       duration: this.config.duration,
       delay: this.config.delay,
       volume: this.config.volume,
-      techniques
+      techniques: this.config.techniques.filter(t => t.selected)
     }
   }
 
@@ -142,7 +116,6 @@ export class ConfigManager {
       volume: DEFAULT_CONFIG.VOLUME,
       techniques: [],
       lastSaved: null,
-      fightLists: [],
       currentFightListId: null
     }
     this.saveConfig()
@@ -220,103 +193,13 @@ export class ConfigManager {
     return this.isInitialized
   }
 
-  // Fight List Methods
-  getFightLists(): FightList[] {
-    return this.config.fightLists
-  }
-
+  // Current Fight List Management
   getCurrentFightListId(): string | null {
     return this.config.currentFightListId
   }
 
-  getCurrentFightList(): FightList | undefined {
-    return this.config.fightLists.find(fl => fl.id === this.config.currentFightListId)
-  }
-
   setCurrentFightListId(id: string | null): void {
     this.config.currentFightListId = id
-  }
-
-  createFightList(name: string): ValidationResult {
-    const validation = this.validateFightListName(name)
-    if (!validation.isValid) {
-      return validation
-    }
-
-    const newFightList: FightList = {
-      id: crypto.randomUUID(),
-      name,
-      techniques: [],
-      createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
-    }
-
-    this.config.fightLists.push(newFightList)
-    return { isValid: true, errors: [], warnings: [] }
-  }
-
-  updateFightList(id: string, updates: Partial<Pick<FightList, 'name'>>): ValidationResult {
-    const fightList = this.config.fightLists.find(fl => fl.id === id)
-    if (!fightList) {
-      return { isValid: false, errors: ['Fight list not found.'], warnings: [] }
-    }
-
-    if (updates.name) {
-      const validation = this.validateFightListName(updates.name, id)
-      if (!validation.isValid) {
-        return validation
-      }
-      fightList.name = updates.name
-    }
-
-    fightList.lastModified = new Date().toISOString()
-    return { isValid: true, errors: [], warnings: [] }
-  }
-
-  deleteFightList(id: string): void {
-    this.config.fightLists = this.config.fightLists.filter(fl => fl.id !== id)
-    if (this.config.currentFightListId === id) {
-      this.config.currentFightListId = this.config.fightLists.length > 0 ? this.config.fightLists[0].id : null
-    }
-  }
-
-  addTechniqueToFightList(fightListId: string, techniqueId: string): void {
-    const fightList = this.config.fightLists.find(fl => fl.id === fightListId)
-    if (fightList && !fightList.techniques.some(t => t.techniqueId === techniqueId)) {
-      const newTechnique: FightListTechnique = {
-        id: crypto.randomUUID(),
-        techniqueId,
-        priority: 3,
-        selected: true
-      }
-      fightList.techniques.push(newTechnique)
-      fightList.lastModified = new Date().toISOString()
-    }
-  }
-
-  removeTechniqueFromFightList(fightListId: string, techniqueId: string): void {
-    const fightList = this.config.fightLists.find(fl => fl.id === fightListId)
-    if (fightList) {
-      fightList.techniques = fightList.techniques.filter(t => t.techniqueId !== techniqueId)
-      fightList.lastModified = new Date().toISOString()
-    }
-  }
-
-  validateFightListName(name: string, idToExclude?: string): ValidationResult {
-    const errors: string[] = []
-    if (name.length < FIGHT_LIST_LIMITS.MIN_NAME_LENGTH || name.length > FIGHT_LIST_LIMITS.MAX_NAME_LENGTH) {
-      errors.push(`Name must be between ${FIGHT_LIST_LIMITS.MIN_NAME_LENGTH} and ${FIGHT_LIST_LIMITS.MAX_NAME_LENGTH} characters.`)
-    }
-
-    const isDuplicate = this.config.fightLists.some(
-      fl => fl.name.toLowerCase() === name.toLowerCase() && fl.id !== idToExclude
-    )
-
-    if (isDuplicate) {
-      errors.push('A fight list with this name already exists.')
-    }
-
-    return { isValid: errors.length === 0, errors, warnings: [] }
+    this.saveConfig()
   }
 }
-

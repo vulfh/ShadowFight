@@ -12,7 +12,8 @@ export const TECHNIQUE_CATEGORIES = {
   KICKS: 'Kicks',
   KNEES: 'Knees',
   DEFENSES_GRABS: 'Defenses/Grabs',
-  WEAPONS: 'Weapons'
+  WEAPONS: 'Weapons',
+  HAND_GRIP: 'Hand-Grip'
 } as const
 
 // Priority levels

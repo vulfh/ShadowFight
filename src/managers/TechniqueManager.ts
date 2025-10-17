@@ -46,6 +46,10 @@ export class TechniqueManager {
       // { name: 'Heel Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'SHIN', side: 'RIGHT' },
       // { name: 'Spinning Outside Slap Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'low', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
       
+      // Hand-Grip
+      { name: 'Left Hand Grip', file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+      { name: 'Right Hand Grip', file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+      
       // Knees
       // { name: 'Vertical Knee Strike', file: 'vertical_knee_strike.wav', category: 'Knees', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },
       

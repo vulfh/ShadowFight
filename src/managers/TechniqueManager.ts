@@ -12,7 +12,12 @@ export class TechniqueManager {
   private loadTechniques(): void {
     this.techniques = [
       // Punches
-     
+
+        { name: 'Left Uppercot', file: 'smol-makat-snukeret.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+        { name: 'Right Uppercot', file: 'yamin-makat-snukeret.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+      { name: 'Left Hook', file: 'smol-magal-la-rosh.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+      { name: 'Right Hook', file: 'yamin-magal-la-rosh.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
       { name: 'Left Straight Punch', file: 'smol-egrof-lefanim.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
       { name: 'Right Straight Punch', file: 'yamin-egrof-lefanim.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
       { name: 'Left Back Fist', file: 'smol-makat-gav-yad.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },

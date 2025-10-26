@@ -432,9 +432,6 @@ export class KravMagaTrainerApp {
     this.enableConfigurationControls()
     this.updateSessionUI()
     
-    // Clear current fight list from storage when session stops
-    this.fightListManager.clearCurrentFightList();
-    
     this.showNotification({
       message: INFO_MESSAGES.SESSION_STOPPED,
       type: NOTIFICATION_TYPES.INFO
@@ -442,12 +439,9 @@ export class KravMagaTrainerApp {
   }
 
   private handleSessionComplete(): void {
-    // Session completed naturally - behave exactly like Stop button was pressed
+    // Session completed naturally
     this.enableConfigurationControls()
     this.updateSessionUI()
-    
-    // Clear current fight list from storage when session completes
-    this.fightListManager.clearCurrentFightList();
     
     this.showNotification({
       message: SUCCESS_MESSAGES.SESSION_COMPLETED,

@@ -10,7 +10,7 @@ export interface Technique {
   side: Side
 }
 
-export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN'
+export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN' | 'BACK'
 
 export type Side = 'LEFT' | 'RIGHT'
 
@@ -22,6 +22,7 @@ export type TechniqueCategory =
   | 'Defenses/Grabs'
   | 'Weapons'
   | 'Hand-Grip'
+  |'Knife'
 
 export type PriorityLevel = 'high' | 'medium' | 'low'
 

@@ -10,7 +10,7 @@ export interface Technique {
   side: Side
 }
 
-export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN' | 'BACK'
+export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN' | 'BACK' | 'FOOT'
 
 export type Side = 'LEFT' | 'RIGHT'
 

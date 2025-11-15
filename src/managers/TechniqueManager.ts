@@ -53,6 +53,10 @@ export class TechniqueManager {
           { name: 'Left Turn Back Round House Kick', file: 'smol-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Turn Back Round House Kick', file: 'yamin-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
 
+          { name: 'Left Underhook Front Kick', file: 'smol-gziza-kidmit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'LEFT' },
+          { name: 'Right Underhook Front Kick', file: 'yamin-gziza-kidmit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'RIGHT' },
+          { name: 'Left Underhook Back Kick', file: 'smol-gziza-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'LEFT' },
+          { name: 'Right Underhook Back Kick', file: 'yamin-gziza-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'RIGHT' },
           // { name: 'Heel Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'SHIN', side: 'RIGHT' },
 
           // { name: 'Spinning Outside Slap Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'low', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },

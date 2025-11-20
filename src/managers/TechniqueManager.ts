@@ -65,6 +65,8 @@ export class TechniqueManager {
           // { name: 'Spinning Outside Slap Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'low', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
           //Kinfe
+          { name: 'Right Hand Knife Top Front Attack', file: 'yamin-tkifat-sakin-elit.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Hand Knife Top Front Attack', file: 'smol-tkifat-sakin-elit.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Left Hand Knife Top Back Attack', file: 'smol-dkirat-gav-mi-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Hand Knife Top Back Attack', file: 'yamin-dkirat-gav-mi-lemamala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
 

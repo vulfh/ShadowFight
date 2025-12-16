@@ -392,14 +392,16 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 
 #### Task 3.2.3: Integrate Voice Notes into Technique UI
 - [ ] **Add voice note controls to technique panel**
-  - [ ] Add record button for each mode
-  - [ ] Add play button for each mode (if note exists)
-  - [ ] Show recording/playback status
-  - [ ] Show voice note indicator (icon) when note exists
+  - [ ] Add record button for each mode (PERFORMING and RESPONDING independently)
+  - [ ] Add play button for each mode (if note exists for that mode)
+  - [ ] Show recording/playback status per mode
+  - [ ] Show voice note indicator (icon) when note exists for each mode
+  - [ ] Allow recording notes for both modes independently (a technique can have notes for both PERFORMING and RESPONDING modes)
 - [ ] **Update technique editor** to include voice notes
-  - [ ] Add voice note section
-  - [ ] Show mode-specific voice note controls
-  - [ ] Allow recording/editing/deleting voice notes
+  - [ ] Add voice note section with separate controls for each mode
+  - [ ] Show mode-specific voice note controls (record/play/delete for PERFORMING, record/play/delete for RESPONDING)
+  - [ ] Allow recording/editing/deleting voice notes independently for each mode
+  - [ ] Display which modes have voice notes recorded
 - [ ] **Add voice note management UI**
   - [ ] Show list of voice notes for technique
   - [ ] Allow deletion of voice notes
@@ -419,14 +421,19 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
   - [ ] Store preference in session config or user config
   - [ ] Show checkbox in fightlist playback panel
 - [ ] **Update SessionManager** to handle voice note playback
-  - [ ] Check if voice note playback is enabled
-  - [ ] Play voice note after technique announcement
+  - [ ] Check if voice note playback is enabled (checkbox state)
+  - [ ] Get the current fightlist's mode (PERFORMING or RESPONDING)
+  - [ ] Retrieve voice note for technique using fightlist's mode (not technique's supported modes)
+  - [ ] Play voice note after technique announcement (only if checkbox is checked and note exists for fightlist's mode)
   - [ ] Handle voice note playback errors gracefully
+  - [ ] Skip playback silently if voice note doesn't exist for the fightlist's mode
 - [ ] **Add voice note playback logic**
-  - [ ] Get voice note for technique and current mode
-  - [ ] Play voice note after technique name announcement
+  - [ ] Get voice note for technique and fightlist's mode (not technique's mode, but the fightlist's mode)
+  - [ ] Determine fightlist mode from current active fightlist
+  - [ ] Retrieve voice note using technique ID and fightlist mode: `getVoiceNote(techniqueId, fightlistMode)`
+  - [ ] Play voice note after technique name announcement (only if checkbox is checked)
   - [ ] Wait for voice note to finish before next technique (or allow overlap)
-  - [ ] Handle missing voice notes gracefully
+  - [ ] Handle missing voice notes gracefully (skip silently if note doesn't exist for fightlist's mode)
 - [ ] **Add playback controls**
   - [ ] Allow skipping voice note playback
   - [ ] Allow pausing during voice note playback

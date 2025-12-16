@@ -18,6 +18,8 @@ This document specifies the requirements for implementing technique modes (PERFO
 
 ### 3. Voice Notes for Techniques
 - For each mode a technique supports, the user can record a voice note.
+  - A technique that supports both PERFORMING and RESPONDING modes can have separate voice notes for each mode.
+  - Each mode-specific voice note is recorded and stored independently.
 - Voice notes are recorded in-app only (no upload at this stage).
 - Audio format: WebM (Opus codec) for efficient, high-quality, browser-compatible recording and playback.
 - Voice notes must be playable on both desktop and mobile browsers.
@@ -26,6 +28,10 @@ This document specifies the requirements for implementing technique modes (PERFO
 - When playing a fightlist, provide a checkbox option:
   - If checked, play the technique's voice note immediately after announcing the technique name.
   - If unchecked, skip automatic playback of the note.
+- **Mode-Specific Playback**: The voice note played during fightlist playback must match the fightlist's mode.
+  - For a PERFORMING fightlist, play the PERFORMING mode voice note for each technique.
+  - For a RESPONDING fightlist, play the RESPONDING mode voice note for each technique.
+  - If a voice note for the fightlist's mode is not available, skip playback gracefully (no error).
 
 ### 5. Offline Support
 - Users must be able to record and play back voice notes while offline.

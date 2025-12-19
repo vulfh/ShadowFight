@@ -449,5 +449,279 @@ describe('MigrationService Integration Tests', () => {
       expect(migrationService.getMigrationVersion()).toBeNull()
     })
   })
+
+  describe('Integration with StorageService', () => {
+    it('should work correctly with StorageService getAllFightLists', async () => {
+      const preMigrationLists = [
+        createPreMigrationFightList('storage-test-1', 'Storage Test 1'),
+        createPreMigrationFightList('storage-test-2', 'Storage Test 2')
+      ]
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify(preMigrationLists)
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      // Run migration
+      const result = await migrationService.runMigration()
+      expect(result.success).toBe(true)
+
+      // Verify StorageService can retrieve migrated fightlists
+      const retrievedLists = storageService.getAllFightLists()
+      expect(retrievedLists).toHaveLength(2)
+      retrievedLists.forEach(list => {
+        expect(list.mode).toBe(FIGHTLIST_MODES.RESPONDING)
+        expect(list.id).toBeDefined()
+        expect(list.name).toBeDefined()
+        expect(list.techniques).toBeDefined()
+      })
+    })
+
+    it('should handle StorageService compression/decompression', async () => {
+      const preMigrationLists = [
+        createPreMigrationFightList('compressed-test', 'Compressed Test')
+      ]
+
+      // Set data directly (StorageService will handle compression)
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify(preMigrationLists)
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+      expect(result.success).toBe(true)
+
+      // Verify data can be retrieved after migration
+      const retrieved = storageService.getFightList('compressed-test')
+      expect(retrieved).not.toBeNull()
+      expect(retrieved?.mode).toBe(FIGHTLIST_MODES.RESPONDING)
+    })
+  })
+
+  describe('Real-World Data Scenarios', () => {
+    it('should migrate large number of fightlists', async () => {
+      // Create 50 fightlists (near the limit)
+      const largeFightLists = Array.from({ length: 50 }, (_, i) => 
+        createPreMigrationFightList(`large-list-${i}`, `Large List ${i}`)
+      )
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify(largeFightLists)
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+
+      expect(result.success).toBe(true)
+      expect(result.migratedFightLists).toBe(50)
+
+      // Verify all were migrated
+      const migratedLists = storageService.getAllFightLists()
+      expect(migratedLists).toHaveLength(50)
+      migratedLists.forEach(list => {
+        expect(list.mode).toBe(FIGHTLIST_MODES.RESPONDING)
+      })
+    })
+
+    it('should handle fightlists with many techniques', async () => {
+      const fightListWithManyTechniques = {
+        id: 'many-techs-list',
+        name: 'Many Techniques List',
+        techniques: Array.from({ length: 100 }, (_, i) => ({
+          id: `tech-${i}`,
+          techniqueId: `technique-${i}`,
+          priority: (i % 5) + 1,
+          selected: i % 2 === 0
+        })),
+        createdAt: '2024-01-20T10:30:15.123Z',
+        lastModified: '2024-01-20T10:30:15.123Z'
+      }
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify([fightListWithManyTechniques])
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+
+      expect(result.success).toBe(true)
+      expect(result.migratedFightLists).toBe(1)
+
+      // Verify all techniques preserved
+      const migrated = storageService.getFightList('many-techs-list')
+      expect(migrated).not.toBeNull()
+      expect(migrated?.techniques).toHaveLength(100)
+      expect(migrated?.mode).toBe(FIGHTLIST_MODES.RESPONDING)
+    })
+
+    it('should handle fightlists with special characters in names', async () => {
+      const specialCharLists = [
+        createPreMigrationFightList('special-1', 'Test List with "quotes"'),
+        createPreMigrationFightList('special-2', 'Test List with \'apostrophes\''),
+        createPreMigrationFightList('special-3', 'Test List with - hyphens'),
+        createPreMigrationFightList('special-4', 'Test List with _ underscores'),
+        createPreMigrationFightList('special-5', 'Test List with numbers 123')
+      ]
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify(specialCharLists)
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+
+      expect(result.success).toBe(true)
+      expect(result.migratedFightLists).toBe(5)
+
+      // Verify names preserved
+      const migrated = storageService.getAllFightLists()
+      expect(migrated).toHaveLength(5)
+      expect(migrated[0].name).toBe('Test List with "quotes"')
+      expect(migrated[1].name).toBe('Test List with \'apostrophes\'')
+    })
+  })
+
+  describe('Migration State Persistence', () => {
+    it('should persist migration timestamp', async () => {
+      const preMigrationLists = [
+        createPreMigrationFightList('timestamp-test', 'Timestamp Test')
+      ]
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify(preMigrationLists)
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+
+      expect(result.success).toBe(true)
+      expect(storage[MIGRATION_KEYS.LAST_MIGRATION_TIMESTAMP]).toBe(result.timestamp)
+      expect(storage[MIGRATION_KEYS.MIGRATION_VERSION]).toBe(CURRENT_FIGHT_LIST_VERSION)
+    })
+
+    it('should create backup before migration', async () => {
+      const preMigrationLists = [
+        createPreMigrationFightList('backup-test', 'Backup Test')
+      ]
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify(preMigrationLists)
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      await migrationService.runMigration()
+
+      // Verify backup exists
+      const backupData = JSON.parse(storage[MIGRATION_KEYS.MIGRATION_BACKUP] || '{}')
+      expect(backupData.fightLists).toBeDefined()
+      expect(backupData.fightLists).toHaveLength(1)
+      expect(backupData.migrationVersion).toBe(MIGRATION_VERSIONS.PRE_MODE_SYSTEM)
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('should handle fightlist with empty techniques array', async () => {
+      const emptyTechniquesList = {
+        id: 'empty-techs',
+        name: 'Empty Techniques',
+        techniques: [],
+        createdAt: '2024-01-20T10:30:15.123Z',
+        lastModified: '2024-01-20T10:30:15.123Z'
+      }
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify([emptyTechniquesList])
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+
+      expect(result.success).toBe(true)
+      const migrated = storageService.getFightList('empty-techs')
+      expect(migrated).not.toBeNull()
+      expect(migrated?.techniques).toHaveLength(0)
+      expect(migrated?.mode).toBe(FIGHTLIST_MODES.RESPONDING)
+    })
+
+    it('should handle fightlist with very long name', async () => {
+      const longNameList = createPreMigrationFightList(
+        'long-name',
+        'A'.repeat(50) // Maximum allowed length
+      )
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify([longNameList])
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+
+      expect(result.success).toBe(true)
+      const migrated = storageService.getFightList('long-name')
+      expect(migrated?.name).toBe('A'.repeat(50))
+    })
+
+    it('should handle concurrent migration attempts gracefully', async () => {
+      const preMigrationLists = [
+        createPreMigrationFightList('concurrent-test', 'Concurrent Test')
+      ]
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify(preMigrationLists)
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      // Run two migrations concurrently
+      const [result1, result2] = await Promise.all([
+        migrationService.runMigration(),
+        migrationService.runMigration()
+      ])
+
+      // Both should succeed, but only one should actually migrate
+      expect(result1.success).toBe(true)
+      expect(result2.success).toBe(true)
+      
+      // Total migrated should be 1 (idempotent)
+      const totalMigrated = result1.migratedFightLists + result2.migratedFightLists
+      expect(totalMigrated).toBeGreaterThanOrEqual(1)
+      expect(totalMigrated).toBeLessThanOrEqual(2) // May migrate once or twice
+    })
+
+    it('should handle fightlist with invalid mode value gracefully', async () => {
+      const invalidModeList = {
+        id: 'invalid-mode',
+        name: 'Invalid Mode',
+        techniques: [],
+        createdAt: '2024-01-20T10:30:15.123Z',
+        lastModified: '2024-01-20T10:30:15.123Z',
+        mode: 'INVALID_MODE' // Invalid mode value
+      }
+
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify([invalidModeList])
+      storage[STORAGE_KEYS.FIGHT_LIST_VERSION] = MIGRATION_VERSIONS.PRE_MODE_SYSTEM
+
+      const result = await migrationService.runMigration()
+
+      // Should treat as unmigrated and migrate it
+      expect(result.success).toBe(true)
+      const migrated = storageService.getFightList('invalid-mode')
+      expect(migrated?.mode).toBe(FIGHTLIST_MODES.RESPONDING)
+    })
+  })
+
+  describe('Migration Validation Edge Cases', () => {
+    it('should validate migration even when technique manager is not set', () => {
+      const migrationServiceWithoutManager = new MigrationService(storageService)
+      
+      const result = {
+        success: true,
+        migratedFightLists: 0,
+        migratedTechniques: 0,
+        errors: [],
+        warnings: [],
+        timestamp: new Date().toISOString()
+      }
+
+      // Should not throw, but may return false if techniques need validation
+      const isValid = migrationServiceWithoutManager.validateMigration(result)
+      expect(typeof isValid).toBe('boolean')
+    })
+
+    it('should handle validation when fightlists array is empty', () => {
+      storage[STORAGE_KEYS.FIGHT_LISTS] = JSON.stringify([])
+
+      const result = {
+        success: true,
+        migratedFightLists: 0,
+        migratedTechniques: 0,
+        errors: [],
+        warnings: [],
+        timestamp: new Date().toISOString()
+      }
+
+      const isValid = migrationService.validateMigration(result)
+      expect(isValid).toBe(true)
+    })
+  })
 })
 

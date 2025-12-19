@@ -10,6 +10,7 @@ import { UIManager } from './managers/UIManager'
 import { FightListManager } from './managers/FightListManager'
 import { FightListUIManager } from './managers/FightListUIManager'
 import { ConfirmModal } from './components/ConfirmModal'
+import { MigrationService } from './services/MigrationService'
 import { 
   UI_ELEMENTS, 
   NOTIFICATION_TYPES, 
@@ -45,8 +46,13 @@ export class KravMagaTrainerApp {
     try {
       console.log('Initializing Krav Maga Trainer App...')
 
-      // Initialize managers in order
+      // Initialize technique manager first (needed for migration)
       await this.techniqueManager.init()
+
+      // Run migration if needed (before loading fightlists)
+      await this.runMigrationIfNeeded()
+
+      // Initialize managers in order
       await this.audioManager.init()
       await this.configManager.init()
       await this.sessionManager.init()
@@ -92,6 +98,66 @@ export class KravMagaTrainerApp {
         type: NOTIFICATION_TYPES.ERROR
       })
       throw error
+    }
+  }
+
+  /**
+   * Run migration if needed
+   * Checks if migration is required and runs it before loading fightlists
+   */
+  private async runMigrationIfNeeded(): Promise<void> {
+    try {
+      const migrationService = new MigrationService()
+      
+      // Set technique manager for technique migration
+      migrationService.setTechniqueManager(this.techniqueManager)
+      
+      // Check if migration is needed
+      if (migrationService.needsMigration()) {
+        console.log('Migration needed, running migration...')
+        
+        // Show migration notification
+        this.showNotification({
+          message: 'Migrating data to support technique modes...',
+          type: NOTIFICATION_TYPES.INFO
+        })
+        
+        // Run migration
+        const result = await migrationService.runMigration()
+        
+        if (result.success) {
+          console.log(`Migration completed: ${result.migratedFightLists} fightlists, ${result.migratedTechniques} techniques migrated`)
+          
+          if (result.warnings.length > 0) {
+            console.warn('Migration warnings:', result.warnings)
+          }
+          
+          // Show success notification
+          this.showNotification({
+            message: `Migration completed successfully. ${result.migratedFightLists} fightlists migrated.`,
+            type: NOTIFICATION_TYPES.SUCCESS
+          })
+        } else {
+          console.error('Migration failed:', result.errors)
+          
+          // Show error notification
+          this.showNotification({
+            message: `Migration completed with errors: ${result.errors.join(', ')}`,
+            type: NOTIFICATION_TYPES.ERROR
+          })
+          
+          // Don't throw - allow app to continue even if migration has errors
+        }
+      } else {
+        console.log('No migration needed')
+      }
+    } catch (error) {
+      console.error('Migration error:', error)
+      // Don't throw - allow app to continue even if migration fails
+      this.showNotification({
+        message: 'Migration encountered an error, but the app will continue.',
+        type: NOTIFICATION_TYPES.WARNING
+      })
     }
   }
 

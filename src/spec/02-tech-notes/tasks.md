@@ -44,68 +44,69 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 **Priority: High | Estimated Time: 2 days**
 
 #### Task 1.2.1: Create Migration Framework
-- [ ] **Create MigrationService class** (`src/services/MigrationService.ts`)
-  - [ ] Implement `migrateFightListsToModes()` method
-  - [ ] Implement `migrateTechniquesToModes()` method
-  - [ ] Implement `validateMigration()` method
-  - [ ] Implement `rollbackMigration()` method
-  - [ ] Add version tracking for data structure
-- [ ] **Add migration constants** (`src/constants/storage.ts`)
-  - [ ] Add `MIGRATION_VERSION_KEY` for tracking migration state
-  - [ ] Add `LAST_MIGRATION_TIMESTAMP_KEY`
-  - [ ] Add migration version numbers
-- [ ] **Create migration data structures**
-  - [ ] Define pre-migration fightlist schema
-  - [ ] Define post-migration fightlist schema
-  - [ ] Create migration mapping logic
-- [ ] **Add error handling** for migration failures
+- [X] **Create MigrationService class** (`src/services/MigrationService.ts`)
+  - [X] Implement `migrateFightListsToModes()` method
+  - [X] Implement `migrateTechniquesToModes()` method
+  - [X] Implement `validateMigration()` method
+  - [X] Implement `rollbackMigration()` method
+  - [X] Add version tracking for data structure
+- [X] **Add migration constants** (`src/constants/storage.ts`)
+  - [X] Add `MIGRATION_VERSION_KEY` for tracking migration state
+  - [X] Add `LAST_MIGRATION_TIMESTAMP_KEY`
+  - [X] Add migration version numbers
+- [X] **Create migration data structures**
+  - [X] Define pre-migration fightlist schema
+  - [X] Define post-migration fightlist schema
+  - [X] Create migration mapping logic
+- [X] **Add error handling** for migration failures
 - [ ] **Create unit tests** for migration service
 
 #### Task 1.2.2: Implement Fightlist Migration
-- [ ] **Migrate existing fightlists to RESPONDING mode**
-  - [ ] Set all existing fightlists to `mode: 'RESPONDING'`
-  - [ ] Preserve all existing fightlist data (id, name, techniques, timestamps)
-  - [ ] Update storage schema version
-  - [ ] Add migration timestamp to each migrated fightlist
-- [ ] **Add migration validation**
-  - [ ] Verify all fightlists have mode assigned
-  - [ ] Verify no data loss during migration
-  - [ ] Verify backward compatibility where possible
-- [ ] **Create migration logging**
-  - [ ] Log migration start/end
-  - [ ] Log number of fightlists migrated
-  - [ ] Log any errors or warnings
-- [ ] **Add migration UI feedback**
-  - [ ] Show migration progress (if needed)
-  - [ ] Show migration completion message
-  - [ ] Handle migration errors gracefully
+- [X] **Migrate existing fightlists to RESPONDING mode**
+  - [X] Set all existing fightlists to `mode: 'RESPONDING'`
+  - [X] Preserve all existing fightlist data (id, name, techniques, timestamps)
+  - [X] Update storage schema version
+  - [X] Add migration timestamp to each migrated fightlist
+- [X] **Add migration validation**
+  - [X] Verify all fightlists have mode assigned
+  - [X] Verify no data loss during migration
+  - [X] Verify backward compatibility where possible
+- [X] **Create migration logging**
+  - [X] Log migration start/end
+  - [X] Log number of fightlists migrated
+  - [X] Log any errors or warnings
+- [X] **Add migration UI feedback**
+  - [X] Show migration progress (if needed)
+  - [X] Show migration completion message
+  - [X] Handle migration errors gracefully
 - [ ] **Test migration** with existing data
-- [ ] **Create rollback mechanism** (optional, for safety)
+- [X] **Create rollback mechanism** (optional, for safety)
 
 #### Task 1.2.3: Implement Technique Migration
-- [ ] **Migrate existing techniques to support modes**
-  - [ ] Default all existing techniques to support both modes: `modes: ['PERFORMING', 'RESPONDING']`
-  - [ ] Preserve all existing technique data
-  - [ ] Update technique storage schema
-- [ ] **Add technique mode validation**
-  - [ ] Ensure all techniques have at least one mode
-  - [ ] Validate mode values are valid
+- [X] **Migrate existing techniques to support modes**
+  - [X] Default all existing techniques to support both modes: `modes: ['PERFORMING', 'RESPONDING']`
+  - [X] Preserve all existing technique data
+  - [X] Update technique storage schema
+- [X] **Add technique mode validation**
+  - [X] Ensure all techniques have at least one mode
+  - [X] Validate mode values are valid
 - [ ] **Create migration tests**
   - [ ] Test migration with various technique configurations
   - [ ] Test migration with empty technique lists
   - [ ] Test migration error scenarios
-- [ ] **Update TechniqueManager** to handle migrated techniques
-- [ ] **Test backward compatibility** with existing code
+- [X] **Update TechniqueManager** to handle migrated techniques (techniques already have modes)
+- [X] **Test backward compatibility** with existing code
 
 #### Task 1.2.4: Integration and Testing
-- [ ] **Integrate migration into app initialization**
-  - [ ] Call migration service on app startup
-  - [ ] Run migration before loading fightlists
-  - [ ] Handle migration errors during startup
-- [ ] **Add migration to StorageService**
-  - [ ] Check migration version on load
-  - [ ] Trigger migration if needed
-  - [ ] Save migration state after completion
+- [X] **Integrate migration into app initialization**
+  - [X] Call migration service on app startup
+  - [X] Run migration before loading fightlists
+  - [X] Handle migration errors during startup
+- [X] **Add migration to StorageService**
+  - [X] Check migration version on load (via MigrationService.needsMigration())
+  - [X] Trigger migration if needed (in app initialization)
+  - [X] Save migration state after completion
+  - [X] Add safety check in getAllFightLists() for unmigrated data
 - [ ] **Create integration tests**
   - [ ] Test full migration flow
   - [ ] Test migration with real data

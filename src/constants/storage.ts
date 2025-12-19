@@ -66,7 +66,56 @@ export const AUDIO_FILES = {
  * @constant
  * @public
  */
-export const CURRENT_FIGHT_LIST_VERSION = '1.1.7';
+export const CURRENT_FIGHT_LIST_VERSION = '1.2.0';
+
+/**
+ * Migration-related storage keys
+ * @namespace MIGRATION_KEYS
+ * @public
+ */
+export const MIGRATION_KEYS = {
+  /**
+   * Key for storing the migration version that was last applied
+   * @type {string}
+   * @constant
+   */
+  MIGRATION_VERSION: 'kravMagaMigrationVersion',
+  
+  /**
+   * Key for storing the timestamp of the last migration
+   * @type {string}
+   * @constant
+   */
+  LAST_MIGRATION_TIMESTAMP: 'kravMagaLastMigrationTimestamp',
+  
+  /**
+   * Key for storing migration backup data (for rollback)
+   * @type {string}
+   * @constant
+   */
+  MIGRATION_BACKUP: 'kravMagaMigrationBackup'
+} as const;
+
+/**
+ * Migration version numbers
+ * @namespace MIGRATION_VERSIONS
+ * @public
+ */
+export const MIGRATION_VERSIONS = {
+  /**
+   * Version before mode system was introduced
+   * @type {string}
+   * @constant
+   */
+  PRE_MODE_SYSTEM: '1.1.7',
+  
+  /**
+   * Version with mode system (current)
+   * @type {string}
+   * @constant
+   */
+  MODE_SYSTEM: '1.2.0'
+} as const;
 
 /**
  * Keys for fight list timestamps.

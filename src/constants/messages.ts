@@ -33,7 +33,17 @@ export const ERROR_MESSAGES = {
   TECHNIQUE_ALREADY_IN_LIST: 'This technique is already in the fight list',
   NO_TECHNIQUES_IN_FIGHT_LIST: 'Please select at least one technique in the fight list',
   MAX_TECHNIQUES_PER_LIST_REACHED: 'Maximum number of techniques per fight list reached (100)',
-  CANNOT_DELETE_LAST_FIGHT_LIST: 'Cannot delete the last remaining fight list'
+  CANNOT_DELETE_LAST_FIGHT_LIST: 'Cannot delete the last remaining fight list',
+  
+  // Mode-related error messages
+  TECHNIQUE_MODE_REQUIRED: 'Technique must support at least one mode (PERFORMING or RESPONDING)',
+  TECHNIQUE_MODE_INVALID: 'Invalid technique mode. Must be PERFORMING or RESPONDING',
+  FIGHTLIST_MODE_REQUIRED: 'Fightlist mode is required',
+  FIGHTLIST_MODE_INVALID: 'Invalid fightlist mode. Must be PERFORMING or RESPONDING',
+  TECHNIQUE_MODE_MISMATCH: 'Technique does not support the fightlist mode. Cannot add technique to this fightlist',
+  TECHNIQUE_PERFORMING_ONLY_IN_RESPONDING_LIST: 'This technique only supports PERFORMING mode and cannot be added to a RESPONDING fightlist',
+  TECHNIQUE_RESPONDING_ONLY_IN_PERFORMING_LIST: 'This technique only supports RESPONDING mode and cannot be added to a PERFORMING fightlist',
+  FIGHTLIST_MODE_CHANGE_INCOMPATIBLE_TECHNIQUES: 'Cannot change fightlist mode. Some techniques are incompatible with the new mode'
 } as const
 
 // Success messages

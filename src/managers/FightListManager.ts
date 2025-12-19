@@ -5,7 +5,7 @@ import {
   Technique,
   ValidationResult 
 } from '../types'
-import { STORAGE_KEYS, FIGHT_LIST_LIMITS, ERROR_MESSAGES } from '../constants'
+import { STORAGE_KEYS, FIGHT_LIST_LIMITS, ERROR_MESSAGES, FIGHTLIST_MODES } from '../constants'
 import { StorageService } from '../services/StorageService'
 
 /**
@@ -137,7 +137,8 @@ export class FightListManager {
       name: 'My Techniques',
       techniques: [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.PERFORMING
     }
     
     this.fightLists.push(defaultFightList)
@@ -178,7 +179,8 @@ export class FightListManager {
       name: name.trim(),
       techniques: techniques ? this.convertTechniquesToFightListTechniques(techniques) : [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }
 
     this.fightLists.push(fightList)

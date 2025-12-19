@@ -21,7 +21,8 @@ describe('Fight List Schema Validation', () => {
     name: 'Test Fight List',
     techniques: [validTechnique],
     createdAt: '2024-01-20T10:30:15.123Z',
-    lastModified: '2024-01-20T10:30:15.123Z'
+    lastModified: '2024-01-20T10:30:15.123Z',
+    mode: 'RESPONDING' as const
   };
 
   describe('isFightListTechnique', () => {

@@ -33,7 +33,8 @@ export function isFightList(value: unknown): value is FightList {
     Array.isArray(list.techniques) &&
     list.techniques.every(isFightListTechnique) &&
     typeof list.createdAt === 'string' &&
-    typeof list.lastModified === 'string'
+    typeof list.lastModified === 'string' &&
+    (list.mode === 'PERFORMING' || list.mode === 'RESPONDING')
   );
 }
 

@@ -11,34 +11,34 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 **Priority: High | Estimated Time: 2 days**
 
 #### Task 1.1.1: Add Technique Mode Types
-- [ ] **Extend Technique interface** (`src/types/index.ts`)
-  - [ ] Add `TechniqueMode` type: `'PERFORMING' | 'RESPONDING'`
-  - [ ] Add `modes: TechniqueMode[]` field to `Technique` interface (at least one mode required)
-  - [ ] Add `TechniqueModeSupport` type for mode validation
-  - [ ] Add `TechniqueModeValidationResult` type
-  - [ ] Add JSDoc comments for all new types
-- [ ] **Update existing Technique type** to include modes
-- [ ] **Create type guards** for mode validation (`isPerformingMode()`, `isRespondingMode()`)
+- [X] **Extend Technique interface** (`src/types/index.ts`)
+  - [X] Add `TechniqueMode` type: `'PERFORMING' | 'RESPONDING'`
+  - [X] Add `modes: TechniqueMode[]` field to `Technique` interface (at least one mode required)
+  - [X] Add `TechniqueModeSupport` type for mode validation
+  - [X] Add `TechniqueModeValidationResult` type
+  - [X] Add JSDoc comments for all new types
+- [X] **Update existing Technique type** to include modes
+- [X] **Create type guards** for mode validation (`isPerformingMode()`, `isRespondingMode()`, `isTechniqueMode()`)
 - [ ] **Create unit tests** for type system
 
 #### Task 1.1.2: Add Fightlist Mode Types
-- [ ] **Extend FightList interface** (`src/types/index.ts`)
-  - [ ] Add `mode: 'PERFORMING' | 'RESPONDING'` field to `FightList` interface
-  - [ ] Add `FightListMode` type
-  - [ ] Add `FightListModeValidationResult` type
-  - [ ] Add JSDoc comments
+- [X] **Extend FightList interface** (`src/types/index.ts`)
+  - [X] Add `mode: 'PERFORMING' | 'RESPONDING'` field to `FightList` interface
+  - [X] Add `FightListMode` type
+  - [X] Add `FightListModeValidationResult` type
+  - [X] Add JSDoc comments
 - [ ] **Update FightListTechnique validation** to check mode compatibility
-- [ ] **Create type guards** for fightlist mode validation
+- [X] **Create type guards** for fightlist mode validation (`isFightListMode()`)
 - [ ] **Create unit tests** for fightlist mode types
 
 #### Task 1.1.3: Update Constants for Modes
-- [ ] **Add mode constants** (`src/constants/strategies.ts` or new `src/constants/modes.ts`)
-  - [ ] Add `TECHNIQUE_MODES` constant with PERFORMING and RESPONDING
-  - [ ] Add `FIGHTLIST_MODES` constant
-  - [ ] Add mode validation rules
-  - [ ] Add error messages for mode mismatches
-- [ ] **Update existing constants** to reference modes
-- [ ] **Add JSDoc documentation** for all constants
+- [X] **Add mode constants** (`src/constants/modes.ts`)
+  - [X] Add `TECHNIQUE_MODES` constant with PERFORMING and RESPONDING
+  - [X] Add `FIGHTLIST_MODES` constant
+  - [X] Add mode validation rules
+  - [X] Add error messages for mode mismatches
+- [X] **Update existing constants** to reference modes (updated `src/constants/index.ts` and `src/constants/messages.ts`)
+- [X] **Add JSDoc documentation** for all constants
 
 ### 1.2 Migration System
 **Priority: High | Estimated Time: 2 days**

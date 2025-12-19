@@ -8,6 +8,12 @@ export interface Technique {
   weight: number
   targetLevel: TargetLevel
   side: Side
+  /**
+   * Modes that this technique supports
+   * Must contain at least one mode: PERFORMING or RESPONDING
+   * A technique can support both modes
+   */
+  modes: TechniqueMode[]
 }
 
 export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN' | 'BACK' | 'FOOT'
@@ -26,13 +32,94 @@ export type TechniqueCategory =
 
 export type PriorityLevel = 'high' | 'medium' | 'low'
 
+// Technique Mode Types
+/**
+ * Technique mode type - defines how a technique can be used
+ * - PERFORMING: The player actively uses the technique to achieve an effect
+ * - RESPONDING: The player uses the technique to react to or counter an effect
+ */
+export type TechniqueMode = 'PERFORMING' | 'RESPONDING'
+
+/**
+ * Type guard to check if a value is a valid TechniqueMode
+ * @param value - The value to check
+ * @returns True if value is a valid TechniqueMode
+ */
+export function isTechniqueMode(value: unknown): value is TechniqueMode {
+  return value === 'PERFORMING' || value === 'RESPONDING'
+}
+
+/**
+ * Type guard to check if a technique supports PERFORMING mode
+ * @param technique - The technique to check
+ * @returns True if technique supports PERFORMING mode
+ */
+export function isPerformingMode(technique: Technique): boolean {
+  return technique.modes?.includes('PERFORMING') ?? false
+}
+
+/**
+ * Type guard to check if a technique supports RESPONDING mode
+ * @param technique - The technique to check
+ * @returns True if technique supports RESPONDING mode
+ */
+export function isRespondingMode(technique: Technique): boolean {
+  return technique.modes?.includes('RESPONDING') ?? false
+}
+
+/**
+ * Technique mode support information
+ */
+export interface TechniqueModeSupport {
+  /** Whether the technique supports PERFORMING mode */
+  performing: boolean
+  /** Whether the technique supports RESPONDING mode */
+  responding: boolean
+  /** List of supported modes */
+  modes: TechniqueMode[]
+}
+
+/**
+ * Validation result for technique mode operations
+ */
+export interface TechniqueModeValidationResult extends ValidationResult {
+  isValid: boolean
+  errors: string[]
+  warnings: string[]
+  /** The technique being validated */
+  techniqueId?: string
+  /** The mode being validated */
+  mode?: TechniqueMode
+}
+
 // Fight List Types
+/**
+ * Fightlist mode type - defines the type of fightlist
+ * - PERFORMING: Fightlist contains techniques used in PERFORMING mode
+ * - RESPONDING: Fightlist contains techniques used in RESPONDING mode
+ */
+export type FightListMode = 'PERFORMING' | 'RESPONDING'
+
+/**
+ * Type guard to check if a value is a valid FightListMode
+ * @param value - The value to check
+ * @returns True if value is a valid FightListMode
+ */
+export function isFightListMode(value: unknown): value is FightListMode {
+  return value === 'PERFORMING' || value === 'RESPONDING'
+}
+
 export interface FightList {
   id: string
   name: string
   techniques: FightListTechnique[]
   createdAt: string
   lastModified: string
+  /**
+   * The mode of this fightlist
+   * Determines which techniques can be included (must match technique's supported modes)
+   */
+  mode: FightListMode
 }
 
 export type FightListTechnique = {
@@ -60,6 +147,21 @@ export interface FightListValidationResult extends ValidationResult {
   isValid: boolean
   errors: string[]
   warnings: string[]
+}
+
+/**
+ * Validation result for fightlist mode operations
+ */
+export interface FightListModeValidationResult extends ValidationResult {
+  isValid: boolean
+  errors: string[]
+  warnings: string[]
+  /** The fightlist being validated */
+  fightListId?: string
+  /** The mode being validated */
+  mode?: FightListMode
+  /** Techniques that are incompatible with the mode */
+  incompatibleTechniques?: string[]
 }
 
 // Fight List Events

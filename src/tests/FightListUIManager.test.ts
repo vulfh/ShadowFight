@@ -3,6 +3,7 @@ import { FightListUIManager } from '../managers/FightListUIManager'
 import { FightListManager } from '../managers/FightListManager'
 import { UIManager } from '../managers/UIManager'
 import { FightList } from '../types'
+import { FIGHTLIST_MODES } from '../constants/modes'
 
 describe('FightListUIManager', () => {
   let fightListUIManager: FightListUIManager
@@ -47,7 +48,8 @@ describe('FightListUIManager', () => {
       name: 'Test List',
       techniques: [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.PERFORMING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
@@ -72,7 +74,8 @@ describe('FightListUIManager', () => {
         selected: true
       }],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
@@ -91,7 +94,8 @@ describe('FightListUIManager', () => {
       name: 'Test List',
       techniques: [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
@@ -114,7 +118,8 @@ describe('FightListUIManager', () => {
         selected: true
       }],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
@@ -137,7 +142,8 @@ describe('FightListUIManager', () => {
         selected: true
       }],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
@@ -163,7 +169,8 @@ describe('FightListUIManager', () => {
       name: 'Test List',
       techniques: [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
@@ -199,7 +206,8 @@ describe('FightListUIManager', () => {
         selected: true
       }],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
@@ -230,7 +238,8 @@ describe('FightListUIManager', () => {
       name: 'Test List',
       techniques: [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: FIGHTLIST_MODES.RESPONDING
     }]
 
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)

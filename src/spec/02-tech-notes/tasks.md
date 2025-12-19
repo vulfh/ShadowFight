@@ -120,15 +120,15 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 **Priority: High | Estimated Time: 2 days**
 
 #### Task 1.3.1: Update TechniqueManager
-- [ ] **Add mode support to TechniqueManager** (`src/managers/TechniqueManager.ts`)
-  - [ ] Add `getTechniquesByMode(mode: TechniqueMode)` method
-  - [ ] Add `getTechniqueModes(techniqueId: string)` method
-  - [ ] Add `updateTechniqueModes(techniqueId: string, modes: TechniqueMode[])` method
-  - [ ] Add `validateTechniqueMode(technique: Technique, mode: TechniqueMode)` method
-- [ ] **Update technique loading** to include modes
-- [ ] **Add mode validation** when techniques are loaded
-- [ ] **Update unit tests** for TechniqueManager
-- [ ] **Add JSDoc documentation**
+- [X] **Add mode support to TechniqueManager** (`src/managers/TechniqueManager.ts`)
+  - [X] Add `getTechniquesByMode(mode: TechniqueMode)` method
+  - [X] Add `getTechniqueModes(techniqueId: string)` method
+  - [X] Add `updateTechniqueModes(techniqueId: string, modes: TechniqueMode[])` method
+  - [X] Add `validateTechniqueMode(technique: Technique, mode: TechniqueMode)` method
+- [X] **Update technique loading** to include modes
+- [X] **Add mode validation** when techniques are loaded
+- [X] **Update unit tests** for TechniqueManager
+- [X] **Add JSDoc documentation**
 
 #### Task 1.3.2: Update FightListManager
 - [ ] **Add mode support to FightListManager** (`src/managers/FightListManager.ts`)

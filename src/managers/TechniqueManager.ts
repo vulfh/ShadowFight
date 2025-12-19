@@ -1,4 +1,4 @@
-import { Technique, TechniqueCategory, PriorityLevel } from '../types'
+import { Technique, TechniqueCategory, PriorityLevel, TechniqueMode, TechniqueModeValidationResult } from '../types'
 
 export class TechniqueManager {
   private techniques: Technique[] = []
@@ -62,7 +62,7 @@ export class TechniqueManager {
 
           // { name: 'Heel Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'SHIN', side: 'RIGHT' },
 
-          // { name: 'Spinning Outside Slap Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'low', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          // { name: 'Spinning Outside Slap Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'low', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' }
 
           //Kinfe
           { name: 'Left Hand Knife Top Back Attack', file: 'smol-dkirat-gav-mi-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT', modes: ['RESPONDING'] },
@@ -97,6 +97,58 @@ export class TechniqueManager {
 
   getTechniquesByCategory(category: TechniqueCategory): Technique[] {
     return this.techniques.filter(t => t.category === category)
+  }
+
+  /**
+   * Returns all techniques that support the given mode
+   * @param mode The mode to filter by (PERFORMING or RESPONDING)
+   */
+  getTechniquesByMode(mode: TechniqueMode): Technique[] {
+    return this.techniques.filter(t => t.modes && t.modes.includes(mode))
+  }
+
+  /**
+   * Returns the modes supported by a technique with the given name
+   * @param techniqueName The name of the technique
+   */
+  getTechniqueModes(techniqueName: string): TechniqueMode[] {
+    const technique = this.techniques.find(t => t.name === techniqueName)
+    return technique ? technique.modes : []
+  }
+
+  /**
+   * Updates the modes for a technique with the given name
+   * @param techniqueName The name of the technique
+   * @param modes The new modes to set
+   */
+  updateTechniqueModes(techniqueName: string, modes: TechniqueMode[]): void {
+    const technique = this.techniques.find(t => t.name === techniqueName)
+    if (technique) {
+      technique.modes = modes
+    }
+  }
+
+  /**
+   * Validates if a technique supports a given mode
+   * @param technique The technique to validate
+   * @param mode The mode to check
+   * @returns TechniqueModeValidationResult
+   */
+  validateTechniqueMode(technique: Technique, mode: TechniqueMode): TechniqueModeValidationResult {
+    const errors: string[] = []
+    const warnings: string[] = []
+    if (!technique.modes || !Array.isArray(technique.modes) || technique.modes.length === 0) {
+      errors.push('Technique must support at least one mode')
+    } else if (!technique.modes.includes(mode)) {
+      errors.push(`Technique does not support mode: ${mode}`)
+    }
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      techniqueId: technique.name,
+      mode
+    }
   }
 
   updateTechniquePriority(name: string, priority: PriorityLevel): void {

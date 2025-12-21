@@ -344,6 +344,13 @@ export class FightListManager {
    * @param technique - Technique to add
    * @param priority - Priority level (1-5)
    */
+  /**
+   * Add a technique to a fight list, enforcing mode compatibility
+   * @param fightListId - ID of the fight list
+   * @param technique - Technique to add
+   * @param priority - Priority level (1-5)
+   * @throws Error if technique does not support the fightlist's mode
+   */
   addTechniqueToFightList(fightListId: string, technique: Technique, priority: number = 3): void {
     if (!this.isInitialized) {
       throw new Error('FightListManager not initialized')
@@ -362,6 +369,14 @@ export class FightListManager {
     const existingTechnique = fightList.techniques.find(ft => ft.techniqueId === technique.name)
     if (existingTechnique) {
       throw new Error('Technique already exists in fight list')
+    }
+
+    // Enforce mode compatibility
+    if (!this.canAddTechniqueToFightList(technique, fightList)) {
+      throw new Error(
+        `Technique "${technique.name}" does not support the fightlist's mode ("${fightList.mode}"). ` +
+        `Allowed modes for this technique: ${Array.isArray(technique.modes) ? technique.modes.join(', ') : technique.modes}`
+      )
     }
 
     const fightListTechnique: FightListTechnique = {
@@ -383,6 +398,22 @@ export class FightListManager {
       fightList.lastModified = new Date().toISOString()
       throw error
     }
+  }
+
+  /**
+   * Checks if a technique can be added to a fight list based on mode compatibility
+   * @param technique - Technique to check
+   * @param fightList - FightList to check against
+   * @returns true if technique supports the fightlist's mode
+   */
+  canAddTechniqueToFightList(technique: Technique, fightList: FightList): boolean {
+    // Assume technique.modes is an array of allowed modes (e.g., ['PERFORMING', 'RESPONDING'])
+    if (!technique.modes) return false;
+    if (Array.isArray(technique.modes)) {
+      return technique.modes.includes(fightList.mode)
+    }
+    // If modes is a single string (legacy), compare directly
+    return technique.modes === fightList.mode
   }
 
   /**

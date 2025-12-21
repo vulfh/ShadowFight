@@ -131,19 +131,19 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 - [X] **Add JSDoc documentation**
 
 #### Task 1.3.2: Update FightListManager
-- [ ] **Add mode support to FightListManager** (`src/managers/FightListManager.ts`)
-  - [ ] Add `mode` field to `createFightList()` method
-  - [ ] Add `updateFightListMode(id: string, mode: FightListMode)` method
-  - [ ] Add `validateFightListMode(fightListId: string)` method
-  - [ ] Add `getFightListsByMode(mode: FightListMode)` method
-  - [ ] Add `canAddTechniqueToFightList(techniqueId: string, fightListId: string)` method
-- [ ] **Update technique addition validation**
-  - [ ] Check technique mode compatibility before adding
-  - [ ] Show error if technique mode doesn't match fightlist mode
-  - [ ] Update error messages for mode mismatches
-- [ ] **Update existing methods** to respect mode constraints
-- [ ] **Add unit tests** for mode validation
-- [ ] **Update JSDoc documentation**
+- [X] **Add mode support to FightListManager** (`src/managers/FightListManager.ts`)
+  - [X] Add `mode` field to `createFightList()` method
+  - [X] Add `updateFightListMode(id: string, mode: FightListMode)` method
+  - [X] Add `validateFightListMode(fightListId: string)` method
+  - [X] Add `getFightListsByMode(mode: FightListMode)` method
+  - [X] Add `canAddTechniqueToFightList(techniqueId: string, fightListId: string)` method
+- [X] **Update technique addition validation**
+  - [X] Check technique mode compatibility before adding
+  - [X] Show error if technique mode doesn't match fightlist mode
+  - [X] Update error messages for mode mismatches
+- [X] **Update existing methods** to respect mode constraints
+- [X] **Add unit tests** for mode validation
+- [X] **Update JSDoc documentation**
 
 #### Task 1.3.3: Update SessionManager
 - [ ] **Add mode support to SessionManager** (`src/managers/SessionManager.ts`)

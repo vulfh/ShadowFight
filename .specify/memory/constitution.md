@@ -28,11 +28,6 @@
 [PRINCIPLE_5_DESCRIPTION]
 <!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-### [PRINCIPLE_6_NAME]
-
-
-[PRINCIPLE__DESCRIPTION]
-
 ## [SECTION_2_NAME]
 <!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 

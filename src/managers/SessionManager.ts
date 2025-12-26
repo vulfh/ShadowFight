@@ -54,6 +54,13 @@ export class SessionManager {
     this.scheduleNextTechnique(config)
   }
 
+  /**
+   * Start a session using a fightlist, enforcing mode compatibility.
+   * Only techniques supporting the fightlist's mode are included.
+   * @param config - Session configuration
+   * @param fightList - FightList to use for the session
+   * @throws Error if no compatible techniques are selected
+   */
   async startSessionWithFightList(config: SessionConfig, fightList: FightList): Promise<void> {
     if (this._isActive) {
       throw new Error(ERROR_MESSAGES.SESSION_ALREADY_ACTIVE)
@@ -63,12 +70,18 @@ export class SessionManager {
       throw new Error(`Please select at least one technique in ${fightList.name}`)
     }
 
-    // Get selected techniques from fight list
+    // Get selected techniques from fight list, filter by mode compatibility
     const selectedTechniques = fightList.techniques
       .filter(t => t.selected)
       .map(flTechnique => {
         const technique = config.techniques.find(t => t.name === flTechnique.techniqueId)
         if (!technique) return null
+        // Check if technique supports the fightlist's mode
+        if (Array.isArray(technique.modes)) {
+          if (!technique.modes.includes(fightList.mode)) return null
+        } else if (technique.modes !== fightList.mode) {
+          return null
+        }
         return {
           ...technique,
           weight: flTechnique.priority // Use fight list priority as weight
@@ -76,7 +89,11 @@ export class SessionManager {
       })
       .filter((t): t is Technique => t !== null)
 
-    this.currentFightList = fightList
+    if (selectedTechniques.length === 0) {
+      throw new Error(`No techniques in ${fightList.name} support mode "${fightList.mode}". Please update your fightlist.`)
+    }
+
+    this.currentFightList = { ...fightList, mode: fightList.mode }
     const fightListConfig = { ...config, techniques: selectedTechniques }
     await this.startSession(fightListConfig)
   }
@@ -268,6 +285,9 @@ export class SessionManager {
   }
 
   // Session persistence methods
+  /**
+   * Save session state, including fightlist mode, to localStorage
+   */
   private saveSessionState(): void {
     try {
       const sessionState = {
@@ -277,7 +297,7 @@ export class SessionManager {
         sessionDuration: this.sessionDuration,
         techniquesUsed: this.techniquesUsed,
         sessionStats: this.sessionStats,
-        currentFightList: this.currentFightList,
+        currentFightList: this.currentFightList ? { ...this.currentFightList, mode: this.currentFightList.mode } : null,
         timestamp: Date.now()
       }
       localStorage.setItem(STORAGE_KEYS.KRAV_MAGA_SESSION_STATE, JSON.stringify(sessionState))

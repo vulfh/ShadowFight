@@ -1,50 +1,55 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+
+# ShadowFight PWA Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### I. TypeScript & SOLID Foundation
+All code MUST be written in TypeScript. SOLID principles and clean code practices are mandatory. Code must be modular, maintainable, and easy to test. Rationale: Ensures long-term maintainability and reliability.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Progressive Web App (PWA) & Responsiveness
+The application MUST function as a PWA: installable, offline-capable, and responsive on all devices. Rationale: Guarantees accessibility and usability for all users, including mobile-first.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### III. Test-First & Quality Gates (NON-NEGOTIABLE)
+All features MUST be developed using test-first or TDD. Unit and integration tests are required for all business logic. No code is merged without passing tests and code review. Rationale: Prevents regressions and enforces reliability.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### IV. Integration & Accessibility
+Integration tests are required for all user flows and PWA features. All UI must comply with WCAG 2.1 accessibility standards. Rationale: Ensures the app works as a whole and is usable by everyone.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+
+### V. Versioning & Simplicity
+Semantic versioning (MAJOR.MINOR.PATCH) is required. Simplicity and YAGNI (You Aren't Gonna Need It) principles must guide all design and implementation. Rationale: Reduces complexity and risk.
+
+
+## Additional Constraints
+
+- Technology stack: TypeScript, Vite, Bootstrap 5, Web Audio API, Service Workers.
+- Code must be linted (ESLint) and formatted (Prettier) before merge.
+- All features must support offline use and mobile-first design.
+- All code must be documented and reviewed before merging.
+
+
+
+## Development Workflow & Quality Gates
+
+- All work is done in feature branches, merged via pull request.
+- Every PR must pass all tests, linting, and review.
+- No feature is considered complete without user story acceptance and independent testability.
+- Documentation and code comments are required for all public APIs and complex logic.
+- After implementing any task, it MUST be marked as COMPLETED in the task tracking system.
+- After implementing any task, a build MUST be run to verify project integrity before proceeding.
+
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution supersedes all other practices for the ShadowFight PWA.
+- Amendments require documentation, team approval, and a migration plan if breaking.
+- All PRs and reviews must verify compliance with these principles.
+- Any complexity must be justified and documented.
+- Compliance is reviewed at every major release and before feature freeze.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+
+**Version**: 1.0.1 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-23

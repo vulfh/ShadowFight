@@ -22,6 +22,22 @@ export class AudioRecordingService {
   private stopTime: number | null = null;
   private duration: number = 0; // in milliseconds
   private fileSize: number = 0; // in bytes
+  private lastError: Error | null = null;
+  private errorCallback: ((err: Error) => void) | null = null;
+
+  /**
+   * Set a callback to be invoked on recording errors.
+   */
+  setErrorHandler(cb: (err: Error) => void) {
+    this.errorCallback = cb;
+  }
+
+  /**
+   * Get the last error that occurred during recording, if any.
+   */
+  getLastError(): Error | null {
+    return this.lastError;
+  }
 
   getRecordingState(): RecordingState {
     return this.state;
@@ -50,11 +66,31 @@ export class AudioRecordingService {
 
   async startRecording(): Promise<void> {
     if (this.state === 'recording') throw new Error('Already recording');
-    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    if (!MediaRecorder.isTypeSupported(this.mimeType)) {
-      throw new Error('WebM/Opus format not supported by this browser');
+    this.lastError = null;
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      const error = new Error('Microphone access denied or unavailable.');
+      this.lastError = error;
+      if (this.errorCallback) this.errorCallback(error);
+      throw error;
     }
-    this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: this.mimeType });
+    if (!MediaRecorder.isTypeSupported(this.mimeType)) {
+      const error = new Error('WebM/Opus format not supported by this browser');
+      this.lastError = error;
+      if (this.errorCallback) this.errorCallback(error);
+      this.cleanupStream();
+      throw error;
+    }
+    try {
+      this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: this.mimeType });
+    } catch (err) {
+      const error = new Error('Failed to initialize MediaRecorder: ' + (err instanceof Error ? err.message : String(err)));
+      this.lastError = error;
+      if (this.errorCallback) this.errorCallback(error);
+      this.cleanupStream();
+      throw error;
+    }
     this.chunks = [];
     this.startTime = Date.now();
     this.stopTime = null;
@@ -76,10 +112,21 @@ export class AudioRecordingService {
     this.mediaRecorder.onerror = (e) => {
       this.state = 'idle';
       this.cleanupStream();
-      throw e.error || new Error('Recording error');
+      const error = e.error || new Error('Recording error');
+      this.lastError = error;
+      if (this.errorCallback) this.errorCallback(error);
+      // Do not throw here, as it is an event handler
     };
-    this.mediaRecorder.start();
-    this.state = 'recording';
+    try {
+      this.mediaRecorder.start();
+      this.state = 'recording';
+    } catch (err) {
+      const error = new Error('Failed to start recording: ' + (err instanceof Error ? err.message : String(err)));
+      this.lastError = error;
+      if (this.errorCallback) this.errorCallback(error);
+      this.cleanupStream();
+      throw error;
+    }
   }
 
   pauseRecording(): void {
@@ -106,7 +153,10 @@ export class AudioRecordingService {
 
   async stopRecording(): Promise<Blob> {
     if (!this.mediaRecorder || (this.state !== 'recording' && this.state !== 'paused')) {
-      throw new Error('No recording in progress');
+      const error = new Error('No recording in progress');
+      this.lastError = error;
+      if (this.errorCallback) this.errorCallback(error);
+      throw error;
     }
     return new Promise<Blob>((resolve, reject) => {
       this.mediaRecorder!.onstop = () => {
@@ -120,9 +170,20 @@ export class AudioRecordingService {
       this.mediaRecorder!.onerror = (e) => {
         this.state = 'idle';
         this.cleanupStream();
-        reject(e.error || new Error('Recording error'));
+        const error = e.error || new Error('Recording error');
+        this.lastError = error;
+        if (this.errorCallback) this.errorCallback(error);
+        reject(error);
       };
-      this.mediaRecorder!.stop();
+      try {
+        this.mediaRecorder!.stop();
+      } catch (err) {
+        const error = new Error('Failed to stop recording: ' + (err instanceof Error ? err.message : String(err)));
+        this.lastError = error;
+        if (this.errorCallback) this.errorCallback(error);
+        this.cleanupStream();
+        reject(error);
+      }
     });
   }
 

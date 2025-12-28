@@ -177,7 +177,7 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
   - [X] Track recording duration
   - [X] Track recording file size
 - [X] **Add error handling** for recording failures
-- [ ] **Create unit tests** for AudioRecordingService
+- [X] **Create unit tests** for AudioRecordingService
 - [ ] **Add JSDoc documentation**
 
 #### Task 2.1.2: Create AudioPlaybackService

@@ -146,13 +146,13 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 - [X] **Update JSDoc documentation**
 
 #### Task 1.3.3: Update SessionManager
-- [ ] **Add mode support to SessionManager** (`src/managers/SessionManager.ts`)
-  - [ ] Update `startSessionWithFightList()` to validate mode
-  - [ ] Add mode information to session state
-  - [ ] Filter techniques by fightlist mode during session
-- [ ] **Update session persistence** to include mode
-- [ ] **Add unit tests** for session mode handling
-- [ ] **Update JSDoc documentation**
+- [X] **Add mode support to SessionManager** (`src/managers/SessionManager.ts`)
+  - [X] Update `startSessionWithFightList()` to validate mode
+  - [X] Add mode information to session state
+  - [X] Filter techniques by fightlist mode during session
+- [X] **Update session persistence** to include mode
+- [X] **Add unit tests** for session mode handling
+- [X] **Update JSDoc documentation**
 
 ---
 
@@ -161,14 +161,13 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 ### 2.1 Audio Recording Infrastructure
 **Priority: High | Estimated Time: 3 days**
 
-#### Task 2.1.1: Create AudioRecordingService
-- [ ] **Create AudioRecordingService class** (`src/services/AudioRecordingService.ts`)
-  - [ ] Implement `startRecording()` method
-  - [ ] Implement `stopRecording()` method
-  - [ ] Implement `pauseRecording()` method
-  - [ ] Implement `resumeRecording()` method
-  - [ ] Implement `getRecordingState()` method
-  - [ ] Implement `cancelRecording()` method
+- [X] **Create AudioRecordingService class** (`src/services/AudioRecordingService.ts`)
+  - [X] Implement `startRecording()` method
+  - [X] Implement `stopRecording()` method
+  - [X] Implement `pauseRecording()` method
+  - [X] Implement `resumeRecording()` method
+  - [X] Implement `getRecordingState()` method
+  - [X] Implement `cancelRecording()` method
 - [ ] **Add WebM/Opus recording support**
   - [ ] Configure MediaRecorder with WebM mime type
   - [ ] Handle browser compatibility (fallback to available codecs)

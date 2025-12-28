@@ -181,23 +181,23 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 - [X] **Add JSDoc documentation**
 
 #### Task 2.1.2: Create AudioPlaybackService
-- [ ] **Create AudioPlaybackService class** (`src/services/AudioPlaybackService.ts`)
-  - [ ] Implement `playAudio(blob: Blob)` method
-  - [ ] Implement `pausePlayback()` method
-  - [ ] Implement `resumePlayback()` method
-  - [ ] Implement `stopPlayback()` method
-  - [ ] Implement `getPlaybackState()` method
-  - [ ] Implement `setVolume(volume: number)` method
-- [ ] **Add WebM/Opus playback support**
-  - [ ] Handle browser compatibility
-  - [ ] Add fallback for unsupported formats
-- [ ] **Add playback state management**
-  - [ ] Track playback status (idle, playing, paused, stopped)
-  - [ ] Track playback position
-  - [ ] Track playback duration
-- [ ] **Add error handling** for playback failures
-- [ ] **Create unit tests** for AudioPlaybackService
-- [ ] **Add JSDoc documentation**
+- [X] **Create AudioPlaybackService class** (`src/services/AudioPlaybackService.ts`)
+  - [X] Implement `playAudio(blob: Blob)` method
+  - [X] Implement `pausePlayback()` method
+  - [X] Implement `resumePlayback()` method
+  - [X] Implement `stopPlayback()` method
+  - [X] Implement `getPlaybackState()` method
+  - [X] Implement `setVolume(volume: number)` method
+- [X] **Add WebM/Opus playback support**
+  - [X] Handle browser compatibility
+  - [X] Add fallback for unsupported formats
+- [X] **Add playback state management**
+  - [X] Track playback status (idle, playing, paused, stopped)
+  - [X] Track playback position
+  - [X] Track playback duration
+- [X] **Add error handling** for playback failures
+- [X] **Create unit tests** for AudioPlaybackService
+- [X] **Add JSDoc documentation**
 
 #### Task 2.1.3: Create VoiceNoteStorageService
 - [ ] **Create VoiceNoteStorageService class** (`src/services/VoiceNoteStorageService.ts`)

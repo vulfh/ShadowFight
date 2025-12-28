@@ -272,9 +272,8 @@ export class MigrationService {
    * @returns True if migration is valid, false otherwise
    */
   validateMigration(result: MigrationResult): boolean {
-    if (!result.success) {
-      return false
-    }
+    // Do not require result.success to be true before validation
+    // Only check the data state
 
     // Validate fightlists have mode
     const fightLists = this.storageService.getAllFightLists()

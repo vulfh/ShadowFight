@@ -131,17 +131,8 @@ export class StorageService {
         return []
       }
 
-      // Ensure all fightlists have mode field (safety check for unmigrated data)
-      return lists.map(list => {
-        if (!list.mode || (list.mode !== 'PERFORMING' && list.mode !== 'RESPONDING')) {
-          console.warn(`Fightlist ${list.id} missing mode, defaulting to RESPONDING`)
-          return {
-            ...list,
-            mode: 'RESPONDING' as const
-          }
-        }
-        return list
-      })
+      // Do not mutate or add mode field here; return as-is for migration correctness
+      return lists
     } catch (error) {
       console.error('Error retrieving fight lists:', error)
       return []

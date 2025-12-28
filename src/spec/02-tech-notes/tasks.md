@@ -200,28 +200,28 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 - [X] **Add JSDoc documentation**
 
 #### Task 2.1.3: Create VoiceNoteStorageService
-- [ ] **Create VoiceNoteStorageService class** (`src/services/VoiceNoteStorageService.ts`)
-  - [ ] Implement `saveVoiceNote(techniqueId: string, mode: TechniqueMode, blob: Blob)` method
-  - [ ] Implement `getVoiceNote(techniqueId: string, mode: TechniqueMode)` method
-  - [ ] Implement `deleteVoiceNote(techniqueId: string, mode: TechniqueMode)` method
-  - [ ] Implement `hasVoiceNote(techniqueId: string, mode: TechniqueMode)` method
-  - [ ] Implement `getVoiceNoteUrl(techniqueId: string, mode: TechniqueMode)` method
-- [ ] **Add IndexedDB storage** for audio files
-  - [ ] Create IndexedDB database schema
-  - [ ] Implement blob storage in IndexedDB
-  - [ ] Add database versioning
-  - [ ] Handle storage quota management
-- [ ] **Add storage constants** (`src/constants/storage.ts`)
-  - [ ] Add `VOICE_NOTES_DB_NAME` constant
-  - [ ] Add `VOICE_NOTES_STORE_NAME` constant
-  - [ ] Add `VOICE_NOTES_DB_VERSION` constant
-- [ ] **Add error handling** for storage failures
-- [ ] **Add storage quota management**
-  - [ ] Check available storage before saving
-  - [ ] Implement cleanup of old/unused notes
-  - [ ] Add storage usage tracking
-- [ ] **Create unit tests** for VoiceNoteStorageService
-- [ ] **Add JSDoc documentation**
+- [X] **Create VoiceNoteStorageService class** (`src/services/VoiceNoteStorageService.ts`)
+  - [X] Implement `saveVoiceNote(techniqueId: string, mode: TechniqueMode, blob: Blob)` method
+  - [X] Implement `getVoiceNote(techniqueId: string, mode: TechniqueMode)` method
+  - [X] Implement `deleteVoiceNote(techniqueId: string, mode: TechniqueMode)` method
+  - [X] Implement `hasVoiceNote(techniqueId: string, mode: TechniqueMode)` method
+  - [X] Implement `getVoiceNoteUrl(techniqueId: string, mode: TechniqueMode)` method
+- [X] **Add IndexedDB storage** for audio files
+  - [X] Create IndexedDB database schema
+  - [X] Implement blob storage in IndexedDB
+  - [X] Add database versioning
+  - [X] Handle storage quota management
+- [X] **Add storage constants** (`src/constants/storage.ts`)
+  - [X] Add `VOICE_NOTES_DB_NAME` constant
+  - [X] Add `VOICE_NOTES_STORE_NAME` constant
+  - [X] Add `VOICE_NOTES_DB_VERSION` constant
+- [X] **Add error handling** for storage failures
+- [X] **Add storage quota management**
+  - [X] Check available storage before saving
+  - [X] Implement cleanup of old/unused notes
+  - [X] Add storage usage tracking
+- [X] **Create unit tests** for VoiceNoteStorageService
+- [X] **Add JSDoc documentation**
 
 ### 2.2 Type System for Voice Notes
 **Priority: High | Estimated Time: 1 day**

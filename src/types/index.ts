@@ -14,7 +14,93 @@ export interface Technique {
    * A technique can support both modes
    */
   modes: TechniqueMode[]
+  /**
+   * Optional voice notes for each mode (keyed by mode, value is note ID or URL)
+   */
+  voiceNotes?: Record<TechniqueMode, string>
 }
+/**
+ * VoiceNote interface represents a recorded voice note for a technique and mode.
+ * - techniqueId: The ID of the technique this note belongs to
+ * - mode: The mode (PERFORMING or RESPONDING) for which this note is recorded
+ * - blob: The audio data (WebM/Opus)
+ * - duration: Duration in seconds
+ * - fileSize: Size in bytes
+ * - createdAt: ISO string timestamp
+ * - lastModified: ISO string timestamp
+ */
+export interface VoiceNote {
+  techniqueId: string;
+  mode: TechniqueMode;
+  blob: Blob;
+  duration: number;
+  fileSize: number;
+  createdAt: string;
+  lastModified: string;
+}
+
+/**
+ * VoiceNoteMetadata contains metadata for a voice note (no blob).
+ */
+export interface VoiceNoteMetadata {
+  techniqueId: string;
+  mode: TechniqueMode;
+  duration: number;
+  fileSize: number;
+  createdAt: string;
+  lastModified: string;
+}
+
+/**
+ * Type guard to check if a value is a valid VoiceNote
+ */
+export function isVoiceNote(value: any): value is VoiceNote {
+  return (
+    value &&
+    typeof value.techniqueId === 'string' &&
+    (value.mode === 'PERFORMING' || value.mode === 'RESPONDING') &&
+    value.blob instanceof Blob &&
+    typeof value.duration === 'number' && value.duration >= 0 &&
+    typeof value.fileSize === 'number' && value.fileSize >= 0 &&
+    typeof value.createdAt === 'string' &&
+    typeof value.lastModified === 'string'
+  );
+}
+
+/**
+ * Type guard to check if a value is a valid VoiceNoteMetadata
+ */
+export function isVoiceNoteMetadata(value: any): value is VoiceNoteMetadata {
+  return (
+    value &&
+    typeof value.techniqueId === 'string' &&
+    (value.mode === 'PERFORMING' || value.mode === 'RESPONDING') &&
+    typeof value.duration === 'number' && value.duration >= 0 &&
+    typeof value.fileSize === 'number' && value.fileSize >= 0 &&
+    typeof value.createdAt === 'string' &&
+    typeof value.lastModified === 'string'
+  );
+}
+
+/**
+ * RecordingState type for audio recording state machine
+ */
+export type RecordingState = 'idle' | 'recording' | 'paused' | 'stopped' | 'error';
+
+/**
+ * PlaybackState type for audio playback state machine
+ */
+export type PlaybackState = 'idle' | 'playing' | 'paused' | 'stopped' | 'error';
+
+/**
+ * VoiceNoteStorageResult type for storage operations
+ * - success: true if operation succeeded
+ * - id: optional note ID (if success)
+ * - error: error message (if failed)
+ */
+export type VoiceNoteStorageResult =
+  | { success: true; id: string }
+  | { success: false; error: string };
 
 export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN' | 'BACK' | 'FOOT'
 

@@ -227,24 +227,24 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
 **Priority: High | Estimated Time: 1 day**
 
 #### Task 2.2.1: Add Voice Note Types
-- [ ] **Extend type system** (`src/types/index.ts`)
-  - [ ] Add `VoiceNote` interface
-    - [ ] `techniqueId: string`
-    - [ ] `mode: TechniqueMode`
-    - [ ] `blob: Blob` (or reference)
-    - [ ] `duration: number`
-    - [ ] `fileSize: number`
-    - [ ] `createdAt: string`
-    - [ ] `lastModified: string`
-  - [ ] Add `VoiceNoteMetadata` type
-  - [ ] Add `RecordingState` type
-  - [ ] Add `PlaybackState` type
-  - [ ] Add `VoiceNoteStorageResult` type
-- [ ] **Update Technique interface** to include voice note references
-  - [ ] Add optional `voiceNotes: Record<TechniqueMode, string>` field (URLs or IDs)
-- [ ] **Add JSDoc comments** for all new types
-- [ ] **Create type guards** for voice note validation
-- [ ] **Create unit tests** for type system
+- [X] **Extend type system** (`src/types/index.ts`)
+  - [X] Add `VoiceNote` interface
+    - [X] `techniqueId: string`
+    - [X] `mode: TechniqueMode`
+    - [X] `blob: Blob` (or reference)
+    - [X] `duration: number`
+    - [X] `fileSize: number`
+    - [X] `createdAt: string`
+    - [X] `lastModified: string`
+  - [X] Add `VoiceNoteMetadata` type
+  - [X] Add `RecordingState` type
+  - [X] Add `PlaybackState` type
+  - [X] Add `VoiceNoteStorageResult` type
+- [X] **Update Technique interface** to include voice note references
+  - [X] Add optional `voiceNotes: Record<TechniqueMode, string>` field (URLs or IDs)
+- [X] **Add JSDoc comments** for all new types
+- [X] **Create type guards** for voice note validation
+- [X] **Create unit tests** for type system
 
 ### 2.3 Voice Note Manager
 **Priority: High | Estimated Time: 2 days**

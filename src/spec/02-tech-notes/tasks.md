@@ -168,14 +168,14 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
   - [X] Implement `resumeRecording()` method
   - [X] Implement `getRecordingState()` method
   - [X] Implement `cancelRecording()` method
-- [ ] **Add WebM/Opus recording support**
-  - [ ] Configure MediaRecorder with WebM mime type
-  - [ ] Handle browser compatibility (fallback to available codecs)
-  - [ ] Add error handling for unsupported browsers
-- [ ] **Add recording state management**
-  - [ ] Track recording status (idle, recording, paused, stopped)
-  - [ ] Track recording duration
-  - [ ] Track recording file size
+- [X] **Add WebM/Opus recording support**
+  - [X] Configure MediaRecorder with WebM mime type
+  - [X] Handle browser compatibility (fallback to available codecs)
+  - [X] Add error handling for unsupported browsers
+- [X] **Add recording state management**
+  - [X] Track recording status (idle, recording, paused, stopped)
+  - [X] Track recording duration
+  - [X] Track recording file size
 - [ ] **Add error handling** for recording failures
 - [ ] **Create unit tests** for AudioRecordingService
 - [ ] **Add JSDoc documentation**

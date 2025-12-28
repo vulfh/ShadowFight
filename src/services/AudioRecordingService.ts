@@ -18,9 +18,34 @@ export class AudioRecordingService {
   private state: RecordingState = 'idle';
   private mimeType: string = 'audio/webm;codecs=opus';
   private stream: MediaStream | null = null;
+  private startTime: number | null = null;
+  private stopTime: number | null = null;
+  private duration: number = 0; // in milliseconds
+  private fileSize: number = 0; // in bytes
 
   getRecordingState(): RecordingState {
     return this.state;
+  }
+
+  /**
+   * Returns the current recording duration in milliseconds.
+   * If recording is active, returns elapsed time. If stopped, returns total duration.
+   */
+  getRecordingDuration(): number {
+    if (this.state === 'recording' && this.startTime !== null) {
+      return Date.now() - this.startTime;
+    }
+    if (this.state === 'paused' && this.startTime !== null && this.stopTime !== null) {
+      return this.stopTime - this.startTime;
+    }
+    return this.duration;
+  }
+
+  /**
+   * Returns the current file size in bytes (sum of all chunks so far).
+   */
+  getRecordingFileSize(): number {
+    return this.chunks.reduce((acc, chunk) => acc + (chunk instanceof Blob ? chunk.size : (typeof chunk === 'string' ? chunk.length : 0)), 0);
   }
 
   async startRecording(): Promise<void> {
@@ -31,11 +56,21 @@ export class AudioRecordingService {
     }
     this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: this.mimeType });
     this.chunks = [];
+    this.startTime = Date.now();
+    this.stopTime = null;
+    this.duration = 0;
+    this.fileSize = 0;
     this.mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) this.chunks.push(e.data);
+      if (e.data.size > 0) {
+        this.chunks.push(e.data);
+        this.fileSize += e.data.size;
+      }
     };
     this.mediaRecorder.onstop = () => {
       this.state = 'stopped';
+      this.stopTime = Date.now();
+      this.duration = this.startTime !== null && this.stopTime !== null ? this.stopTime - this.startTime : 0;
+      this.fileSize = this.getRecordingFileSize();
       this.cleanupStream();
     };
     this.mediaRecorder.onerror = (e) => {
@@ -51,6 +86,8 @@ export class AudioRecordingService {
     if (this.mediaRecorder && this.state === 'recording') {
       this.mediaRecorder.pause();
       this.state = 'paused';
+      this.stopTime = Date.now();
+      this.duration = this.startTime !== null && this.stopTime !== null ? this.stopTime - this.startTime : 0;
     }
   }
 
@@ -58,6 +95,12 @@ export class AudioRecordingService {
     if (this.mediaRecorder && this.state === 'paused') {
       this.mediaRecorder.resume();
       this.state = 'recording';
+      // Adjust startTime so duration is correct after pause/resume
+      if (this.startTime !== null && this.stopTime !== null) {
+        const pausedDuration = Date.now() - this.stopTime;
+        this.startTime += pausedDuration;
+        this.stopTime = null;
+      }
     }
   }
 
@@ -68,6 +111,9 @@ export class AudioRecordingService {
     return new Promise<Blob>((resolve, reject) => {
       this.mediaRecorder!.onstop = () => {
         this.state = 'stopped';
+        this.stopTime = Date.now();
+        this.duration = this.startTime !== null && this.stopTime !== null ? this.stopTime - this.startTime : 0;
+        this.fileSize = this.getRecordingFileSize();
         this.cleanupStream();
         resolve(new Blob(this.chunks, { type: this.mimeType }));
       };
@@ -86,6 +132,10 @@ export class AudioRecordingService {
       this.state = 'idle';
       this.cleanupStream();
       this.chunks = [];
+      this.startTime = null;
+      this.stopTime = null;
+      this.duration = 0;
+      this.fileSize = 0;
     }
   }
 

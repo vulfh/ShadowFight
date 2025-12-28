@@ -12,6 +12,16 @@
 
 export type RecordingState = 'idle' | 'recording' | 'paused' | 'stopped';
 
+/**
+ * AudioRecordingService provides in-app audio recording for voice notes using the MediaRecorder API.
+ *
+ * - Records in WebM/Opus format for browser compatibility and efficient storage (see requirements.md).
+ * - Manages recording state (idle, recording, paused, stopped), duration, and file size.
+ * - Handles browser compatibility and errors gracefully, invoking error callbacks as needed.
+ * - Designed for use in both desktop and mobile browsers, supporting offline recording.
+ *
+ * @class AudioRecordingService
+ */
 export class AudioRecordingService {
   private mediaRecorder: MediaRecorder | null = null;
   private chunks: BlobPart[] = [];
@@ -28,6 +38,11 @@ export class AudioRecordingService {
   /**
    * Set a callback to be invoked on recording errors.
    */
+  /**
+   * Set a callback to be invoked on recording errors.
+   *
+   * @param cb Callback function receiving an Error object.
+   */
   setErrorHandler(cb: (err: Error) => void) {
     this.errorCallback = cb;
   }
@@ -35,10 +50,20 @@ export class AudioRecordingService {
   /**
    * Get the last error that occurred during recording, if any.
    */
+  /**
+   * Get the last error that occurred during recording, if any.
+   *
+   * @returns The last Error encountered, or null if none.
+   */
   getLastError(): Error | null {
     return this.lastError;
   }
 
+  /**
+   * Get the current recording state.
+   *
+   * @returns The current state: 'idle', 'recording', 'paused', or 'stopped'.
+   */
   getRecordingState(): RecordingState {
     return this.state;
   }
@@ -46,6 +71,12 @@ export class AudioRecordingService {
   /**
    * Returns the current recording duration in milliseconds.
    * If recording is active, returns elapsed time. If stopped, returns total duration.
+   */
+  /**
+   * Returns the current recording duration in milliseconds.
+   * If recording is active, returns elapsed time. If stopped, returns total duration.
+   *
+   * @returns Duration in milliseconds.
    */
   getRecordingDuration(): number {
     if (this.state === 'recording' && this.startTime !== null) {
@@ -60,10 +91,26 @@ export class AudioRecordingService {
   /**
    * Returns the current file size in bytes (sum of all chunks so far).
    */
+  /**
+   * Returns the current file size in bytes (sum of all chunks so far).
+   *
+   * @returns File size in bytes.
+   */
   getRecordingFileSize(): number {
     return this.chunks.reduce((acc, chunk) => acc + (chunk instanceof Blob ? chunk.size : (typeof chunk === 'string' ? chunk.length : 0)), 0);
   }
 
+  /**
+   * Start recording audio using the MediaRecorder API.
+   *
+   * - Requests microphone access (prompts user if needed).
+   * - Uses WebM/Opus format for compatibility and quality.
+   * - Handles browser compatibility and errors (see requirements.md).
+   * - Updates state, duration, and file size.
+   *
+   * @throws Error if already recording, microphone access denied, or browser unsupported.
+   * @returns Promise that resolves when recording starts.
+   */
   async startRecording(): Promise<void> {
     if (this.state === 'recording') throw new Error('Already recording');
     this.lastError = null;
@@ -129,6 +176,12 @@ export class AudioRecordingService {
     }
   }
 
+  /**
+   * Pause the current recording if active.
+   *
+   * - Only valid if currently recording.
+   * - Updates state and duration.
+   */
   pauseRecording(): void {
     if (this.mediaRecorder && this.state === 'recording') {
       this.mediaRecorder.pause();
@@ -138,6 +191,12 @@ export class AudioRecordingService {
     }
   }
 
+  /**
+   * Resume a paused recording.
+   *
+   * - Only valid if currently paused.
+   * - Updates state and adjusts duration.
+   */
   resumeRecording(): void {
     if (this.mediaRecorder && this.state === 'paused') {
       this.mediaRecorder.resume();
@@ -151,6 +210,16 @@ export class AudioRecordingService {
     }
   }
 
+  /**
+   * Stop the current recording and return the audio as a Blob.
+   *
+   * - Only valid if recording or paused.
+   * - Updates state, duration, and file size.
+   * - Handles errors and invokes error callback if needed.
+   *
+   * @throws Error if no recording is in progress.
+   * @returns Promise resolving to a Blob containing the recorded audio (WebM/Opus).
+   */
   async stopRecording(): Promise<Blob> {
     if (!this.mediaRecorder || (this.state !== 'recording' && this.state !== 'paused')) {
       const error = new Error('No recording in progress');
@@ -187,6 +256,13 @@ export class AudioRecordingService {
     });
   }
 
+  /**
+   * Cancel the current recording and discard all recorded data.
+   *
+   * - Stops recording if active or paused.
+   * - Resets state, duration, and file size.
+   * - Does not return a Blob.
+   */
   cancelRecording(): void {
     if (this.mediaRecorder && (this.state === 'recording' || this.state === 'paused')) {
       this.mediaRecorder.stop();

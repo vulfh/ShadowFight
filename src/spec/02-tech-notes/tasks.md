@@ -178,7 +178,7 @@ This document breaks down the implementation of technique modes (PERFORMING/RESP
   - [X] Track recording file size
 - [X] **Add error handling** for recording failures
 - [X] **Create unit tests** for AudioRecordingService
-- [ ] **Add JSDoc documentation**
+- [X] **Add JSDoc documentation**
 
 #### Task 2.1.2: Create AudioPlaybackService
 - [ ] **Create AudioPlaybackService class** (`src/services/AudioPlaybackService.ts`)

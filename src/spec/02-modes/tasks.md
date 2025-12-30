@@ -35,10 +35,10 @@ This document provides a granular breakdown of tasks required to implement the T
 
 ##SubTask 3.1
 - [ ] **Update `src/managers/FightListUIManager.ts`**
-  - [ ] **Mode Selection**: In the fight list creation form, add a UI element (e.g., radio buttons) for selecting the fight list mode.
-  - [ ] **Technique Filtering**: Modify the logic that opens the technique selection modal to pass the current fight list's mode.
-  - [ ] **Disable Mode Selection**: Implement logic to disable the mode selection UI once the first technique is added to a new fight list.
-  - [ ] **Display Mode**: Update the fight list rendering logic to display a visual indicator (e.g., a badge) for the `mode` of each fight list.
+  - [x] **Mode Selection**: In the fight list creation form, add a UI element (e.g., radio buttons) for selecting the fight list mode.
+  - [x] **Technique Filtering**: Modify the logic that opens the technique selection modal to pass the current fight list's mode.
+  - [x] **Disable Mode Selection**: Implement logic to disable the mode selection UI once the first technique is added to a new fight list.
+  - [x] **Display Mode**: Update the fight list rendering logic to display a visual indicator (e.g., a badge) for the `mode` of each fight list.
 
 ##SubTask 3.2
 - [ ] **Update `src/components/TechniqueAddModal.ts`**

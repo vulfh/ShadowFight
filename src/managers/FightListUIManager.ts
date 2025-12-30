@@ -5,12 +5,13 @@ import { FightList,
         Technique, 
         FightListUICallbacks,
         FightListManagerCallbacks, 
-        FightListValidationResult } from '../types'
+        FightListValidationResult,
+        Mode } from '../types'
 import { FIGHT_LIST_UI_ELEMENTS as UI } from '../constants/ui-elements'
+import { MODES } from '../constants/modes'
 import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
 import { TechniqueAddModal } from '../components/TechniqueAddModal'
-import { InputModal } from '../components/InputModal'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { TechniqueManager } from './TechniqueManager'
 
@@ -173,6 +174,12 @@ export class FightListUIManager {
     
     const isExpanded = this.uiState.expandedFightLists.includes(fightList.id)
     
+    // Create mode badge
+    const modeBadge = fightList.mode ? 
+      `<span class="badge bg-${fightList.mode === MODES.PERFORMING ? 'warning' : 'info'} me-2">
+        ${fightList.mode}
+      </span>` : ''
+    
     element.innerHTML = `
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
@@ -180,6 +187,7 @@ export class FightListUIManager {
             <i class="fas fa-chevron-${isExpanded ? 'down' : 'right'} me-2"></i>
             ${fightList.name}
           </button>
+          ${modeBadge}
         </h5>
         <div class="btn-group">
           ${isCurrent ? 
@@ -489,38 +497,170 @@ export class FightListUIManager {
    * Show modal to create a new fight list
    */
   private showCreateFightListModal(): void {
-    const modal = new InputModal({
-      title: 'Create New Fight List',
-      placeholder: 'Enter fight list name',
-      inputLabel: 'Fight List Name',
-      confirmButtonText: 'Create',
-      cancelButtonText: 'Cancel',
-      maxLength: 50,
-      validator: (value: string) => {
-        const validation = this.fightListManager.validateFightListName(value)
-        return {
-          isValid: validation.isValid,
-          error: validation.errors.join(', ')
+    // Create a custom modal with mode selection
+    const modalContainer = document.createElement('div')
+    modalContainer.className = 'modal fade'
+    modalContainer.id = 'createFightListModal'
+    modalContainer.setAttribute('tabindex', '-1')
+    modalContainer.setAttribute('aria-labelledby', 'createFightListModalLabel')
+    modalContainer.setAttribute('aria-hidden', 'true')
+    
+    let selectedMode: Mode = MODES.RESPONDING // Default mode
+    
+    modalContainer.innerHTML = `
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="createFightListModalLabel">
+              <i class="fas fa-plus-circle me-2"></i>Create New Fight List
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="createFightListForm">
+              <div class="mb-3">
+                <label for="fightListName" class="form-label">Fight List Name</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-list"></i>
+                  </span>
+                  <input type="text" class="form-control" id="fightListName" required minlength="3" maxlength="50" placeholder="Enter fight list name">
+                </div>
+                <div class="form-text">3-50 characters, must be unique</div>
+                <div class="invalid-feedback" id="nameError"></div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="fas fa-cog me-1"></i>Training Mode
+                </label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="mode" id="modePerforming" value="${MODES.PERFORMING}">
+                  <label class="form-check-label" for="modePerforming">
+                    <strong><i class="fas fa-fist-raised me-1 text-warning"></i>Performing</strong>
+                    <small class="d-block text-muted">Actively initiate techniques</small>
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="mode" id="modeResponding" value="${MODES.RESPONDING}" checked>
+                  <label class="form-check-label" for="modeResponding">
+                    <strong><i class="fas fa-shield-alt me-1 text-info"></i>Responding</strong>
+                    <small class="d-block text-muted">React to prompts and actions</small>
+                  </label>
+                </div>
+                <div class="form-text">
+                  <i class="fas fa-info-circle me-1"></i>Mode cannot be changed once techniques are added to the list.
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="fas fa-times me-1"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="createFightListBtn">
+              <i class="fas fa-plus me-1"></i>Create Fight List
+            </button>
+          </div>
+        </div>
+      </div>
+    `
+    
+    document.body.appendChild(modalContainer)
+    
+    // Set up event listeners
+    const nameInput = modalContainer.querySelector('#fightListName') as HTMLInputElement
+    const createBtn = modalContainer.querySelector('#createFightListBtn') as HTMLButtonElement
+    const nameError = modalContainer.querySelector('#nameError') as HTMLElement
+    const modeRadios = modalContainer.querySelectorAll('input[name="mode"]') as NodeListOf<HTMLInputElement>
+    
+    // Handle mode selection
+    modeRadios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radio.checked) {
+          selectedMode = radio.value as Mode
         }
-      },
-      onConfirm: (name: string) => {
-        this.uiState.isCreating = true
-        try {
-          const created = this.fightListManager.createFightList(name)
-          this.fightListManager.setCurrentFightList(created.id)
-          this.renderFightLists()
-          this.showNotification({ message: 'Fight list created', type: 'success' })
-        } catch (error) {
-          this.showNotification({ message: error instanceof Error ? error.message : 'Failed to create list', type: 'error' })
-        } finally {
-          this.uiState.isCreating = false
-        }
-      },
-      onCancel: () => {
+      })
+    })
+    
+    // Validate name input
+    const validateName = () => {
+      const name = nameInput.value.trim()
+      if (!name) {
+        nameInput.classList.add('is-invalid')
+        nameError.textContent = 'Fight list name is required'
+        return false
+      }
+      
+      if (name.length < 3) {
+        nameInput.classList.add('is-invalid')
+        nameError.textContent = 'Name must be at least 3 characters long'
+        return false
+      }
+      
+      const validation = this.fightListManager.validateFightListName(name)
+      if (!validation.isValid) {
+        nameInput.classList.add('is-invalid')
+        nameError.textContent = validation.errors.join(', ')
+        return false
+      }
+      
+      nameInput.classList.remove('is-invalid')
+      nameInput.classList.add('is-valid')
+      nameError.textContent = ''
+      return true
+    }
+    
+    nameInput.addEventListener('input', validateName)
+    nameInput.addEventListener('blur', validateName)
+    
+    // Handle create button
+    createBtn.addEventListener('click', () => {
+      if (!validateName()) return
+      
+      this.uiState.isCreating = true
+      createBtn.disabled = true
+      createBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Creating...'
+      
+      try {
+        const name = nameInput.value.trim()
+        const created = this.fightListManager.createFightList(name, selectedMode)
+        this.fightListManager.setCurrentFightList(created.id)
+        this.renderFightLists()
+        this.showNotification({ message: 'Fight list created successfully', type: 'success' })
+        
+        // Close modal
+        const modal = (window as any).bootstrap?.Modal?.getInstance(modalContainer)
+        modal?.hide()
+      } catch (error) {
+        this.showNotification({ message: error instanceof Error ? error.message : 'Failed to create list', type: 'error' })
+        createBtn.disabled = false
+        createBtn.innerHTML = '<i class="fas fa-plus me-1"></i>Create Fight List'
+      } finally {
         this.uiState.isCreating = false
       }
     })
+    
+    // Handle form submission
+    const form = modalContainer.querySelector('#createFightListForm') as HTMLFormElement
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      createBtn.click()
+    })
+    
+    // Clean up modal when hidden
+    modalContainer.addEventListener('hidden.bs.modal', () => {
+      document.body.removeChild(modalContainer)
+      this.uiState.isCreating = false
+    })
+    
+    // Show modal
+    const modal = new (window as any).bootstrap.Modal(modalContainer)
     modal.show()
+    
+    // Focus on name input
+    modalContainer.addEventListener('shown.bs.modal', () => {
+      nameInput.focus()
+    })
   }
 
   /**
@@ -591,9 +731,9 @@ export class FightListUIManager {
   }
 
   // UI→Manager Callback Implementations
-  private async createFightList(name: string): Promise<FightList> {
+  private async createFightList(name: string, mode: Mode = MODES.RESPONDING): Promise<FightList> {
     try {
-      const fightList = this.fightListManager.createFightList(name)
+      const fightList = this.fightListManager.createFightList(name, mode)
       this.managerCallbacks?.onFightListsChanged(this.fightListManager.getFightLists())
       this.showNotification({ message: 'Fight list created', type: 'success' })
       return fightList

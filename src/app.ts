@@ -9,6 +9,7 @@ import { ConfigManager } from './managers/ConfigManager'
 import { UIManager } from './managers/UIManager'
 import { FightListManager } from './managers/FightListManager'
 import { FightListUIManager } from './managers/FightListUIManager'
+import { MigrationService } from './services/MigrationService'
 import { ConfirmModal } from './components/ConfirmModal'
 import { 
   UI_ELEMENTS, 
@@ -29,6 +30,7 @@ export class KravMagaTrainerApp {
   private uiManager: UIManager
   private fightListManager: FightListManager
   private fightListUIManager: FightListUIManager
+  private migrationService: MigrationService
   private isInitialized: boolean = false
 
   constructor() {
@@ -39,11 +41,15 @@ export class KravMagaTrainerApp {
     this.uiManager = new UIManager()
     this.fightListManager = new FightListManager()
     this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager)
+    this.migrationService = new MigrationService()
   }
 
   async init(): Promise<void> {
     try {
       console.log('Initializing Krav Maga Trainer App...')
+
+      // Run data migrations first
+      await this.migrationService.run()
 
       // Initialize managers in order
       await this.techniqueManager.init()

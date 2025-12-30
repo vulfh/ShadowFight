@@ -1,10 +1,11 @@
-import { Technique, FightListTechnique } from '../types';
+import { Technique, FightListTechnique, Mode } from '../types';
 
 export interface TechniqueAddModalOptions {
   onTechniqueSelect: (technique: FightListTechnique) => void;
   onAddAll?: (techniques: FightListTechnique[]) => void;
   onClose: () => void;
   existingTechniques?: FightListTechnique[];
+  mode?: Mode; // Optional mode parameter for filtering techniques
 }
 
 const TECHNIQUE_CATEGORIES = [
@@ -28,8 +29,16 @@ export class TechniqueAddModal {
 
   constructor(techniques: Technique[], options: TechniqueAddModalOptions) {
     this.techniques = techniques;
-    this.filteredTechniques = [...techniques];
     this.options = options;
+    
+    // Filter techniques based on mode if provided
+    if (options.mode) {
+      this.techniques = techniques.filter(technique => 
+        technique.modes && technique.modes.includes(options.mode!)
+      );
+    }
+    
+    this.filteredTechniques = [...this.techniques];
     this.initializeModal();
   }
 
@@ -42,10 +51,11 @@ export class TechniqueAddModal {
     this.modal.setAttribute('aria-labelledby', 'modal-title');
 
     // Create modal content
+    const modeInfo = this.options.mode ? ` (${this.options.mode} Mode)` : '';
     const modalContent = `
       <div class="technique-add-modal__content">
         <header class="technique-add-modal__header">
-          <h2 id="modal-title">Add Techniques</h2>
+          <h2 id="modal-title">Add Techniques${modeInfo}</h2>
           <button type="button" class="technique-add-modal__close" aria-label="Close modal">
             <span aria-hidden="true">&times;</span>
           </button>

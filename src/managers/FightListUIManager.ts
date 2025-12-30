@@ -389,6 +389,7 @@ export class FightListUIManager {
 
     const modal = new TechniqueAddModal(allTechniques, {
       existingTechniques: existing,
+      mode: fightList.mode, // Pass the fight list's mode for filtering
       onTechniqueSelect: (flt: FightListTechnique) => {
         try {
           // Convert FightListTechnique to full addition via manager by mapping techniqueId back to Technique

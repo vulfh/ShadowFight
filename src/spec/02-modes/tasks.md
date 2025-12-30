@@ -26,10 +26,10 @@ This document provides a granular breakdown of tasks required to implement the T
 
 ##SubTask 2.2
 - [ ] **Update `src/managers/FightListManager.ts`**
-  - [ ] Add an import for the `Mode` type from `../types`.
-  - [ ] Update the `createFightList` method signature to accept a `mode: Mode` parameter.
-  - [ ] In the `createFightList` method, ensure the new `FightList` object includes the `mode` property.
-  - [ ] In the `addTechniqueToFightList` method, add a validation check to ensure the technique being added has a `modes` array that includes the fight list's `mode`.
+  - [x] Add an import for the `Mode` type from `../types`.
+  - [x] Update the `createFightList` method signature to accept a `mode: Mode` parameter.
+  - [x] In the `createFightList` method, ensure the new `FightList` object includes the `mode` property.
+  - [x] In the `addTechniqueToFightList` method, add a validation check to ensure the technique being added has a `modes` array that includes the fight list's `mode`.
 
 ## 3. User Interface and Experience
 

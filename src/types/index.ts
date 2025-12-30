@@ -1,5 +1,8 @@
 import { Mode } from '../constants/modes'
 
+// Re-export Mode type for convenience
+export type { Mode }
+
 // Technique-related types
 export interface Technique {
   name: string

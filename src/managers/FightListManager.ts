@@ -3,9 +3,11 @@ import {
   FightListTechnique, 
   FightListValidationResult, 
   Technique,
-  ValidationResult 
+  ValidationResult,
+  Mode 
 } from '../types'
 import { STORAGE_KEYS, FIGHT_LIST_LIMITS, ERROR_MESSAGES } from '../constants'
+import { MODES } from '../constants/modes'
 import { StorageService } from '../services/StorageService'
 
 /**
@@ -137,7 +139,8 @@ export class FightListManager {
       name: 'My Techniques',
       techniques: [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: MODES.RESPONDING
     }
     
     this.fightLists.push(defaultFightList)
@@ -156,10 +159,11 @@ export class FightListManager {
   /**
    * Create a new fight list
    * @param name - Name of the fight list
+   * @param mode - Mode of the fight list (PERFORMING or RESPONDING)
    * @param techniques - Optional array of techniques to add
    * @returns The created fight list
    */
-  createFightList(name: string, techniques?: Technique[]): FightList {
+  createFightList(name: string, mode: Mode = MODES.RESPONDING, techniques?: Technique[]): FightList {
     if (!this.isInitialized) {
       throw new Error('FightListManager not initialized')
     }
@@ -178,7 +182,8 @@ export class FightListManager {
       name: name.trim(),
       techniques: techniques ? this.convertTechniquesToFightListTechniques(techniques) : [],
       createdAt: new Date().toISOString(),
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
+      mode: mode
     }
 
     this.fightLists.push(fightList)
@@ -360,6 +365,11 @@ export class FightListManager {
     const existingTechnique = fightList.techniques.find(ft => ft.techniqueId === technique.name)
     if (existingTechnique) {
       throw new Error('Technique already exists in fight list')
+    }
+
+    // Validate that the technique supports the fight list's mode
+    if (fightList.mode && technique.modes && !technique.modes.includes(fightList.mode)) {
+      throw new Error(`Technique "${technique.name}" does not support ${fightList.mode} mode`)
     }
 
     const fightListTechnique: FightListTechnique = {

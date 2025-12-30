@@ -1,4 +1,5 @@
 import { Technique, TechniqueCategory, PriorityLevel } from '../types'
+import { MODES } from '../constants/modes'
 
 export class TechniqueManager {
   private techniques: Technique[] = []
@@ -94,6 +95,11 @@ export class TechniqueManager {
       // { name: 'Defense Against Knife Stab', file: 'smol-beitat-magal-gvoa.wav', category: 'Weapons', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
       // { name: 'Defense Against Gun Front', file: 'smol-beitat-magal-gvoa.wav', category: 'Weapons', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' }
     ]
+
+    // Add modes property to all techniques for backward compatibility
+    this.techniques.forEach(technique => {
+      technique.modes = [MODES.PERFORMING, MODES.RESPONDING]
+    })
   }
 
   getTechniques(): Technique[] {

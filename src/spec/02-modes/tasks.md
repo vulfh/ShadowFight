@@ -20,9 +20,9 @@ This document provides a granular breakdown of tasks required to implement the T
 
 ##SubTask 2.1
 - [ ] **Update `src/managers/TechniqueManager.ts`**
-  - [ ] Add an import for the `MODES` constant from `../constants/modes`.
-  - [ ] In the `loadTechniques` method, iterate through the `this.techniques` array.
-  - [ ] For each technique object, add the `modes` property and assign it `[MODES.PERFORMING, MODES.RESPONDING]`.
+  - [x] Add an import for the `MODES` constant from `../constants/modes`.
+  - [x] In the `loadTechniques` method, iterate through the `this.techniques` array.
+  - [x] For each technique object, add the `modes` property and assign it `[MODES.PERFORMING, MODES.RESPONDING]`.
 
 ##SubTask 2.2
 - [ ] **Update `src/managers/FightListManager.ts`**

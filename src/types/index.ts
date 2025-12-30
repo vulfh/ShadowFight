@@ -1,3 +1,5 @@
+import { Mode } from '../constants/modes'
+
 // Technique-related types
 export interface Technique {
   name: string
@@ -8,6 +10,7 @@ export interface Technique {
   weight: number
   targetLevel: TargetLevel
   side: Side
+  modes?: Mode[]
 }
 
 export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN' | 'BACK' | 'FOOT'
@@ -33,6 +36,7 @@ export interface FightList {
   techniques: FightListTechnique[]
   createdAt: string
   lastModified: string
+  mode?: Mode
 }
 
 export type FightListTechnique = {

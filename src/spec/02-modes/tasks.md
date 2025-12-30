@@ -11,10 +11,10 @@ This document provides a granular breakdown of tasks required to implement the T
   - [x] Define and export the `Mode` type from the keys of the `MODES` constant.
 
 ##SubTask 1.2
-- [ ] **Update `src/types/index.ts`**
-  - [ ] Add an import for the `Mode` type from `../constants/modes`.
-  - [ ] Add the `modes: Mode[]` property to the `Technique` interface.
-  - [ ] Add the `mode: Mode` property to the `FightList` interface.
+- [x] **Update `src/types/index.ts`**
+  - [x] Add an import for the `Mode` type from `../constants/modes`.
+  - [x] Add the `modes: Mode[]` property to the `Technique` interface.
+  - [x] Add the `mode: Mode` property to the `FightList` interface.
 
 ## 2. Core Logic Modifications
 

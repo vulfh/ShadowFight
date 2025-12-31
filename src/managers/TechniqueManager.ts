@@ -36,6 +36,10 @@ export class TechniqueManager {
           // { name: 'Knife Hand Strike', file: 'smol-beitat-magal-gvoa.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
 
           // Kicks
+          { name: 'Right Side Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-tatsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Side Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-latsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Knee Front Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-bereh-milafanim.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Knee Front Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-bereh-milefanim.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Left High Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right High Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Middle Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-la-guf.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },

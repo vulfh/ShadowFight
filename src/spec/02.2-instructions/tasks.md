@@ -14,19 +14,19 @@ The instruction audio feature plays mode-specific audio files at the start of fi
 **Priority: High | Estimated Time: 2 hours**
 
 #### Task 1.1.1: Audio File Setup
-- [ ] **Verify audio file availability**
-  - [ ] Confirm `instruction-for-performer.wav` exists in `public/Sounds/`
-  - [ ] Confirm `instruction-for-responder.wav` exists in `public/Sounds/`
-  - [ ] Test audio file format compatibility (WAV format)
-  - [ ] Verify audio file quality and volume levels
-- [ ] **Add audio file constants**
-  - [ ] Add `INSTRUCTION_AUDIO_FILES` constant to `src/constants/audio.ts`
-  - [ ] Define file paths for performer and responder instructions
-  - [ ] Add JSDoc documentation for audio constants
-- [ ] **Create audio file validation**
-  - [ ] Implement function to check if instruction files exist
-  - [ ] Add error handling for missing audio files
-  - [ ] Create fallback behavior when files are unavailable
+- [V] **Verify audio file availability**
+  - [V] Confirm `instruction-for-performer.wav` exists in `public/Sounds/`
+  - [V] Confirm `instruction-for-responder.wav` exists in `public/Sounds/`
+  - [V] Test audio file format compatibility (WAV format)
+  - [V] Verify audio file quality and volume levels
+- [V] **Add audio file constants**
+  - [V] Add `INSTRUCTION_AUDIO_FILES` constant to `src/constants/audio.ts`
+  - [V] Define file paths for performer and responder instructions
+  - [V] Add JSDoc documentation for audio constants
+- [V] **Create audio file validation**
+  - [V] Implement function to check if instruction files exist
+  - [V] Add error handling for missing audio files
+  - [V] Create fallback behavior when files are unavailable
 
 #### Task 1.1.2: Audio Service Integration
 - [ ] **Extend existing audio service**

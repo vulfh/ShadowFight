@@ -31,14 +31,16 @@ The instruction audio feature plays mode-specific audio files at the start of fi
 #### Task 1.1.2: Audio Service Integration
 - [ ] **Extend existing audio service**
   - [ ] Add instruction audio methods to existing audio service
-  - [ ] Implement `playInstructionAudio(mode: Mode)` method
+  - [ ] Implement `playInstructionAudio(mode: Mode)` method with completion callback
   - [ ] Add audio preloading for instruction files
   - [ ] Implement volume control for instruction audio
 - [ ] **Audio playback management**
-  - [ ] Ensure instruction audio completes before technique audio
+  - [ ] Ensure instruction audio completes before technique audio starts
+  - [ ] Implement audio completion event detection for instruction audio
   - [ ] Implement audio queue management for sequential playback
   - [ ] Add audio interruption handling
   - [ ] Create audio state management (loading, playing, completed)
+  - [ ] Add callback system to notify when instruction audio finishes
 
 ---
 
@@ -53,11 +55,14 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [ ] Add instruction audio step before first technique
   - [ ] Implement mode-based audio file selection
   - [ ] Ensure proper timing between instruction and technique audio
+  - [ ] Wait for instruction audio completion before starting technique cycle
+  - [ ] Implement callback-based flow: instruction audio → completion event → first technique selection → first technique playback
 - [ ] **Session state management**
   - [ ] Add instruction audio state to session state
   - [ ] Track instruction audio completion status
   - [ ] Handle session pause during instruction audio
   - [ ] Implement session resume with instruction audio context
+  - [ ] Add state for "waiting for instruction completion" before technique cycle starts
 
 #### Task 2.1.2: Fight List Mode Integration
 - [ ] **Mode-based audio selection**
@@ -70,6 +75,8 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [ ] Skip instruction audio on session resume (not restart)
   - [ ] Handle instruction audio in session restart scenarios
   - [ ] Maintain compatibility with existing session features
+  - [ ] Implement proper sequencing: instruction audio completion → first technique selection → first technique playback
+  - [ ] Ensure technique cycle doesn't start until instruction audio is completely finished
 
 ### 2.2 User Interface Updates
 **Priority: Medium | Estimated Time: 2 hours**
@@ -132,11 +139,15 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [ ] Test `playInstructionAudio()` with RESPONDING mode
   - [ ] Test audio file loading and error handling
   - [ ] Test audio volume control and muting
+  - [ ] Test audio completion callback functionality
+  - [ ] Test that completion callback fires only after audio fully finishes
 - [ ] **Test audio integration**
   - [ ] Test instruction audio with session start
   - [ ] Test audio queue management
   - [ ] Test audio interruption and resume
   - [ ] Test audio state management
+  - [ ] Test sequential flow: instruction audio → completion → first technique selection
+  - [ ] Test that first technique doesn't play until instruction audio completes
 
 #### Task 4.1.2: Session Manager Tests
 - [ ] **Test session integration**
@@ -144,11 +155,14 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [ ] Test session pause/resume with instruction audio
   - [ ] Test session restart behavior
   - [ ] Test fallback behavior when audio fails
+  - [ ] Test that first technique selection waits for instruction audio completion
+  - [ ] Test timing: instruction audio must finish before first technique starts
 - [ ] **Test mode integration**
-  - [ ] Test PERFORMING fight list instruction audio
-  - [ ] Test RESPONDING fight list instruction audio
+  - [ ] Test PERFORMING fight list instruction audio followed by first technique
+  - [ ] Test RESPONDING fight list instruction audio followed by first technique
   - [ ] Test edge cases (no fight list, invalid mode)
   - [ ] Test instruction audio with different fight list configurations
+  - [ ] Test that technique cycle timing is correct after instruction audio completes
 
 ### 4.2 Integration Testing
 **Priority: High | Estimated Time: 2 hours**
@@ -159,11 +173,13 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [ ] Test instruction audio with different fight list modes
   - [ ] Test instruction audio with various browser configurations
   - [ ] Test instruction audio on different devices (mobile, desktop)
+  - [ ] Test complete flow: session start → instruction audio → instruction completion → first technique selection → first technique playback → normal cycle
 - [ ] **Test error scenarios**
   - [ ] Test behavior when instruction audio files are missing
   - [ ] Test behavior when audio playback fails
   - [ ] Test behavior with network connectivity issues
   - [ ] Test behavior with browser audio restrictions
+  - [ ] Test that first technique still plays if instruction audio fails
 
 #### Task 4.2.2: Performance Testing
 - [ ] **Test audio performance**
@@ -171,11 +187,14 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [ ] Test memory usage during audio playback
   - [ ] Test audio playback on low-end devices
   - [ ] Test concurrent audio handling
+  - [ ] Test timing accuracy between instruction audio completion and first technique start
 - [ ] **Test user experience**
   - [ ] Test instruction audio timing and flow
   - [ ] Test audio quality and volume levels
   - [ ] Test user control responsiveness
   - [ ] Test accessibility with screen readers
+  - [ ] Test that there's no awkward pause or overlap between instruction and first technique
+  - [ ] Test smooth transition from instruction audio to technique cycle
 
 ### 4.3 Browser and Device Testing
 **Priority: Medium | Estimated Time: 2 hours**

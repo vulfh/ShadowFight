@@ -24,7 +24,9 @@ This feature introduces audio instructions that play automatically at the start 
   - For `PERFORMING` fight lists: Play `instruction-for-performer.wav`
   - For `RESPONDING` fight lists: Play `instruction-for-responder.wav`
 
-- **User Experience**: The instruction audio should complete playing before the first technique audio begins, ensuring users receive clear guidance about their expected role.
+- **Sequential Playback**: The instruction audio must complete playing entirely before the first technique audio begins. The system must wait for the instruction audio to finish (including any fade-out or silence) before starting the first technique selection and playback cycle.
+
+- **User Experience**: The instruction audio should complete playing before the first technique audio begins, ensuring users receive clear guidance about their expected role. There should be no overlap between instruction audio and technique audio.
 
 ### 2.3. Integration Points
 
@@ -32,7 +34,14 @@ This feature introduces audio instructions that play automatically at the start 
 
 - **Audio Management**: The instruction audio should use the same audio playback system as technique sounds for consistency.
 
-- **Error Handling**: If instruction audio files are missing or fail to load, the system should gracefully continue with the fight list session without blocking the user experience.
+- **Sequential Audio Flow**: The system must implement proper audio sequencing to ensure:
+  1. Instruction audio plays first and completes entirely
+  2. System waits for instruction audio completion event
+  3. First technique is selected from the fight list
+  4. First technique audio begins playing only after instruction audio has finished
+  5. Normal technique cycle continues with configured delays
+
+- **Error Handling**: If instruction audio files are missing or fail to load, the system should gracefully continue with the fight list session without blocking the user experience. In this case, the first technique should be selected and played immediately.
 
 ## 3. Technical Considerations
 
@@ -41,3 +50,7 @@ This feature introduces audio instructions that play automatically at the start 
 - **Playback Control**: Users should be able to hear the instruction audio clearly, with appropriate volume levels matching other system sounds.
 
 - **Performance**: Audio files should be preloaded or cached to ensure smooth playback without delays at session start.
+
+- **Audio Completion Detection**: The system must implement reliable audio completion detection to know when instruction audio has finished playing before starting the first technique.
+
+- **Timing Synchronization**: Proper event-driven architecture must be implemented to ensure the first technique selection and playback only occurs after instruction audio completion, maintaining the integrity of the training session flow.

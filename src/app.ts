@@ -79,6 +79,9 @@ export class KravMagaTrainerApp {
       // Set up event listeners
       this.setupEventListeners()
 
+      // Set up instruction audio skip listener
+      this.setupInstructionAudioListeners()
+
       // Load initial configuration
       await this.loadConfiguration()
 
@@ -135,6 +138,33 @@ export class KravMagaTrainerApp {
     // Set up Session→UI callbacks (defined for future use)
     // These callbacks define the contract for session events
     // Currently handled by existing methods in the app
+  }
+
+  private setupInstructionAudioListeners(): void {
+    // Listen for skip instruction audio events
+    window.addEventListener('skipInstructionAudio', () => {
+      if (this.sessionManager.isPlayingInstructionAudio()) {
+        this.audioManager.stopInstructionAudio()
+        this.showNotification({
+          message: 'Instructions skipped. Starting technique cycle...',
+          type: 'info',
+          duration: 3000
+        })
+      }
+    })
+
+    // Listen for instruction audio errors
+    window.addEventListener('audioerror', (event: any) => {
+      if (event.detail && event.detail.mode) {
+        this.uiManager.showInstructionAudioError(
+          `Failed to play instruction audio. The session will continue without instructions. 
+          <br><small>Tip: Check your audio settings and ensure instruction audio files are available.</small>`
+        )
+      }
+    })
+
+    // Add instruction audio volume control indicator
+    this.uiManager.addInstructionAudioVolumeControl()
   }
 
   private setupEventListeners(): void {
@@ -474,17 +504,17 @@ export class KravMagaTrainerApp {
 
   private handleInstructionAudioStarted(): void {
     this.showNotification({
-      message: 'Playing instructions...',
-      type: NOTIFICATION_TYPES.INFO,
-      duration: 2000
+      message: '<i class="fas fa-headphones me-2"></i>Playing instructions for your training session...',
+      type: 'info',
+      duration: 3000
     })
     this.updateSessionUI()
   }
 
   private handleInstructionAudioCompleted(): void {
     this.showNotification({
-      message: 'Instructions completed. Starting technique cycle...',
-      type: NOTIFICATION_TYPES.SUCCESS,
+      message: '<i class="fas fa-check-circle me-2"></i>Instructions completed. Starting technique cycle...',
+      type: 'success',
       duration: 2000
     })
     this.updateSessionUI()

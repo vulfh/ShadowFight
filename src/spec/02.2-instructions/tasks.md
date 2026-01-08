@@ -82,16 +82,16 @@ The instruction audio feature plays mode-specific audio files at the start of fi
 **Priority: Medium | Estimated Time: 2 hours**
 
 #### Task 2.2.1: Session Status Display
-- [ ] **Add instruction audio status to UI**
-  - [ ] Show "Playing instructions..." status during instruction audio
-  - [ ] Update session timer to account for instruction audio duration
-  - [ ] Display appropriate icons for instruction phase
-  - [ ] Provide visual feedback for instruction audio progress
-- [ ] **User control enhancements**
-  - [ ] Allow users to skip instruction audio (optional)
-  - [ ] Add instruction audio volume control
-  - [ ] Implement instruction audio mute option
-  - [ ] Provide instruction audio replay functionality
+- [V] **Add instruction audio status to UI**
+  - [V] Show "Playing instructions..." status during instruction audio
+  - [V] Update session timer to account for instruction audio duration
+  - [V] Display appropriate icons for instruction phase
+  - [V] Provide visual feedback for instruction audio progress
+- [V] **User control enhancements**
+  - [V] Allow users to skip instruction audio (optional)
+  - [V] Add instruction audio volume control
+  - [V] Implement instruction audio mute option
+  - [V] Provide instruction audio replay functionality
 
 #### Task 2.2.2: Error Handling UI
 - [ ] **Instruction audio error feedback**

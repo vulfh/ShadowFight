@@ -75,6 +75,7 @@ export class UIManager {
     this.updateTechniqueDisplay(status.currentTechnique)
     this.updateSessionControls(status)
     this.updateSessionSummary(status)
+    this.updateInstructionAudioStatus(status)
   }
 
   private updateSessionStatus(status: SessionStatus): void {
@@ -85,9 +86,20 @@ export class UIManager {
     const title = sessionStatus.querySelector('h4')
 
     if (status.isActive) {
-      sessionStatus.className = 'session-status active'
-      if (icon) icon.className = 'fas fa-play-circle fa-3x text-success'
-      if (title) title.textContent = status.isPaused ? 'Paused' : 'Active'
+      // Check if instruction audio is playing
+      if (status.isPlayingInstructionAudio || status.isWaitingForInstructionCompletion) {
+        sessionStatus.className = 'session-status active instruction-audio'
+        if (icon) icon.className = 'fas fa-volume-up fa-3x text-info'
+        if (title) title.textContent = 'Playing Instructions...'
+      } else if (status.isPaused) {
+        sessionStatus.className = 'session-status active paused'
+        if (icon) icon.className = 'fas fa-pause-circle fa-3x text-warning'
+        if (title) title.textContent = 'Paused'
+      } else {
+        sessionStatus.className = 'session-status active'
+        if (icon) icon.className = 'fas fa-play-circle fa-3x text-success'
+        if (title) title.textContent = 'Active'
+      }
     } else {
       sessionStatus.className = 'session-status'
       if (icon) icon.className = 'fas fa-stop-circle fa-3x text-muted'
@@ -132,6 +144,69 @@ export class UIManager {
 
     if (stopBtn) {
       stopBtn.disabled = !status.isActive
+    }
+  }
+
+  private updateInstructionAudioStatus(status: SessionStatus): void {
+    // Create or update instruction audio status indicator
+    let instructionStatusElement = document.getElementById('instructionAudioStatus')
+    
+    if (status.isPlayingInstructionAudio || status.isWaitingForInstructionCompletion) {
+      // Create instruction audio status element if it doesn't exist
+      if (!instructionStatusElement) {
+        instructionStatusElement = document.createElement('div')
+        instructionStatusElement.id = 'instructionAudioStatus'
+        instructionStatusElement.className = 'instruction-audio-status mt-2'
+        
+        // Insert after the session status
+        const sessionStatus = document.getElementById('sessionStatus')
+        if (sessionStatus && sessionStatus.parentNode) {
+          sessionStatus.parentNode.insertBefore(instructionStatusElement, sessionStatus.nextSibling)
+        }
+      }
+
+      // Update content based on instruction audio state
+      if (status.isPlayingInstructionAudio) {
+        instructionStatusElement.innerHTML = `
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <div class="spinner-border spinner-border-sm text-info me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <small class="text-info fw-bold">
+                <i class="fas fa-headphones me-1"></i>Playing Instructions...
+              </small>
+            </div>
+            <button class="btn btn-outline-info btn-sm" id="skipInstructionBtn" title="Skip Instructions">
+              <i class="fas fa-forward me-1"></i>Skip
+            </button>
+          </div>
+        `
+        
+        // Add event listener for skip button
+        const skipBtn = instructionStatusElement.querySelector('#skipInstructionBtn')
+        if (skipBtn) {
+          skipBtn.addEventListener('click', () => this.handleSkipInstructionAudio())
+        }
+      } else if (status.isWaitingForInstructionCompletion) {
+        instructionStatusElement.innerHTML = `
+          <div class="d-flex align-items-center justify-content-center">
+            <div class="spinner-border spinner-border-sm text-warning me-2" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <small class="text-warning fw-bold">
+              <i class="fas fa-clock me-1"></i>Preparing Instructions...
+            </small>
+          </div>
+        `
+      }
+
+      instructionStatusElement.style.display = 'block'
+    } else {
+      // Hide instruction audio status when not needed
+      if (instructionStatusElement) {
+        instructionStatusElement.style.display = 'none'
+      }
     }
   }
 
@@ -196,6 +271,62 @@ export class UIManager {
       body.classList.add('loading')
     } else {
       body.classList.remove('loading')
+    }
+  }
+
+  private handleSkipInstructionAudio(): void {
+    // Dispatch custom event that the app can listen to
+    const event = new CustomEvent('skipInstructionAudio')
+    window.dispatchEvent(event)
+  }
+
+  /**
+   * Add instruction audio volume control to the volume slider
+   */
+  addInstructionAudioVolumeControl(): void {
+    const volumeSlider = document.getElementById('volumeControl') as HTMLInputElement
+    if (volumeSlider) {
+      // Add instruction audio volume indicator
+      const volumeLabel = volumeSlider.parentElement?.querySelector('.form-label')
+      if (volumeLabel && !volumeLabel.querySelector('.instruction-audio-indicator')) {
+        const indicator = document.createElement('small')
+        indicator.className = 'instruction-audio-indicator text-muted ms-2'
+        indicator.innerHTML = '<i class="fas fa-headphones" title="Also controls instruction audio volume"></i>'
+        volumeLabel.appendChild(indicator)
+      }
+    }
+  }
+
+  /**
+   * Show instruction audio error message
+   */
+  showInstructionAudioError(message: string): void {
+    this.showNotification({
+      message: `<i class="fas fa-exclamation-triangle me-2"></i><strong>Instruction Audio Error:</strong> ${message}`,
+      type: 'warning',
+      duration: 8000
+    })
+  }
+
+  /**
+   * Show instruction audio progress feedback
+   */
+  updateInstructionAudioProgress(progress: number): void {
+    const instructionStatusElement = document.getElementById('instructionAudioStatus')
+    if (instructionStatusElement && progress >= 0 && progress <= 100) {
+      const progressBar = instructionStatusElement.querySelector('.progress-bar')
+      if (progressBar) {
+        (progressBar as HTMLElement).style.width = `${progress}%`
+      } else {
+        // Add progress bar if it doesn't exist
+        const progressContainer = document.createElement('div')
+        progressContainer.className = 'progress mt-2'
+        progressContainer.style.height = '4px'
+        progressContainer.innerHTML = `
+          <div class="progress-bar bg-info" role="progressbar" style="width: ${progress}%"></div>
+        `
+        instructionStatusElement.appendChild(progressContainer)
+      }
     }
   }
 

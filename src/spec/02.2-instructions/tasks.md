@@ -50,19 +50,19 @@ The instruction audio feature plays mode-specific audio files at the start of fi
 **Priority: High | Estimated Time: 3 hours**
 
 #### Task 2.1.1: Session Start Enhancement
-- [ ] **Modify session start flow**
-  - [ ] Update `SessionManager.startSession()` to include instruction audio
-  - [ ] Add instruction audio step before first technique
-  - [ ] Implement mode-based audio file selection
-  - [ ] Ensure proper timing between instruction and technique audio
-  - [ ] Wait for instruction audio completion before starting technique cycle
-  - [ ] Implement callback-based flow: instruction audio → completion event → first technique selection → first technique playback
-- [ ] **Session state management**
-  - [ ] Add instruction audio state to session state
-  - [ ] Track instruction audio completion status
-  - [ ] Handle session pause during instruction audio
-  - [ ] Implement session resume with instruction audio context
-  - [ ] Add state for "waiting for instruction completion" before technique cycle starts
+- [V] **Modify session start flow**
+  - [V] Update `SessionManager.startSession()` to include instruction audio
+  - [V] Add instruction audio step before first technique
+  - [V] Implement mode-based audio file selection
+  - [V] Ensure proper timing between instruction and technique audio
+  - [V] Wait for instruction audio completion before starting technique cycle
+  - [V] Implement callback-based flow: instruction audio → completion event → first technique selection → first technique playback
+- [V] **Session state management**
+  - [V] Add instruction audio state to session state
+  - [V] Track instruction audio completion status
+  - [V] Handle session pause during instruction audio
+  - [V] Implement session resume with instruction audio context
+  - [V] Add state for "waiting for instruction completion" before technique cycle starts
 
 #### Task 2.1.2: Fight List Mode Integration
 - [ ] **Mode-based audio selection**

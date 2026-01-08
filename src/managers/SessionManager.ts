@@ -117,7 +117,7 @@ export class SessionManager {
    * Play instruction audio for the current fight list mode
    */
   private async playInstructionAudioForSession(): Promise<void> {
-    if (!this.currentFightList || !this.audioManager) {
+    if (!this.currentFightList || !this.audioManager || !this.currentFightList.mode) {
       return
     }
 
@@ -153,21 +153,9 @@ export class SessionManager {
     // Notify that instruction audio is completed
     this.onInstructionAudioCompleted?.()
 
-    // Now start the technique cycle
-    const config = this.getSessionConfigFromCurrentState()
-    if (config) {
-      this.scheduleNextTechnique(config)
-      this.onFirstTechniqueReady?.()
-    }
-  }
-
-  /**
-   * Get session config from current state (helper method)
-   */
-  private getSessionConfigFromCurrentState(): SessionConfig | null {
-    // This is a simplified version - in practice, you'd reconstruct from saved state
-    // For now, we'll trigger this from the app level
-    return null
+    // Now start the technique cycle by scheduling the first technique
+    // We'll let the app handle starting the technique loop via the callback
+    this.onFirstTechniqueReady?.()
   }
 
   /**
@@ -329,7 +317,10 @@ export class SessionManager {
       sessionDuration: this.sessionDuration,
       currentTechnique: this.currentTechnique,
       techniquesUsed: this.techniquesUsed,
-      sessionStats: this.sessionStats
+      sessionStats: this.sessionStats,
+      isPlayingInstructionAudio: this._isPlayingInstructionAudio,
+      isWaitingForInstructionCompletion: this._waitingForInstructionCompletion,
+      instructionAudioCompleted: this._instructionAudioCompleted
     }
   }
 
@@ -401,6 +392,7 @@ export class SessionManager {
         techniquesUsed: this.techniquesUsed,
         sessionStats: this.sessionStats,
         currentFightList: this.currentFightList,
+        instructionAudioCompleted: this._instructionAudioCompleted,
         timestamp: Date.now()
       }
       localStorage.setItem(STORAGE_KEYS.KRAV_MAGA_SESSION_STATE, JSON.stringify(sessionState))
@@ -425,6 +417,10 @@ export class SessionManager {
           this.techniquesUsed = state.techniquesUsed
           this.sessionStats = state.sessionStats
           this.currentFightList = state.currentFightList
+          this._instructionAudioCompleted = state.instructionAudioCompleted || false
+          // Don't restore playing/waiting states - they should be false on restoration
+          this._isPlayingInstructionAudio = false
+          this._waitingForInstructionCompletion = false
           return true
         }
       }

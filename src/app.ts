@@ -58,6 +58,9 @@ export class KravMagaTrainerApp {
       await this.sessionManager.init()
       await this.uiManager.init()
 
+      // Set up audio manager integration with session manager
+      this.sessionManager.setAudioManager(this.audioManager)
+
       // Initialize Fight List managers and hydrate UI
       await this.fightListManager.init()
       await this.fightListUIManager.init()
@@ -67,6 +70,11 @@ export class KravMagaTrainerApp {
 
       // Set up session completion callback
       this.sessionManager.onSessionComplete = () => this.handleSessionComplete()
+
+      // Set up instruction audio callbacks
+      this.sessionManager.onInstructionAudioStarted = () => this.handleInstructionAudioStarted()
+      this.sessionManager.onInstructionAudioCompleted = () => this.handleInstructionAudioCompleted()
+      this.sessionManager.onFirstTechniqueReady = () => this.handleFirstTechniqueReady()
 
       // Set up event listeners
       this.setupEventListeners()
@@ -376,7 +384,7 @@ export class KravMagaTrainerApp {
             this.updateSessionUI()
             this.disableConfigurationControls()
 
-            // Start the technique announcement loop
+            // Start the technique announcement loop (no instruction audio for regular sessions)
             this.startTechniqueAnnouncementLoop(sessionConfig)
 
             this.showNotification({
@@ -399,8 +407,11 @@ export class KravMagaTrainerApp {
       this.updateSessionUI()
       this.disableConfigurationControls()
 
-      // Start the technique announcement loop
-      this.startTechniqueAnnouncementLoop(sessionConfig)
+      // Start the technique announcement loop only if no instruction audio is playing
+      // If instruction audio is playing, the loop will be started by the completion callback
+      if (!this.sessionManager.isPlayingInstructionAudio() && !this.sessionManager.isWaitingForInstructionCompletion()) {
+        this.startTechniqueAnnouncementLoop(sessionConfig)
+      }
 
       this.showNotification({
         message: SUCCESS_MESSAGES.SESSION_STARTED,
@@ -459,6 +470,30 @@ export class KravMagaTrainerApp {
       message: SUCCESS_MESSAGES.SESSION_COMPLETED,
       type: NOTIFICATION_TYPES.SUCCESS
     })
+  }
+
+  private handleInstructionAudioStarted(): void {
+    this.showNotification({
+      message: 'Playing instructions...',
+      type: NOTIFICATION_TYPES.INFO,
+      duration: 2000
+    })
+    this.updateSessionUI()
+  }
+
+  private handleInstructionAudioCompleted(): void {
+    this.showNotification({
+      message: 'Instructions completed. Starting technique cycle...',
+      type: NOTIFICATION_TYPES.SUCCESS,
+      duration: 2000
+    })
+    this.updateSessionUI()
+  }
+
+  private handleFirstTechniqueReady(): void {
+    // Start the technique announcement loop now that instruction audio is complete
+    const config = this.configManager.getSessionConfig()
+    this.startTechniqueAnnouncementLoop(config)
   }
 
   private handleKeyboardShortcuts(e: KeyboardEvent): void {
@@ -531,6 +566,13 @@ export class KravMagaTrainerApp {
   private async startTechniqueAnnouncementLoop(config: SessionConfig): Promise<void> {
     const announceNextTechnique = async () => {
       if (!this.sessionManager.isActive) return
+
+      // Don't start technique cycle if we're still playing instruction audio or waiting for it to complete
+      if (this.sessionManager.isPlayingInstructionAudio() || this.sessionManager.isWaitingForInstructionCompletion()) {
+        // Wait and check again
+        setTimeout(announceNextTechnique, 500)
+        return
+      }
 
       const status = this.sessionManager.getSessionStatus()
       if (status.currentTechnique) {

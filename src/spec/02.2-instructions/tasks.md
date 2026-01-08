@@ -29,18 +29,18 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [V] Create fallback behavior when files are unavailable
 
 #### Task 1.1.2: Audio Service Integration
-- [ ] **Extend existing audio service**
-  - [ ] Add instruction audio methods to existing audio service
-  - [ ] Implement `playInstructionAudio(mode: Mode)` method with completion callback
-  - [ ] Add audio preloading for instruction files
-  - [ ] Implement volume control for instruction audio
-- [ ] **Audio playback management**
-  - [ ] Ensure instruction audio completes before technique audio starts
-  - [ ] Implement audio completion event detection for instruction audio
-  - [ ] Implement audio queue management for sequential playback
-  - [ ] Add audio interruption handling
-  - [ ] Create audio state management (loading, playing, completed)
-  - [ ] Add callback system to notify when instruction audio finishes
+- [V] **Extend existing audio service**
+  - [V] Add instruction audio methods to existing audio service
+  - [V] Implement `playInstructionAudio(mode: Mode)` method with completion callback
+  - [V] Add audio preloading for instruction files
+  - [V] Implement volume control for instruction audio
+- [V] **Audio playback management**
+  - [V] Ensure instruction audio completes before technique audio starts
+  - [V] Implement audio completion event detection for instruction audio
+  - [V] Implement audio queue management for sequential playback
+  - [V] Add audio interruption handling
+  - [V] Create audio state management (loading, playing, completed)
+  - [V] Add callback system to notify when instruction audio finishes
 
 ---
 

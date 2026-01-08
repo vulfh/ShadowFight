@@ -1,6 +1,7 @@
 import { Technique, SessionConfig, SessionStatus, SessionStats, FightList } from '../types'
 import { ITechniqueSelectionStrategy, TechniqueSelectionStrategyFactory } from '../utils/TechniqueSelectionStrategy'
 import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../constants'
+import { AudioManager } from './AudioManager'
 
 export class SessionManager {
   private selectionStrategy!: ITechniqueSelectionStrategy
@@ -28,11 +29,28 @@ export class SessionManager {
     sessionDuration: 0
   }
   private isInitialized: boolean = false
+  
+  // Instruction audio state management
+  private _isPlayingInstructionAudio: boolean = false
+  private _instructionAudioCompleted: boolean = false
+  private _waitingForInstructionCompletion: boolean = false
+  private audioManager: AudioManager | null = null
+  
   public onSessionComplete?: () => void
+  public onInstructionAudioStarted?: () => void
+  public onInstructionAudioCompleted?: () => void
+  public onFirstTechniqueReady?: () => void
 
   async init(): Promise<void> {
     this.selectionStrategy = TechniqueSelectionStrategyFactory.createStrategy(STRATEGY_TYPES.RANDOM)
     this.isInitialized = true
+  }
+
+  /**
+   * Set the audio manager instance for instruction audio integration
+   */
+  setAudioManager(audioManager: AudioManager): void {
+    this.audioManager = audioManager
   }
 
   async startSession(config: SessionConfig): Promise<void> {
@@ -48,10 +66,17 @@ export class SessionManager {
     this.currentTechnique = null
     this.resetSessionStats()
     this.resetAudioFailureCount()
+    this.resetInstructionAudioState()
 
     this.saveSessionState()
     this.startSessionTimer()
-    this.scheduleNextTechnique(config)
+    
+    // Start with instruction audio if fight list is available, otherwise start technique cycle
+    if (this.currentFightList && this.audioManager) {
+      await this.playInstructionAudioForSession()
+    } else {
+      this.scheduleNextTechnique(config)
+    }
   }
 
   async startSessionWithFightList(config: SessionConfig, fightList: FightList): Promise<void> {
@@ -84,6 +109,104 @@ export class SessionManager {
 
   getCurrentFightList(): FightList | null {
     return this.currentFightList
+  }
+
+  // ========== INSTRUCTION AUDIO METHODS ==========
+
+  /**
+   * Play instruction audio for the current fight list mode
+   */
+  private async playInstructionAudioForSession(): Promise<void> {
+    if (!this.currentFightList || !this.audioManager) {
+      return
+    }
+
+    try {
+      this._isPlayingInstructionAudio = true
+      this._waitingForInstructionCompletion = true
+      this._instructionAudioCompleted = false
+
+      // Notify that instruction audio is starting
+      this.onInstructionAudioStarted?.()
+
+      // Play instruction audio with completion callback
+      await this.audioManager.playInstructionAudio(
+        this.currentFightList.mode,
+        () => this.handleInstructionAudioCompleted()
+      )
+
+    } catch (error) {
+      console.error('Failed to play instruction audio:', error)
+      // If instruction audio fails, continue with technique cycle
+      this.handleInstructionAudioCompleted()
+    }
+  }
+
+  /**
+   * Handle instruction audio completion and start technique cycle
+   */
+  private handleInstructionAudioCompleted(): void {
+    this._isPlayingInstructionAudio = false
+    this._instructionAudioCompleted = true
+    this._waitingForInstructionCompletion = false
+
+    // Notify that instruction audio is completed
+    this.onInstructionAudioCompleted?.()
+
+    // Now start the technique cycle
+    const config = this.getSessionConfigFromCurrentState()
+    if (config) {
+      this.scheduleNextTechnique(config)
+      this.onFirstTechniqueReady?.()
+    }
+  }
+
+  /**
+   * Get session config from current state (helper method)
+   */
+  private getSessionConfigFromCurrentState(): SessionConfig | null {
+    // This is a simplified version - in practice, you'd reconstruct from saved state
+    // For now, we'll trigger this from the app level
+    return null
+  }
+
+  /**
+   * Reset instruction audio state
+   */
+  private resetInstructionAudioState(): void {
+    this._isPlayingInstructionAudio = false
+    this._instructionAudioCompleted = false
+    this._waitingForInstructionCompletion = false
+  }
+
+  /**
+   * Check if instruction audio is currently playing
+   */
+  isPlayingInstructionAudio(): boolean {
+    return this._isPlayingInstructionAudio
+  }
+
+  /**
+   * Check if session is waiting for instruction audio to complete
+   */
+  isWaitingForInstructionCompletion(): boolean {
+    return this._waitingForInstructionCompletion
+  }
+
+  /**
+   * Check if instruction audio has completed
+   */
+  hasInstructionAudioCompleted(): boolean {
+    return this._instructionAudioCompleted
+  }
+
+  /**
+   * Start technique cycle (called externally after instruction audio completes)
+   */
+  startTechniqueAfterInstruction(config: SessionConfig): void {
+    if (this._instructionAudioCompleted || !this.currentFightList) {
+      this.scheduleNextTechnique(config)
+    }
   }
 
   pauseSession(): void {

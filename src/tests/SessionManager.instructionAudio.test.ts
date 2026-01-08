@@ -21,7 +21,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     
     // Mock AudioManager methods
     vi.mocked(mockAudioManager.playInstructionAudio).mockImplementation(
-      (mode, onComplete) => {
+      (_mode, onComplete) => {
         // Simulate async audio playback
         setTimeout(() => {
           if (onComplete) onComplete()
@@ -29,6 +29,10 @@ describe('SessionManager - Instruction Audio Integration', () => {
         return Promise.resolve()
       }
     )
+    
+    vi.mocked(mockAudioManager.stopInstructionAudio).mockImplementation(() => {
+      // Mock stop instruction audio
+    })
     
     mockTechniques = [
       {
@@ -335,6 +339,138 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
   })
 
+  describe('Fight List Mode Integration', () => {
+    it('should play instruction audio only once per session', async () => {
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      
+      // Wait for instruction audio to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
+      
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(1)
+      
+      // Pause and resume session
+      sessionManager.pauseSession()
+      sessionManager.resumeSession()
+      
+      // Should not play instruction audio again
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(1)
+      
+      const status = sessionManager.getSessionStatus()
+      expect(status.instructionAudioPlayedThisSession).toBe(true)
+    })
+
+    it('should skip instruction audio on session resume', async () => {
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await new Promise(resolve => setTimeout(resolve, 150))
+      
+      // Instruction audio should be completed by now
+      expect(sessionManager.hasInstructionAudioCompleted()).toBe(true)
+      
+      // Pause session
+      sessionManager.pauseSession()
+      
+      // Resume session
+      sessionManager.resumeSession()
+      
+      // Should not play instruction audio again since it was already completed
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle instruction audio in session restart scenarios', async () => {
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await new Promise(resolve => setTimeout(resolve, 150))
+      
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(1)
+      
+      // Restart session
+      await sessionManager.restartSession(mockSessionConfig)
+      
+      // Should play instruction audio again for new session
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(2)
+    })
+
+    it('should handle pause during instruction audio playback', async () => {
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      
+      // Pause while instruction audio is playing
+      sessionManager.pauseSession()
+      
+      expect(mockAudioManager.stopInstructionAudio).toHaveBeenCalled()
+      
+      const status = sessionManager.getSessionStatus()
+      expect(status.isPlayingInstructionAudio).toBe(false)
+      expect(status.isWaitingForInstructionCompletion).toBe(true)
+    })
+
+    it('should resume instruction audio after pause if not completed', async () => {
+      // Mock instruction audio to not complete immediately
+      let completionCallback: (() => void) | undefined
+      vi.mocked(mockAudioManager.playInstructionAudio).mockImplementation(
+        (_mode, onComplete) => {
+          completionCallback = onComplete
+          return Promise.resolve()
+        }
+      )
+
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      
+      // Verify instruction audio is playing but not completed
+      expect(sessionManager.isPlayingInstructionAudio()).toBe(true)
+      expect(sessionManager.isWaitingForInstructionCompletion()).toBe(true)
+      
+      // Pause while instruction audio is playing
+      sessionManager.pauseSession()
+      
+      // Resume session
+      sessionManager.resumeSession()
+      
+      // Should resume instruction audio since it wasn't completed
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(2)
+      
+      // Complete the instruction audio if callback exists
+      completionCallback?.()
+      
+      expect(sessionManager.hasInstructionAudioCompleted()).toBe(true)
+    })
+
+    it('should maintain compatibility with existing session features', async () => {
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      
+      const status = sessionManager.getSessionStatus()
+      expect(status.isActive).toBe(true)
+      expect(status.remainingTime).toBeGreaterThan(0)
+      expect(status.sessionDuration).toBe(300) // 5 minutes
+      
+      // Should have all the original session properties
+      expect(status).toHaveProperty('techniquesUsed')
+      expect(status).toHaveProperty('sessionStats')
+      expect(status).toHaveProperty('currentTechnique')
+    })
+
+    it('should handle edge cases with no current fight list', async () => {
+      await sessionManager.startSession(mockSessionConfig)
+      
+      expect(mockAudioManager.playInstructionAudio).not.toHaveBeenCalled()
+      
+      const status = sessionManager.getSessionStatus()
+      expect(status.instructionAudioPlayedThisSession).toBe(false)
+    })
+
+    it('should handle edge cases with invalid mode', async () => {
+      const fightListWithInvalidMode = {
+        ...mockFightList,
+        mode: undefined
+      }
+
+      await sessionManager.startSessionWithFightList(mockSessionConfig, fightListWithInvalidMode)
+      
+      expect(mockAudioManager.playInstructionAudio).not.toHaveBeenCalled()
+      
+      const status = sessionManager.getSessionStatus()
+      expect(status.instructionAudioPlayedThisSession).toBe(false)
+    })
+  })
+
   describe('Session Status Updates', () => {
     it('should include instruction audio state in session status', async () => {
       await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
@@ -343,10 +479,12 @@ describe('SessionManager - Instruction Audio Integration', () => {
       expect(status).toHaveProperty('isPlayingInstructionAudio')
       expect(status).toHaveProperty('isWaitingForInstructionCompletion')
       expect(status).toHaveProperty('instructionAudioCompleted')
+      expect(status).toHaveProperty('instructionAudioPlayedThisSession')
       
       expect(status.isPlayingInstructionAudio).toBe(true)
       expect(status.isWaitingForInstructionCompletion).toBe(true)
       expect(status.instructionAudioCompleted).toBe(false)
+      expect(status.instructionAudioPlayedThisSession).toBe(true)
     })
 
     it('should update instruction audio state correctly over time', async () => {
@@ -357,6 +495,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
       expect(status.isPlayingInstructionAudio).toBe(true)
       expect(status.isWaitingForInstructionCompletion).toBe(true)
       expect(status.instructionAudioCompleted).toBe(false)
+      expect(status.instructionAudioPlayedThisSession).toBe(true)
       
       // After completion
       await new Promise(resolve => setTimeout(resolve, 150))
@@ -364,6 +503,52 @@ describe('SessionManager - Instruction Audio Integration', () => {
       expect(status.isPlayingInstructionAudio).toBe(false)
       expect(status.isWaitingForInstructionCompletion).toBe(false)
       expect(status.instructionAudioCompleted).toBe(true)
+      expect(status.instructionAudioPlayedThisSession).toBe(true)
+    })
+
+    it('should provide helper methods for instruction audio state', async () => {
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      
+      expect(sessionManager.hasInstructionAudioBeenPlayedThisSession()).toBe(true)
+      
+      await new Promise(resolve => setTimeout(resolve, 150))
+      
+      expect(sessionManager.hasInstructionAudioCompleted()).toBe(true)
+      expect(sessionManager.isPlayingInstructionAudio()).toBe(false)
+      expect(sessionManager.isWaitingForInstructionCompletion()).toBe(false)
+    })
+  })
+
+  describe('Session Restart Functionality', () => {
+    it('should restart session and play instruction audio again', async () => {
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await new Promise(resolve => setTimeout(resolve, 150))
+      
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(1)
+      
+      // Restart session
+      await sessionManager.restartSession(mockSessionConfig)
+      
+      expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(2)
+      
+      const status = sessionManager.getSessionStatus()
+      expect(status.instructionAudioPlayedThisSession).toBe(true)
+      expect(status.isActive).toBe(true)
+    })
+
+    it('should handle restart with no active session', async () => {
+      await expect(sessionManager.restartSession(mockSessionConfig)).rejects.toThrow('No active session to restart')
+    })
+
+    it('should restart regular session without fight list', async () => {
+      await sessionManager.startSession(mockSessionConfig)
+      
+      await sessionManager.restartSession(mockSessionConfig)
+      
+      expect(mockAudioManager.playInstructionAudio).not.toHaveBeenCalled()
+      
+      const status = sessionManager.getSessionStatus()
+      expect(status.isActive).toBe(true)
     })
   })
 })

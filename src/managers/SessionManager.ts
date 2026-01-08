@@ -34,6 +34,7 @@ export class SessionManager {
   private _isPlayingInstructionAudio: boolean = false
   private _instructionAudioCompleted: boolean = false
   private _waitingForInstructionCompletion: boolean = false
+  private _instructionAudioPlayedThisSession: boolean = false
   private audioManager: AudioManager | null = null
   
   public onSessionComplete?: () => void
@@ -66,13 +67,13 @@ export class SessionManager {
     this.currentTechnique = null
     this.resetSessionStats()
     this.resetAudioFailureCount()
-    this.resetInstructionAudioState()
+    this.resetInstructionAudioStateForNewSession()
 
     this.saveSessionState()
     this.startSessionTimer()
     
-    // Start with instruction audio if fight list is available, otherwise start technique cycle
-    if (this.currentFightList && this.audioManager) {
+    // Start with instruction audio if fight list is available and hasn't been played this session
+    if (this.shouldPlayInstructionAudio()) {
       await this.playInstructionAudioForSession()
     } else {
       this.scheduleNextTechnique(config)
@@ -114,6 +115,33 @@ export class SessionManager {
   // ========== INSTRUCTION AUDIO METHODS ==========
 
   /**
+   * Determine if instruction audio should be played
+   */
+  private shouldPlayInstructionAudio(): boolean {
+    // Don't play if no fight list or audio manager
+    if (!this.currentFightList || !this.audioManager) {
+      return false
+    }
+
+    // Don't play if fight list has no mode
+    if (!this.currentFightList.mode) {
+      return false
+    }
+
+    // Don't play if instruction audio has already been played this session
+    if (this._instructionAudioPlayedThisSession) {
+      return false
+    }
+
+    // Don't play if instruction audio was already completed (session resume case)
+    if (this._instructionAudioCompleted) {
+      return false
+    }
+
+    return true
+  }
+
+  /**
    * Play instruction audio for the current fight list mode
    */
   private async playInstructionAudioForSession(): Promise<void> {
@@ -125,6 +153,7 @@ export class SessionManager {
       this._isPlayingInstructionAudio = true
       this._waitingForInstructionCompletion = true
       this._instructionAudioCompleted = false
+      this._instructionAudioPlayedThisSession = true
 
       // Notify that instruction audio is starting
       this.onInstructionAudioStarted?.()
@@ -159,12 +188,52 @@ export class SessionManager {
   }
 
   /**
-   * Reset instruction audio state
+   * Reset instruction audio state (used internally for pause/resume)
    */
   private resetInstructionAudioState(): void {
     this._isPlayingInstructionAudio = false
     this._instructionAudioCompleted = false
     this._waitingForInstructionCompletion = false
+    // Note: Don't reset _instructionAudioPlayedThisSession here - it should persist during session
+  }
+
+  /**
+   * Reset instruction audio state for new session
+   */
+  private resetInstructionAudioStateForNewSession(): void {
+    this._isPlayingInstructionAudio = false
+    this._instructionAudioCompleted = false
+    this._waitingForInstructionCompletion = false
+    this._instructionAudioPlayedThisSession = false
+  }
+
+  /**
+   * Resume instruction audio after pause
+   */
+  private async resumeInstructionAudio(): Promise<void> {
+    if (!this.currentFightList || !this.audioManager || !this.currentFightList.mode) {
+      // If we can't resume instruction audio, just complete it
+      this.handleInstructionAudioCompleted()
+      return
+    }
+
+    try {
+      this._isPlayingInstructionAudio = true
+      
+      // Notify that instruction audio is resuming
+      this.onInstructionAudioStarted?.()
+
+      // Play instruction audio with completion callback
+      await this.audioManager.playInstructionAudio(
+        this.currentFightList.mode,
+        () => this.handleInstructionAudioCompleted()
+      )
+
+    } catch (error) {
+      console.error('Failed to resume instruction audio:', error)
+      // If instruction audio fails, continue with technique cycle
+      this.handleInstructionAudioCompleted()
+    }
   }
 
   /**
@@ -189,6 +258,13 @@ export class SessionManager {
   }
 
   /**
+   * Check if instruction audio has been played this session
+   */
+  hasInstructionAudioBeenPlayedThisSession(): boolean {
+    return this._instructionAudioPlayedThisSession
+  }
+
+  /**
    * Start technique cycle (called externally after instruction audio completes)
    */
   startTechniqueAfterInstruction(config: SessionConfig): void {
@@ -203,6 +279,14 @@ export class SessionManager {
     this._isPaused = true
     this.stopSessionTimer()
     this.stopTechniqueTimer()
+    
+    // If instruction audio is playing, stop it but remember the state
+    if (this._isPlayingInstructionAudio && this.audioManager) {
+      this.audioManager.stopInstructionAudio()
+      this.resetInstructionAudioState()
+      // Keep _waitingForInstructionCompletion true so we know to resume instruction audio
+      this._waitingForInstructionCompletion = true
+    }
   }
 
   resumeSession(): void {
@@ -210,6 +294,11 @@ export class SessionManager {
 
     this._isPaused = false
     this.startSessionTimer()
+    
+    // If we were waiting for instruction completion when paused, resume instruction audio
+    if (this._waitingForInstructionCompletion && !this._instructionAudioCompleted) {
+      this.resumeInstructionAudio()
+    }
   }
 
   stopSession(): void {
@@ -219,6 +308,15 @@ export class SessionManager {
     this.stopTechniqueTimer()
     this.currentTechnique = null
     this.currentFightList = null
+    
+    // Stop instruction audio if playing
+    if (this._isPlayingInstructionAudio && this.audioManager) {
+      this.audioManager.stopInstructionAudio()
+    }
+    
+    // Reset instruction audio state for new session
+    this.resetInstructionAudioStateForNewSession()
+    
     this.clearSessionState()
   }
 
@@ -320,7 +418,8 @@ export class SessionManager {
       sessionStats: this.sessionStats,
       isPlayingInstructionAudio: this._isPlayingInstructionAudio,
       isWaitingForInstructionCompletion: this._waitingForInstructionCompletion,
-      instructionAudioCompleted: this._instructionAudioCompleted
+      instructionAudioCompleted: this._instructionAudioCompleted,
+      instructionAudioPlayedThisSession: this._instructionAudioPlayedThisSession
     }
   }
 
@@ -333,6 +432,26 @@ export class SessionManager {
   getSessionProgress(): number {
     if (this.sessionDuration === 0) return 0
     return ((this.sessionDuration - this.remainingTime) / this.sessionDuration) * 100
+  }
+
+  /**
+   * Restart the current session (plays instruction audio again if applicable)
+   */
+  async restartSession(config: SessionConfig): Promise<void> {
+    if (!this._isActive) {
+      throw new Error('No active session to restart')
+    }
+
+    // Stop current session but keep fight list
+    const currentFightList = this.currentFightList
+    this.stopSession()
+
+    // Start new session with same fight list
+    if (currentFightList) {
+      await this.startSessionWithFightList(config, currentFightList)
+    } else {
+      await this.startSession(config)
+    }
   }
 
   // Public getters for session state
@@ -393,6 +512,8 @@ export class SessionManager {
         sessionStats: this.sessionStats,
         currentFightList: this.currentFightList,
         instructionAudioCompleted: this._instructionAudioCompleted,
+        instructionAudioPlayedThisSession: this._instructionAudioPlayedThisSession,
+        waitingForInstructionCompletion: this._waitingForInstructionCompletion,
         timestamp: Date.now()
       }
       localStorage.setItem(STORAGE_KEYS.KRAV_MAGA_SESSION_STATE, JSON.stringify(sessionState))
@@ -418,9 +539,10 @@ export class SessionManager {
           this.sessionStats = state.sessionStats
           this.currentFightList = state.currentFightList
           this._instructionAudioCompleted = state.instructionAudioCompleted || false
-          // Don't restore playing/waiting states - they should be false on restoration
+          this._instructionAudioPlayedThisSession = state.instructionAudioPlayedThisSession || false
+          this._waitingForInstructionCompletion = state.waitingForInstructionCompletion || false
+          // Don't restore playing state - it should be false on restoration
           this._isPlayingInstructionAudio = false
-          this._waitingForInstructionCompletion = false
           return true
         }
       }

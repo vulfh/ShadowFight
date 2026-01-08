@@ -65,18 +65,18 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [V] Add state for "waiting for instruction completion" before technique cycle starts
 
 #### Task 2.1.2: Fight List Mode Integration
-- [ ] **Mode-based audio selection**
-  - [ ] Read fight list mode from current fight list
-  - [ ] Map PERFORMING mode to `instruction-for-performer.wav`
-  - [ ] Map RESPONDING mode to `instruction-for-responder.wav`
-  - [ ] Handle edge cases (no current fight list, invalid mode)
-- [ ] **Integration with existing session flow**
-  - [ ] Ensure instruction audio plays only once per session
-  - [ ] Skip instruction audio on session resume (not restart)
-  - [ ] Handle instruction audio in session restart scenarios
-  - [ ] Maintain compatibility with existing session features
-  - [ ] Implement proper sequencing: instruction audio completion → first technique selection → first technique playback
-  - [ ] Ensure technique cycle doesn't start until instruction audio is completely finished
+- [V] **Mode-based audio selection**
+  - [V] Read fight list mode from current fight list
+  - [V] Map PERFORMING mode to `instruction-for-performer.wav`
+  - [V] Map RESPONDING mode to `instruction-for-responder.wav`
+  - [V] Handle edge cases (no current fight list, invalid mode)
+- [V] **Integration with existing session flow**
+  - [V] Ensure instruction audio plays only once per session
+  - [V] Skip instruction audio on session resume (not restart)
+  - [V] Handle instruction audio in session restart scenarios
+  - [V] Maintain compatibility with existing session features
+  - [V] Implement proper sequencing: instruction audio completion → first technique selection → first technique playback
+  - [V] Ensure technique cycle doesn't start until instruction audio is completely finished
 
 ### 2.2 User Interface Updates
 **Priority: Medium | Estimated Time: 2 hours**

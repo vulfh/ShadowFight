@@ -140,6 +140,7 @@ export interface SessionStatus {
   isPlayingInstructionAudio: boolean
   isWaitingForInstructionCompletion: boolean
   instructionAudioCompleted: boolean
+  instructionAudioPlayedThisSession: boolean
 }
 
 // Audio types

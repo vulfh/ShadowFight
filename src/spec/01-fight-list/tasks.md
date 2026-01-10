@@ -261,50 +261,218 @@ This document breaks down the Fight List feature implementation into specific, a
   - [V] Instantiate `FightListUIManager` with `UI_ELEMENTS` refs
   - [V] Hydrate UI from `getFightLists()` and current list
   - [V] Subscribe UI to fight list/current changes
+
 - [V] Task 2.3.1.2 **Connect FightListManager to UI actions**
-  - [V] New list: prompt, `validateFightListName`, `createFightList`, set current
-  - [ ] Rename list: open rename UI, validate uniqueness, `updateFightList({ name })`
-  - [V] Delete list: confirm, `deleteFightList`, clear current if needed
-  - [V] Expand/collapse: wire `updateFightListExpansion`, persist expansion state
-  - [V] Select/deselect techniques: update via `updateFightList`
-  - [V] Remove technique: `removeTechniqueFromFightList`
-  - [ ] Open technique modal: `showTechniqueAddModal(fightListId)`
+  - [V] Task 2.3.1.2.1 **New fight list creation**
+    - [V] Implement name prompt with validation
+    - [V] Call `validateFightListName` before creation
+    - [V] Execute `createFightList` with mode selection
+    - [V] Set newly created list as current
+    - [V] Update UI to reflect new list
+  - [ ] Task 2.3.1.2.2 **Fight list renaming**
+    - [ ] Create rename UI modal/prompt
+    - [ ] Validate name uniqueness against existing lists
+    - [ ] Call `updateFightList({ name })` with new name
+    - [ ] Handle validation errors gracefully
+    - [ ] Update UI to show new name immediately
+  - [V] Task 2.3.1.2.3 **Fight list deletion**
+    - [V] Show confirmation dialog before deletion
+    - [V] Execute `deleteFightList` after confirmation
+    - [V] Clear current list if deleted list was current
+    - [V] Update UI to remove deleted list
+    - [V] Handle edge case of deleting last list
+  - [V] Task 2.3.1.2.4 **Expand/collapse functionality**
+    - [V] Wire `updateFightListExpansion` to UI events
+    - [V] Persist expansion state in component state
+    - [V] Animate expand/collapse transitions
+    - [V] Handle keyboard navigation for expand/collapse
+  - [V] Task 2.3.1.2.5 **Technique selection management**
+    - [V] Update technique selection via `updateFightList`
+    - [V] Handle individual technique selection/deselection
+    - [V] Implement "Select All" and "Deselect All" functionality
+    - [V] Persist selection state across sessions
+  - [V] Task 2.3.1.2.6 **Technique removal**
+    - [V] Call `removeTechniqueFromFightList` on remove action
+    - [V] Show confirmation for technique removal
+    - [V] Update UI immediately after removal
+    - [V] Handle removal of last technique in list
+  - [ ] Task 2.3.1.2.7 **Technique modal integration**
+    - [ ] Implement `showTechniqueAddModal(fightListId)` trigger
+    - [ ] Pass fight list context to modal
+    - [ ] Handle modal close and cleanup
+    - [ ] Ensure modal state is reset between uses
+
 - [V] Task 2.3.1.3 **Integrate TechniqueAddModal**
-  - [V] Populate with techniques not in selected list
-  - [V] Add single technique with chosen priority via `addTechniqueToFightList`
-  - [V] "Add All" adds all filtered techniques, then close modal
-  - [V] Ensure search/filter operates on available set
+  - [V] Task 2.3.1.3.1 **Modal population and filtering**
+    - [V] Populate with techniques not in selected list
+    - [V] Filter techniques based on fight list mode
+    - [V] Implement search functionality within modal
+    - [V] Add category filtering capabilities
+  - [V] Task 2.3.1.3.2 **Single technique addition**
+    - [V] Add single technique with chosen priority
+    - [V] Call `addTechniqueToFightList` with proper parameters
+    - [V] Validate technique compatibility with fight list mode
+    - [V] Update UI immediately after addition
+  - [V] Task 2.3.1.3.3 **Bulk technique addition**
+    - [V] Implement "Add All" functionality for filtered techniques
+    - [V] Add all visible techniques with default priority
+    - [V] Close modal after successful bulk addition
+    - [V] Show progress feedback for large bulk operations
+  - [V] Task 2.3.1.3.4 **Modal search and filter operations**
+    - [V] Ensure search operates on available technique set
+    - [V] Filter by technique category/type
+    - [V] Maintain filter state during modal session
+    - [V] Clear filters when modal reopens
+
 - [V] Task 2.3.1.4 **Connect SessionManager to fight lists**
-  - [V] Start: `startSessionWithFightList(fightListId)` from list or panel
-  - [V] Validate at least one selected technique; show toast if none
-  - [V] Stop: stop session and clear `currentFightList` in storage; update UI
-  - [V] Fallback: prompt when no current list; Yes = all techniques, No = back
-  - [V] Resume/Pause: ensure controls work and restoration reads current list
+  - [V] Task 2.3.1.4.1 **Session start integration**
+    - [V] Implement `startSessionWithFightList(fightListId)` from list
+    - [V] Allow session start from training panel
+    - [V] Validate current fight list exists before start
+    - [V] Handle session start with empty fight list
+  - [V] Task 2.3.1.4.2 **Technique validation for session**
+    - [V] Validate at least one selected technique exists
+    - [V] Show informative toast if no techniques selected
+    - [V] Prevent session start with invalid fight list
+    - [V] Guide user to add techniques if list is empty
+  - [V] Task 2.3.1.4.3 **Session stop integration**
+    - [V] Stop session and clear `currentFightList` in storage
+    - [V] Update UI to reflect session stopped state
+    - [V] Reset session controls to initial state
+    - [V] Preserve fight list data after session stop
+  - [V] Task 2.3.1.4.4 **Session state management**
+    - [V] Handle session pause/resume with fight lists
+    - [V] Restore session state with correct fight list
+    - [V] Maintain fight list context during session
+    - [V] Update session UI based on fight list state
+
 - [V] Task 2.3.1.5 **Event flow contracts**
-  - [V] Define callbacks: UI→Manager (CRUD, select, set current, modal)
-  - [V] Manager→UI (lists changed, current changed)
-  - [V] Session→UI (started, stopped, paused, resumed)
-  - [V] Avoid circular dependencies; keep UI manager presentation-only
+  - [V] Task 2.3.1.5.1 **UI to Manager callbacks**
+    - [V] Define CRUD operation callbacks (create, read, update, delete)
+    - [V] Define selection callbacks (select, set current, modal)
+    - [V] Implement error handling for all callbacks
+    - [V] Ensure consistent callback signatures
+  - [V] Task 2.3.1.5.2 **Manager to UI callbacks**
+    - [V] Implement fight lists changed notifications
+    - [V] Implement current fight list changed notifications
+    - [V] Handle batch update notifications efficiently
+    - [V] Prevent callback loops and circular dependencies
+  - [V] Task 2.3.1.5.3 **Session to UI callbacks**
+    - [V] Handle session started notifications
+    - [V] Handle session stopped notifications
+    - [V] Handle session paused/resumed notifications
+    - [V] Update UI state based on session events
+  - [V] Task 2.3.1.5.4 **Dependency management**
+    - [V] Avoid circular dependencies between managers
+    - [V] Keep UI manager presentation-only
+    - [V] Implement proper separation of concerns
+    - [V] Use dependency injection where appropriate
+
 - [V] Task 2.3.1.6 **Storage & persistence wiring**
-  - [V] Use `FIGHT_LISTS_KEY` and `CURRENT_FIGHT_LIST_KEY` via `StorageService`
-  - [V] Save on all mutations; reflect immediately in UI
-  - [V] Guard corrupt/missing data with validator
+  - [V] Task 2.3.1.6.1 **Storage key management**
+    - [V] Use `FIGHT_LISTS_KEY` for fight lists array storage
+    - [V] Use `CURRENT_FIGHT_LIST_KEY` for active fight list ID
+    - [V] Implement consistent storage key usage
+    - [V] Handle storage key migration if needed
+  - [V] Task 2.3.1.6.2 **Real-time persistence**
+    - [V] Save on all mutations immediately
+    - [V] Reflect changes immediately in UI
+    - [V] Handle storage failures gracefully
+    - [V] Implement optimistic UI updates
+  - [V] Task 2.3.1.6.3 **Data validation and integrity**
+    - [V] Guard against corrupt/missing data with validator
+    - [V] Implement data structure validation
+    - [V] Handle schema version mismatches
+    - [V] Provide data recovery mechanisms
+
 - [V] Task 2.3.1.7 **Integration error handling & feedback**
-  - [V] Map errors to `messages.ts` (duplicate/invalid name, delete last list, empty selection)
-  - [V] Show non-blocking toasts; keep modal open on validation errors
+  - [V] Task 2.3.1.7.1 **Error message mapping**
+    - [V] Map errors to `messages.ts` constants
+    - [V] Handle duplicate name errors
+    - [V] Handle invalid name errors
+    - [V] Handle delete last list errors
+    - [V] Handle empty selection errors
+  - [V] Task 2.3.1.7.2 **User feedback mechanisms**
+    - [V] Show non-blocking toast notifications
+    - [V] Keep modal open on validation errors
+    - [V] Provide clear error recovery instructions
+    - [V] Implement success feedback for operations
+  - [V] Task 2.3.1.7.3 **Error recovery flows**
+    - [V] Allow user to retry failed operations
+    - [V] Provide alternative actions when operations fail
+    - [V] Maintain UI state during error conditions
+    - [V] Clear error states after successful operations
+
 - [ ] Task 2.3.1.8 **Responsive/mobile interaction checks**
-  - [ ] Ensure swipe expand/collapse updates UI state without conflicts
-  - [ ] Technique modal renders correctly on mobile and desktop
+  - [ ] Task 2.3.1.8.1 **Mobile swipe interactions**
+    - [ ] Ensure swipe expand/collapse updates UI state without conflicts
+    - [ ] Test swipe gestures on various mobile devices
+    - [ ] Handle swipe conflicts with scroll gestures
+    - [ ] Implement swipe feedback animations
+  - [ ] Task 2.3.1.8.2 **Modal responsive behavior**
+    - [ ] Technique modal renders correctly on mobile
+    - [ ] Technique modal renders correctly on desktop
+    - [ ] Test modal interactions across screen sizes
+    - [ ] Ensure modal accessibility on touch devices
+  - [ ] Task 2.3.1.8.3 **Touch interaction optimization**
+    - [ ] Optimize touch targets for mobile devices
+    - [ ] Test touch interactions with fight list controls
+    - [ ] Ensure proper touch feedback for all interactions
+    - [ ] Handle touch conflicts between overlapping elements
+
 - [ ] Task 2.3.1.9 **Integration testing checklist**
-  - [ ] Create/rename/delete/set current; add/remove/select/deselect techniques
-  - [ ] Expand/collapse behavior and persistence
-  - [ ] Start/stop session; fallback prompt flow; restoration with current list
-  - [ ] Modal: search/filter, add single/all, no duplicates
-  - [ ] Persistence across reload for lists and current list
+  - [ ] Task 2.3.1.9.1 **CRUD operations testing**
+    - [ ] Test create fight list with various names and modes
+    - [ ] Test rename fight list with validation
+    - [ ] Test delete fight list with confirmation
+    - [ ] Test set current fight list functionality
+  - [ ] Task 2.3.1.9.2 **Technique management testing**
+    - [ ] Test add technique to fight list
+    - [ ] Test remove technique from fight list
+    - [ ] Test select/deselect techniques
+    - [ ] Test technique priority changes
+  - [ ] Task 2.3.1.9.3 **UI state management testing**
+    - [ ] Test expand/collapse behavior and persistence
+    - [ ] Test modal state management
+    - [ ] Test UI updates after data changes
+    - [ ] Test error state handling and recovery
+  - [ ] Task 2.3.1.9.4 **Session integration testing**
+    - [ ] Test start/stop session with fight lists
+    - [ ] Test fallback prompt flow when no current list
+    - [ ] Test session restoration with current list
+    - [ ] Test session controls state management
+  - [ ] Task 2.3.1.9.5 **Modal functionality testing**
+    - [ ] Test modal search and filter functionality
+    - [ ] Test add single technique from modal
+    - [ ] Test add all techniques from modal
+    - [ ] Test modal prevents duplicate additions
+  - [ ] Task 2.3.1.9.6 **Persistence testing**
+    - [ ] Test persistence across browser reload
+    - [ ] Test fight list data persistence
+    - [ ] Test current fight list persistence
+    - [ ] Test UI state restoration after reload
+
 - [ ] Task 2.3.1.10 **Non-functional checks**
-  - [ ] Basic performance on large lists; minimal re-render work
-  - [ ] Cleanup event listeners on re-renders
-  - [ ] Basic accessibility for buttons and modal focus
+  - [ ] Task 2.3.1.10.1 **Performance optimization**
+    - [ ] Test basic performance on large fight lists (50+ lists)
+    - [ ] Minimize re-render work for UI updates
+    - [ ] Optimize technique modal rendering for large datasets
+    - [ ] Implement efficient list virtualization if needed
+  - [ ] Task 2.3.1.10.2 **Memory management**
+    - [ ] Cleanup event listeners on component re-renders
+    - [ ] Prevent memory leaks in modal components
+    - [ ] Optimize DOM manipulation for large lists
+    - [ ] Implement proper component lifecycle management
+  - [ ] Task 2.3.1.10.3 **Accessibility compliance**
+    - [ ] Ensure basic accessibility for all buttons
+    - [ ] Implement proper modal focus management
+    - [ ] Add ARIA labels for screen readers
+    - [ ] Test keyboard navigation for all components
+  - [ ] Task 2.3.1.10.4 **Cross-browser compatibility**
+    - [ ] Test integration on Chrome, Firefox, Safari, Edge
+    - [ ] Verify touch interactions work across browsers
+    - [ ] Test storage persistence across browsers
+    - [ ] Ensure consistent UI behavior across platforms
 
 #### Task 2.3.2: Add Validation & Error Handling
 - [ ] **Add fight list name validation**
@@ -341,14 +509,14 @@ This document breaks down the Fight List feature implementation into specific, a
 - [V] **Optimize for tablet performance**
 
 #### Task 3.1.3: Implement Desktop Enhancements
-- [ ] **Optimize for desktop** (1024px+)
-  - [ ] Multi-column layout
-  - [ ] Hover states for interactive elements
-  - [ ] Keyboard shortcuts for common actions
-  - [ ] Drag-and-drop for technique reordering
-  - [ ] Right-click context menus
-- [ ] **Test desktop interactions**
-- [ ] **Add keyboard navigation**
+- [V] **Optimize for desktop** (1024px+)
+  - [V] Multi-column layout
+  - [V] Hover states for interactive elements
+  - [V] Keyboard shortcuts for common actions
+  - [V] Drag-and-drop for technique reordering
+  - [V] Right-click context menus
+- [V] **Test desktop interactions**
+- [V] **Add keyboard navigation**
 
 ### 3.2 Accessibility & Performance
 **Priority: Medium | Estimated Time: 2 days**

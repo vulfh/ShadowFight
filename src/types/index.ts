@@ -137,6 +137,10 @@ export interface SessionStatus {
   currentTechnique: Technique | null
   techniquesUsed: number
   sessionStats: SessionStats
+  isPlayingInstructionAudio: boolean
+  isWaitingForInstructionCompletion: boolean
+  instructionAudioCompleted: boolean
+  instructionAudioPlayedThisSession: boolean
 }
 
 // Audio types

@@ -58,6 +58,9 @@ export class KravMagaTrainerApp {
       await this.sessionManager.init()
       await this.uiManager.init()
 
+      // Set up audio manager integration with session manager
+      this.sessionManager.setAudioManager(this.audioManager)
+
       // Initialize Fight List managers and hydrate UI
       await this.fightListManager.init()
       await this.fightListUIManager.init()
@@ -68,8 +71,16 @@ export class KravMagaTrainerApp {
       // Set up session completion callback
       this.sessionManager.onSessionComplete = () => this.handleSessionComplete()
 
+      // Set up instruction audio callbacks
+      this.sessionManager.onInstructionAudioStarted = () => this.handleInstructionAudioStarted()
+      this.sessionManager.onInstructionAudioCompleted = () => this.handleInstructionAudioCompleted()
+      this.sessionManager.onFirstTechniqueReady = () => this.handleFirstTechniqueReady()
+
       // Set up event listeners
       this.setupEventListeners()
+
+      // Set up instruction audio skip listener
+      this.setupInstructionAudioListeners()
 
       // Load initial configuration
       await this.loadConfiguration()
@@ -127,6 +138,62 @@ export class KravMagaTrainerApp {
     // Set up Session→UI callbacks (defined for future use)
     // These callbacks define the contract for session events
     // Currently handled by existing methods in the app
+  }
+
+  private setupInstructionAudioListeners(): void {
+    // Listen for skip instruction audio events
+    window.addEventListener('skipInstructionAudio', () => {
+      if (this.sessionManager.isPlayingInstructionAudio()) {
+        this.audioManager.stopInstructionAudio()
+        this.showNotification({
+          message: 'Instructions skipped. Starting technique cycle...',
+          type: 'info',
+          duration: 3000
+        })
+      }
+    })
+
+    // Listen for continue without instructions events
+    window.addEventListener('continueWithoutInstructions', () => {
+      if (this.sessionManager.isWaitingForInstructionCompletion() || this.sessionManager.isPlayingInstructionAudio()) {
+        // Stop any playing instruction audio
+        this.audioManager.stopInstructionAudio()
+        
+        // Force session to continue without instruction audio
+        this.sessionManager.skipInstructionAudio()
+        
+        // Start technique cycle immediately
+        const config = this.configManager.getSessionConfig()
+        this.startTechniqueAnnouncementLoop(config)
+        
+        this.showNotification({
+          message: '<i class="fas fa-check-circle me-2"></i>Continuing session without instruction audio...',
+          type: 'success',
+          duration: 3000
+        })
+      }
+    })
+
+    // Listen for troubleshooting tips events
+    window.addEventListener('showTroubleshootingTips', (event: any) => {
+      const errorType = event.detail?.errorType || 'playback'
+      this.uiManager.showTroubleshootingModal(errorType)
+    })
+
+    // Listen for instruction audio errors
+    window.addEventListener('audioerror', (event: any) => {
+      if (event.detail && event.detail.mode) {
+        const errorType = event.detail.errorType || 'playback'
+        this.uiManager.showInstructionAudioError(
+          `Failed to play instruction audio. The session will continue without instructions. 
+          <br><small>Tip: Check your audio settings and ensure instruction audio files are available.</small>`,
+          errorType
+        )
+      }
+    })
+
+    // Add instruction audio volume control indicator
+    this.uiManager.addInstructionAudioVolumeControl()
   }
 
   private setupEventListeners(): void {
@@ -376,7 +443,7 @@ export class KravMagaTrainerApp {
             this.updateSessionUI()
             this.disableConfigurationControls()
 
-            // Start the technique announcement loop
+            // Start the technique announcement loop (no instruction audio for regular sessions)
             this.startTechniqueAnnouncementLoop(sessionConfig)
 
             this.showNotification({
@@ -399,8 +466,11 @@ export class KravMagaTrainerApp {
       this.updateSessionUI()
       this.disableConfigurationControls()
 
-      // Start the technique announcement loop
-      this.startTechniqueAnnouncementLoop(sessionConfig)
+      // Start the technique announcement loop only if no instruction audio is playing
+      // If instruction audio is playing, the loop will be started by the completion callback
+      if (!this.sessionManager.isPlayingInstructionAudio() && !this.sessionManager.isWaitingForInstructionCompletion()) {
+        this.startTechniqueAnnouncementLoop(sessionConfig)
+      }
 
       this.showNotification({
         message: SUCCESS_MESSAGES.SESSION_STARTED,
@@ -459,6 +529,35 @@ export class KravMagaTrainerApp {
       message: SUCCESS_MESSAGES.SESSION_COMPLETED,
       type: NOTIFICATION_TYPES.SUCCESS
     })
+  }
+
+  private handleInstructionAudioStarted(): void {
+    this.showNotification({
+      message: '<i class="fas fa-headphones me-2"></i>Playing instructions for your training session...',
+      type: 'info',
+      duration: 3000
+    })
+    this.updateSessionUI()
+  }
+
+  private handleInstructionAudioCompleted(): void {
+    this.showNotification({
+      message: '<i class="fas fa-check-circle me-2"></i>Instructions completed. Starting technique cycle...',
+      type: 'success',
+      duration: 2000
+    })
+    this.updateSessionUI()
+  }
+
+  private handleFirstTechniqueReady(): void {
+    // Start the technique cycle now that instruction audio is complete
+    const config = this.configManager.getSessionConfig()
+    
+    // Tell SessionManager to start selecting techniques
+    this.sessionManager.startTechniqueAfterInstruction(config)
+    
+    // Start the announcement loop which will handle audio playback
+    this.startTechniqueAnnouncementLoop(config)
   }
 
   private handleKeyboardShortcuts(e: KeyboardEvent): void {
@@ -531,6 +630,13 @@ export class KravMagaTrainerApp {
   private async startTechniqueAnnouncementLoop(config: SessionConfig): Promise<void> {
     const announceNextTechnique = async () => {
       if (!this.sessionManager.isActive) return
+
+      // Don't start technique cycle if we're still playing instruction audio or waiting for it to complete
+      if (this.sessionManager.isPlayingInstructionAudio() || this.sessionManager.isWaitingForInstructionCompletion()) {
+        // Wait and check again
+        setTimeout(announceNextTechnique, 500)
+        return
+      }
 
       const status = this.sessionManager.getSessionStatus()
       if (status.currentTechnique) {

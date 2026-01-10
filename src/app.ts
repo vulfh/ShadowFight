@@ -550,8 +550,13 @@ export class KravMagaTrainerApp {
   }
 
   private handleFirstTechniqueReady(): void {
-    // Start the technique announcement loop now that instruction audio is complete
+    // Start the technique cycle now that instruction audio is complete
     const config = this.configManager.getSessionConfig()
+    
+    // Tell SessionManager to start selecting techniques
+    this.sessionManager.startTechniqueAfterInstruction(config)
+    
+    // Start the announcement loop which will handle audio playback
     this.startTechniqueAnnouncementLoop(config)
   }
 

@@ -153,12 +153,41 @@ export class KravMagaTrainerApp {
       }
     })
 
+    // Listen for continue without instructions events
+    window.addEventListener('continueWithoutInstructions', () => {
+      if (this.sessionManager.isWaitingForInstructionCompletion() || this.sessionManager.isPlayingInstructionAudio()) {
+        // Stop any playing instruction audio
+        this.audioManager.stopInstructionAudio()
+        
+        // Force session to continue without instruction audio
+        this.sessionManager.skipInstructionAudio()
+        
+        // Start technique cycle immediately
+        const config = this.configManager.getSessionConfig()
+        this.startTechniqueAnnouncementLoop(config)
+        
+        this.showNotification({
+          message: '<i class="fas fa-check-circle me-2"></i>Continuing session without instruction audio...',
+          type: 'success',
+          duration: 3000
+        })
+      }
+    })
+
+    // Listen for troubleshooting tips events
+    window.addEventListener('showTroubleshootingTips', (event: any) => {
+      const errorType = event.detail?.errorType || 'playback'
+      this.uiManager.showTroubleshootingModal(errorType)
+    })
+
     // Listen for instruction audio errors
     window.addEventListener('audioerror', (event: any) => {
       if (event.detail && event.detail.mode) {
+        const errorType = event.detail.errorType || 'playback'
         this.uiManager.showInstructionAudioError(
           `Failed to play instruction audio. The session will continue without instructions. 
-          <br><small>Tip: Check your audio settings and ensure instruction audio files are available.</small>`
+          <br><small>Tip: Check your audio settings and ensure instruction audio files are available.</small>`,
+          errorType
         )
       }
     })

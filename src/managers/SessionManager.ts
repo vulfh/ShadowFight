@@ -565,6 +565,31 @@ export class SessionManager {
     return this.loadSessionState()
   }
 
+  /**
+   * Skip instruction audio and proceed directly to technique cycle
+   * Used when user chooses to continue without instruction audio
+   */
+  skipInstructionAudio(): void {
+    if (this._isPlayingInstructionAudio || this._waitingForInstructionCompletion) {
+      // Stop any playing instruction audio
+      if (this.audioManager) {
+        this.audioManager.stopInstructionAudio()
+      }
+      
+      // Reset instruction audio state
+      this.resetInstructionAudioState()
+      
+      // Mark instruction audio as completed for this session
+      this._instructionAudioCompleted = true
+      this._instructionAudioPlayedThisSession = true
+      
+      // Notify that we're ready for first technique
+      if (this.onFirstTechniqueReady) {
+        this.onFirstTechniqueReady()
+      }
+    }
+  }
+
   isReady(): boolean {
     return this.isInitialized
   }

@@ -94,11 +94,11 @@ The instruction audio feature plays mode-specific audio files at the start of fi
   - [V] Provide instruction audio replay functionality
 
 #### Task 2.2.2: Error Handling UI
-- [ ] **Instruction audio error feedback**
-  - [ ] Show user-friendly message when instruction audio fails
-  - [ ] Provide option to continue session without instruction audio
-  - [ ] Display troubleshooting tips for audio issues
-  - [ ] Log instruction audio errors for debugging
+- [V] **Instruction audio error feedback**
+  - [V] Show user-friendly message when instruction audio fails
+  - [V] Provide option to continue session without instruction audio
+  - [V] Display troubleshooting tips for audio issues
+  - [V] Log instruction audio errors for debugging
 
 ---
 

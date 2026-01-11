@@ -312,7 +312,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
       await new Promise(resolve => setTimeout(resolve, 150))
       
       // Should be able to start technique cycle
-      sessionManager.startTechniqueAfterInstruction(mockSessionConfig)
+      sessionManager.startTechniqueAfterInstruction()
       
       const status = sessionManager.getSessionStatus()
       expect(status.isActive).toBe(true)
@@ -323,7 +323,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
       await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
       
       // Try to start technique cycle before instruction audio completes
-      sessionManager.startTechniqueAfterInstruction(mockSessionConfig)
+      sessionManager.startTechniqueAfterInstruction()
       
       const status = sessionManager.getSessionStatus()
       expect(status.isWaitingForInstructionCompletion).toBe(true)
@@ -332,7 +332,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     it('should start technique cycle for regular sessions without fight list', async () => {
       await sessionManager.startSession(mockSessionConfig)
       
-      sessionManager.startTechniqueAfterInstruction(mockSessionConfig)
+      sessionManager.startTechniqueAfterInstruction()
       
       const status = sessionManager.getSessionStatus()
       expect(status.isActive).toBe(true)

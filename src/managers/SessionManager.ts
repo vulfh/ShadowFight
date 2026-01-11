@@ -14,6 +14,7 @@ export class SessionManager {
   private currentTechnique: Technique | null = null
   private techniquesUsed: number = 0
   private currentFightList: FightList | null = null
+  private currentSessionConfig: SessionConfig | null = null // Store the current session config
   private sessionStats: SessionStats = {
     totalTechniques: 0,
     techniquesByCategory: {
@@ -58,6 +59,9 @@ export class SessionManager {
     if (this._isActive) {
       throw new Error(ERROR_MESSAGES.SESSION_ALREADY_ACTIVE)
     }
+
+    // Store the session config for later use
+    this.currentSessionConfig = config
 
     this._isActive = true
     this._isPaused = false
@@ -267,9 +271,11 @@ export class SessionManager {
   /**
    * Start technique cycle (called externally after instruction audio completes)
    */
-  startTechniqueAfterInstruction(config: SessionConfig): void {
+  startTechniqueAfterInstruction(): void {
     if (this._instructionAudioCompleted || !this.currentFightList) {
-      this.scheduleNextTechnique(config)
+      if (this.currentSessionConfig) {
+        this.scheduleNextTechnique(this.currentSessionConfig)
+      }
     }
   }
 
@@ -308,6 +314,7 @@ export class SessionManager {
     this.stopTechniqueTimer()
     this.currentTechnique = null
     this.currentFightList = null
+    this.currentSessionConfig = null // Clear the stored session config
     
     // Stop instruction audio if playing
     if (this._isPlayingInstructionAudio && this.audioManager) {

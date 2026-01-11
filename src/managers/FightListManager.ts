@@ -121,7 +121,7 @@ export class FightListManager {
           throw new Error('Failed to set current fight list - fight list not found')
         }
       } else {
-        // Clear current fight list
+        // Clear current fight list using localStorage directly since StorageService doesn't have a clear method
         localStorage.removeItem(STORAGE_KEYS.CURRENT_FIGHT_LIST)
       }
     } catch (error) {

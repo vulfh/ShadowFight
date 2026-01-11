@@ -403,6 +403,8 @@ export class KravMagaTrainerApp {
   private async handleStartSession(): Promise<void> {
     try {
       const sessionConfig = this.configManager.getSessionConfig()
+      
+      // Get current fight list right before we need it to ensure we have the latest selection
       const currentFightList = this.fightListManager.getCurrentFightList()
 
       // Check if we have a current fight list
@@ -553,8 +555,8 @@ export class KravMagaTrainerApp {
     // Start the technique cycle now that instruction audio is complete
     const config = this.configManager.getSessionConfig()
     
-    // Tell SessionManager to start selecting techniques
-    this.sessionManager.startTechniqueAfterInstruction(config)
+    // Tell SessionManager to start selecting techniques (it will use its stored config)
+    this.sessionManager.startTechniqueAfterInstruction()
     
     // Start the announcement loop which will handle audio playback
     this.startTechniqueAnnouncementLoop(config)

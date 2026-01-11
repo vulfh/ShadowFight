@@ -271,8 +271,8 @@ export class FightListUIManager {
 
     // Set current
     const setCurrentBtn = element.querySelector('.set-current')
-    setCurrentBtn?.addEventListener('click', () => {
-      this.fightListManager.setCurrentFightList(fightList.id)
+    setCurrentBtn?.addEventListener('click', async () => {
+      await this.setCurrentFightList(fightList.id)
       this.renderFightLists()
     })
 
@@ -625,7 +625,7 @@ export class FightListUIManager {
       try {
         const name = nameInput.value.trim()
         const created = this.fightListManager.createFightList(name, selectedMode)
-        this.fightListManager.setCurrentFightList(created.id)
+        this.setCurrentFightList(created.id)
         this.renderFightLists()
         this.showNotification({ message: 'Fight list created successfully', type: 'success' })
         

@@ -25,7 +25,8 @@ export class SessionManager {
       [TECHNIQUE_CATEGORIES.DEFENSES_GRABS]: 0,
       [TECHNIQUE_CATEGORIES.WEAPONS]: 0,
       [TECHNIQUE_CATEGORIES.HAND_GRIP]: 0,
-      [TECHNIQUE_CATEGORIES.KNIFE]: 0
+      [TECHNIQUE_CATEGORIES.KNIFE]: 0,
+      [TECHNIQUE_CATEGORIES.SLIP]: 0
     },
     sessionDuration: 0
   }
@@ -393,7 +394,8 @@ export class SessionManager {
         [TECHNIQUE_CATEGORIES.DEFENSES_GRABS]: 0,
         [TECHNIQUE_CATEGORIES.WEAPONS]: 0,
         [TECHNIQUE_CATEGORIES.HAND_GRIP]: 0,
-        [TECHNIQUE_CATEGORIES.KNIFE]:0
+        [TECHNIQUE_CATEGORIES.KNIFE]: 0,
+        [TECHNIQUE_CATEGORIES.SLIP]: 0
       },
       sessionDuration: 0
     }

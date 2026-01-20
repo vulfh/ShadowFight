@@ -48,7 +48,7 @@ export class TechniqueManager {
           { name: 'Left Round Kick High ', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Low Kick ',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'yamin-beitat-magal-hitsonit-nemuha.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HIP', side: 'RIGHT' },
           { name: 'Left Low Kick ', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-nitsonit-nemuha.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HIP', side: 'LEFT' },
-          { name: 'Slipping Against Left Front Kick In Dead Zone', modes: [MODES.PERFORMING], file: 'smol-agana-neged-beita-regila-tsad-met.wav', category: 'Slip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Slipping Against Left Front Kick In Dead Zone', modes: [MODES.PERFORMING,MODES.RESPONDING], file: 'smol-agana-neged-beita-regila-tsad-met.wav', category: 'Slip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
 
           { name: 'Left Question Mark Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Question Mark Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },

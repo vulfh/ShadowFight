@@ -96,7 +96,7 @@ describe('AudioPlaybackQueue', () => {
       audioPlaybackQueue.enqueue('test.wav', AudioType.TECHNIQUE_ANNOUNCEMENT)
       
       // Start first playback
-      const playPromise = audioPlaybackQueue.play()
+      audioPlaybackQueue.play()
       
       // Try to start second playback
       await expect(audioPlaybackQueue.play()).rejects.toThrow('AudioPlaybackQueue: Already playing')

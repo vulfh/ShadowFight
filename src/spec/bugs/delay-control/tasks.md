@@ -10,49 +10,49 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
 
 ## Phase 1: Core Infrastructure Setup
 
-### Task 1.1: Create Audio Type Definitions
+### Task 1.1: Create Audio Type Definitions ✅
 
-- [ ] 1.1.1 Create new audio types file
+- [x] 1.1.1 Create new audio types file
   - Create `src/types/audio.ts`
   - Define `AudioType` enum with current and future audio types
   - Add `TECHNIQUE_ANNOUNCEMENT`, `TECHNIQUE_INSTRUCTION`, `TECHNIQUE_FEEDBACK`, `TECHNIQUE_CORRECTION`
   - _Validates: Requirement 3 (Audio Integration) - extensible audio system_
 
-- [ ] 1.1.2 Define AudioQueueItem interface
+- [x] 1.1.2 Define AudioQueueItem interface
   - Add `AudioQueueItem` interface in `src/types/audio.ts`
   - Include fields: `file: string`, `type: AudioType`, `priority: number`, `optional: boolean`
   - Add JSDoc documentation for each field
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - structured audio handling_
 
-- [ ] 1.1.3 Define PlaybackConfig interface
+- [x] 1.1.3 Define PlaybackConfig interface
   - Add `PlaybackConfig` interface in `src/types/audio.ts`
   - Include fields: `enabledAudioTypes: AudioType[]`, `fallbackOnError: boolean`, `maxRetries: number`
   - Set default values in JSDoc comments
   - _Validates: Requirement 4 (Backward Compatibility) - configurable behavior_
 
-- [ ] 1.1.4 Export audio types from main types file
+- [x] 1.1.4 Export audio types from main types file
   - Update `src/types/index.ts` to export from `./audio`
   - Add re-export statement: `export * from './audio'`
   - Verify no circular dependencies
   - _Validates: Requirement 3 (Audio Integration) - proper module structure_
 
-### Task 1.2: Create AudioPlaybackQueue Class
+### Task 1.2: Create AudioPlaybackQueue Class ✅
 
-- [ ] 1.2.1 Create AudioPlaybackQueue class file
+- [x] 1.2.1 Create AudioPlaybackQueue class file
   - Create `src/managers/AudioPlaybackQueue.ts`
   - Add class declaration with private properties
   - Include: `queue: AudioQueueItem[]`, `isPlaying: boolean`, `currentIndex: number`
   - Add constructor with AudioManager dependency injection
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - sequential audio management_
 
-- [ ] 1.2.2 Implement enqueue method
+- [x] 1.2.2 Implement enqueue method
   - Add `enqueue(audioFile: string, type: AudioType, priority?: number, optional?: boolean): void`
   - Sort queue by priority (higher priority first)
   - Prevent duplicate entries for same file and type
   - Add input validation for audioFile parameter
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - proper audio queuing_
 
-- [ ] 1.2.3 Implement play method
+- [x] 1.2.3 Implement play method
   - Add `play(): Promise<void>` method
   - Iterate through queue sequentially
   - Use AudioManager to play each audio file
@@ -60,21 +60,21 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Set `isPlaying` state correctly
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - sequential playback_
 
-- [ ] 1.2.4 Implement pause/resume methods
+- [x] 1.2.4 Implement pause/resume methods
   - Add `pause(): void` method to stop current audio and save state
   - Add `resume(): void` method to continue from paused position
   - Track paused state and current audio position
   - Handle AudioManager pause/resume integration
   - _Validates: Requirement 2 (Session State Management) - pause/resume support_
 
-- [ ] 1.2.5 Implement utility methods
+- [x] 1.2.5 Implement utility methods
   - Add `clear(): void` to empty queue and reset state
   - Add `isPlaying(): boolean` getter
   - Add `getCurrentAudio(): AudioQueueItem | null` getter
   - Add `getQueueLength(): number` getter
   - _Validates: Requirement 2 (Session State Management) - state visibility_
 
-- [ ] 1.2.6 Add error handling
+- [x] 1.2.6 Add error handling
   - Wrap audio playback in try-catch blocks
   - Handle optional audio failures gracefully (skip and continue)
   - Handle required audio failures (stop queue and callback with error)

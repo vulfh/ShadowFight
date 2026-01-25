@@ -3,6 +3,9 @@ import { Mode } from '../constants/modes'
 // Re-export Mode type for convenience
 export type { Mode }
 
+// Re-export audio types for delay control system
+export * from './audio'
+
 // Technique-related types
 export interface Technique {
   name: string

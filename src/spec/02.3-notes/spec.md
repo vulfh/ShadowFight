@@ -15,7 +15,7 @@ This feature introduces the ability to record and play voice notes associated wi
    - The mode of the note aligns with the fight list to which the technique currently belongs.
 
 3. **Playback Control**
-   - A "Play Notes" checkbox is added to the playlist UI.
+   - A "Play Notes" checkbox is added to the fightlist UI.
    - If the checkbox is selected, notes are played immediately after the technique declaration, one by one.
 
 4. **State Persistence**
@@ -59,6 +59,34 @@ This feature introduces the ability to record and play voice notes associated wi
 2. Should there be a limit on the total number of notes per technique?
 3. How should the UI indicate the association between notes and techniques/modes?
 
+## Answers to Open Questions
+
+1. **What is the maximum duration for a single voice note?**
+   - The maximum duration for a single voice note is **1 minute**.
+
+2. **Should there be a limit on the total number of notes per technique?**
+   - Yes, the maximum number of notes per mode in a technique is **15**.
+
+3. **How should the UI indicate the association between notes and techniques/modes?**
+   - The UI will indicate the association by displaying the mode of the Fight List and the mode of the note in the technique.
+
+## Clarifications
+
+1. **What happens to the notes associated with a technique if the technique is deleted?**
+   - The notes are also deleted.
+
+2. **What happens if there are no notes for a technique in the Fight List UI?**
+   - Display a message: "No notes available."
+
+3. **How should the system handle microphone unavailability during recording?**
+   - Display an error message and disable recording. Include the original system error message if available.
+
+4. **Should there be a limit on the total storage size for all notes?**
+   - Yes, limit to 100MB per user.
+
+5. **Should the system log note-related actions (e.g., recording, deleting, playing)?**
+   - Yes, for debugging and analytics.
+
 ## UI Requirements
 
 1. **Add Note Button**
@@ -94,3 +122,27 @@ Once the user clicks "Stop" during the recording process, the recording should b
 
 ### Additional Requirements
 - Each note must have a title that is unique to the mode of the associated technique.
+
+## Updated Requirements
+
+### Fight List UI Component
+
+1. **Expandable List of Notes**
+   - The Fight List UI component will include an expandable list of notes for each technique.
+   - The list will display only the notes associated with the specific mode of the Fight List.
+     - For example, if Fight List A is in "Performance Mode":
+       - Technique T has 2 notes for "Performance Mode" and 3 notes for "Responding Mode".
+       - The list of notes for Technique T in Fight List A will display only the 2 notes associated with "Performance Mode".
+
+2. **Note Options**
+   - Each note in the list will have the following options:
+     - **Play Button**: Allows the user to play the selected note.
+     - **Delete Button**: Allows the user to delete the selected note.
+
+3. **Delete Confirmation Window**
+   - When the user clicks the "Delete" button for a note:
+     - A delete confirmation window will appear.
+     - The window will display the message: "Are you sure you want to delete this note? This action cannot be undone."
+     - The window will include two buttons:
+       - **Confirm**: Deletes the note and removes it from the list.
+       - **Cancel**: Closes the confirmation window without deleting the note.

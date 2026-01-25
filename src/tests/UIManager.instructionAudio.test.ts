@@ -67,7 +67,12 @@ describe('UIManager - Instruction Audio UI Integration', () => {
       isPlayingInstructionAudio: false,
       isWaitingForInstructionCompletion: false,
       instructionAudioCompleted: false,
-      instructionAudioPlayedThisSession: false
+      instructionAudioPlayedThisSession: false,
+      isPlayingTechniqueAudio: false,
+      currentAudioType: null,
+      audioQueueLength: 0,
+      isDelayActive: false,
+      delayRemainingTime: 0
     }
   })
 

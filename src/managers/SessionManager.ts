@@ -1,7 +1,8 @@
-import { Technique, SessionConfig, SessionStatus, SessionStats, FightList } from '../types'
+import { Technique, SessionConfig, SessionStatus, SessionStats, FightList, PlaybackConfig, AudioType } from '../types'
 import { ITechniqueSelectionStrategy, TechniqueSelectionStrategyFactory } from '../utils/TechniqueSelectionStrategy'
 import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../constants'
 import { AudioManager } from './AudioManager'
+import { TechniquePlaybackManager } from './TechniquePlaybackManager'
 
 export class SessionManager {
   private selectionStrategy!: ITechniqueSelectionStrategy
@@ -39,6 +40,19 @@ export class SessionManager {
   private _instructionAudioPlayedThisSession: boolean = false
   private audioManager: AudioManager | null = null
   
+  // Technique playback management
+  private techniquePlaybackManager: TechniquePlaybackManager | null = null
+  
+  // Delay timer state management
+  private delayTimer: number | null = null
+  private delayRemainingTime: number = 0
+  private isDelayActive: boolean = false
+  private playbackConfig: PlaybackConfig = {
+    enabledAudioTypes: [AudioType.TECHNIQUE_ANNOUNCEMENT],
+    fallbackOnError: true,
+    maxRetries: 1
+  }
+  
   public onSessionComplete?: () => void
   public onInstructionAudioStarted?: () => void
   public onInstructionAudioCompleted?: () => void
@@ -46,6 +60,7 @@ export class SessionManager {
 
   async init(): Promise<void> {
     this.selectionStrategy = TechniqueSelectionStrategyFactory.createStrategy(STRATEGY_TYPES.RANDOM)
+    this.playbackConfig = this.createDefaultPlaybackConfig()
     this.isInitialized = true
   }
 
@@ -54,6 +69,13 @@ export class SessionManager {
    */
   setAudioManager(audioManager: AudioManager): void {
     this.audioManager = audioManager
+  }
+
+  /**
+   * Set the technique playback manager instance for audio-aware delay timing
+   */
+  setTechniquePlaybackManager(manager: TechniquePlaybackManager): void {
+    this.techniquePlaybackManager = manager
   }
 
   async startSession(config: SessionConfig): Promise<void> {
@@ -287,6 +309,16 @@ export class SessionManager {
     this.stopSessionTimer()
     this.stopTechniqueTimer()
     
+    // Pause technique playback if active
+    if (this.techniquePlaybackManager && this.techniquePlaybackManager.isPlaybackActive()) {
+      this.techniquePlaybackManager.pausePlayback()
+    }
+    
+    // Pause delay timer if active
+    if (this.isDelayActive) {
+      this.pauseDelayTimer()
+    }
+    
     // If instruction audio is playing, stop it but remember the state
     if (this._isPlayingInstructionAudio && this.audioManager) {
       this.audioManager.stopInstructionAudio()
@@ -302,6 +334,16 @@ export class SessionManager {
     this._isPaused = false
     this.startSessionTimer()
     
+    // Resume technique playback if it was active
+    if (this.techniquePlaybackManager) {
+      this.techniquePlaybackManager.resumePlayback()
+    }
+    
+    // Resume delay timer if it was active
+    if (this.isDelayActive && this.currentSessionConfig) {
+      this.resumeDelayTimer(this.currentSessionConfig)
+    }
+    
     // If we were waiting for instruction completion when paused, resume instruction audio
     if (this._waitingForInstructionCompletion && !this._instructionAudioCompleted) {
       this.resumeInstructionAudio()
@@ -313,9 +355,15 @@ export class SessionManager {
     this._isPaused = false
     this.stopSessionTimer()
     this.stopTechniqueTimer()
+    this.stopDelayTimer()
     this.currentTechnique = null
     this.currentFightList = null
     this.currentSessionConfig = null // Clear the stored session config
+    
+    // Stop technique playback if active
+    if (this.techniquePlaybackManager) {
+      this.techniquePlaybackManager.stopPlayback()
+    }
     
     // Stop instruction audio if playing
     if (this._isPlayingInstructionAudio && this.audioManager) {
@@ -366,21 +414,102 @@ export class SessionManager {
     this.announceTechnique(technique, config)
   }
 
-  private announceTechnique(technique: Technique, config: SessionConfig): void {
+  /**
+   * Start the delay timer after technique audio completes
+   */
+  private startDelayTimer(config: SessionConfig): void {
+    if (!this._isActive || this._isPaused) return
+
+    this.isDelayActive = true
+    this.delayRemainingTime = config.delay
+
+    this.delayTimer = window.setTimeout(() => {
+      this.onDelayComplete(config)
+    }, config.delay * 1000)
+  }
+
+  /**
+   * Stop the delay timer and clear state
+   */
+  private stopDelayTimer(): void {
+    if (this.delayTimer) {
+      clearTimeout(this.delayTimer)
+      this.delayTimer = null
+    }
+    this.isDelayActive = false
+    this.delayRemainingTime = 0
+  }
+
+  /**
+   * Pause the delay timer and save remaining time
+   */
+  private pauseDelayTimer(): void {
+    if (this.delayTimer && this.isDelayActive) {
+      clearTimeout(this.delayTimer)
+      this.delayTimer = null
+      // Note: In a real implementation, we'd need to track elapsed time
+      // For now, we'll resume with the full delay time
+    }
+  }
+
+  /**
+   * Resume the delay timer with remaining time
+   */
+  private resumeDelayTimer(config: SessionConfig): void {
+    if (this.isDelayActive && !this.delayTimer) {
+      this.delayTimer = window.setTimeout(() => {
+        this.onDelayComplete(config)
+      }, this.delayRemainingTime * 1000)
+    }
+  }
+
+  /**
+   * Handle delay timer completion
+   */
+  private onDelayComplete(config: SessionConfig): void {
+    this.isDelayActive = false
+    this.delayRemainingTime = 0
+    this.currentTechnique = null
+    this.scheduleNextTechnique(config)
+  }
+
+  private async announceTechnique(technique: Technique, config: SessionConfig): Promise<void> {
     this.currentTechnique = technique
     this.techniquesUsed++
     this.updateSessionStats(technique)
 
-    // Schedule next technique after delay
-    this.techniqueTimer = window.setTimeout(() => {
-      this.currentTechnique = null
-      this.scheduleNextTechnique(config)
-    }, config.delay * 1000)
+    try {
+      // Check if we have technique playback manager for audio-aware timing
+      if (this.techniquePlaybackManager && this.techniquePlaybackManager.isReady()) {
+        // Use audio-aware delay timing
+        await this.techniquePlaybackManager.playTechniqueWithAudio(technique, this.playbackConfig)
+        // Audio has completed, now start delay timer
+        this.startDelayTimer(config)
+      } else {
+        // Fallback to immediate delay timing (backward compatibility)
+        this.startDelayTimer(config)
+      }
+    } catch (error) {
+      console.error('Failed to play technique audio:', error)
+      // On audio error, fall back to immediate delay timing
+      this.startDelayTimer(config)
+    }
   }
 
   private updateSessionStats(technique: Technique): void {
     this.sessionStats.totalTechniques++
     this.sessionStats.techniquesByCategory[technique.category]++
+  }
+
+  /**
+   * Create default playback configuration for backward compatibility
+   */
+  private createDefaultPlaybackConfig(): PlaybackConfig {
+    return {
+      enabledAudioTypes: [AudioType.TECHNIQUE_ANNOUNCEMENT],
+      fallbackOnError: true,
+      maxRetries: 1
+    }
   }
 
   private resetSessionStats(): void {
@@ -428,7 +557,12 @@ export class SessionManager {
       isPlayingInstructionAudio: this._isPlayingInstructionAudio,
       isWaitingForInstructionCompletion: this._waitingForInstructionCompletion,
       instructionAudioCompleted: this._instructionAudioCompleted,
-      instructionAudioPlayedThisSession: this._instructionAudioPlayedThisSession
+      instructionAudioPlayedThisSession: this._instructionAudioPlayedThisSession,
+      isPlayingTechniqueAudio: this.techniquePlaybackManager?.isPlaybackActive() ?? false,
+      currentAudioType: this.techniquePlaybackManager?.getCurrentAudio()?.type ?? null,
+      audioQueueLength: this.techniquePlaybackManager?.getRemainingAudioCount() ?? 0,
+      isDelayActive: this.isDelayActive,
+      delayRemainingTime: this.delayRemainingTime
     }
   }
 

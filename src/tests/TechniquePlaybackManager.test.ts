@@ -127,7 +127,7 @@ describe('TechniquePlaybackManager', () => {
 
     it('should handle playback errors gracefully', async () => {
       const error = new Error('Audio playback failed')
-      mockAudioQueue.play.mockRejectedValueOnce(error)
+      ;(mockAudioQueue.play as any).mockRejectedValueOnce(error)
       
       await expect(techniquePlaybackManager.playTechniqueWithAudio(sampleTechnique, sampleConfig))
         .rejects.toThrow('Audio playback failed')
@@ -162,7 +162,7 @@ describe('TechniquePlaybackManager', () => {
       expect(techniquePlaybackManager.isPlaybackActive()).toBe(false)
       
       // Mock ongoing playback
-      mockAudioQueue.play.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
+      ;(mockAudioQueue.play as any).mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
       
       const playbackPromise = techniquePlaybackManager.playTechniqueWithAudio(sampleTechnique, sampleConfig)
       
@@ -176,7 +176,7 @@ describe('TechniquePlaybackManager', () => {
     })
 
     it('should report active state when audio queue is playing', () => {
-      mockAudioQueue.isPlayingAudio.mockReturnValue(true)
+      ;(mockAudioQueue.isPlayingAudio as any).mockReturnValue(true)
       
       expect(techniquePlaybackManager.isPlaybackActive()).toBe(true)
     })
@@ -229,13 +229,13 @@ describe('TechniquePlaybackManager', () => {
         priority: 10,
         optional: false
       }
-      mockAudioQueue.getCurrentAudio.mockReturnValue(mockAudioItem)
+      ;(mockAudioQueue.getCurrentAudio as any).mockReturnValue(mockAudioItem)
       
       expect(techniquePlaybackManager.getCurrentAudio()).toBe(mockAudioItem)
     })
 
     it('should get remaining audio count from queue', () => {
-      mockAudioQueue.getRemainingItems.mockReturnValue(3)
+      ;(mockAudioQueue.getRemainingItems as any).mockReturnValue(3)
       
       expect(techniquePlaybackManager.getRemainingAudioCount()).toBe(3)
     })
@@ -314,7 +314,7 @@ describe('TechniquePlaybackManager', () => {
     })
 
     it('should reset state after playback error', async () => {
-      mockAudioQueue.play.mockRejectedValueOnce(new Error('Playback failed'))
+      ;(mockAudioQueue.play as any).mockRejectedValueOnce(new Error('Playback failed'))
       
       await expect(techniquePlaybackManager.playTechniqueWithAudio(sampleTechnique, sampleConfig))
         .rejects.toThrow('Playback failed')

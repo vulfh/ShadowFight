@@ -1,4 +1,5 @@
 import { Mode } from '../constants/modes'
+import { AudioType } from './audio'
 
 // Re-export Mode type for convenience
 export type { Mode }
@@ -144,6 +145,11 @@ export interface SessionStatus {
   isWaitingForInstructionCompletion: boolean
   instructionAudioCompleted: boolean
   instructionAudioPlayedThisSession: boolean
+  isPlayingTechniqueAudio: boolean
+  currentAudioType: AudioType | null
+  audioQueueLength: number
+  isDelayActive: boolean
+  delayRemainingTime: number
 }
 
 // Audio types

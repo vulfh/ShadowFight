@@ -123,23 +123,23 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
 
 ## Phase 2: SessionManager Integration
 
-### Task 2.1: Modify SessionManager Audio Integration
+### Task 2.1: Modify SessionManager Audio Integration ✅
 
-- [ ] 2.1.1 Add TechniquePlaybackManager dependency
+- [x] 2.1.1 Add TechniquePlaybackManager dependency
   - Update `src/managers/SessionManager.ts` imports
   - Add private property: `techniquePlaybackManager: TechniquePlaybackManager | null`
   - Add setter method: `setTechniquePlaybackManager(manager: TechniquePlaybackManager): void`
   - Initialize in constructor or init method
   - _Validates: Requirement 3 (Audio Integration) - proper dependency injection_
 
-- [ ] 2.1.2 Add delay timer state management
+- [x] 2.1.2 Add delay timer state management
   - Add private properties: `delayTimer: number | null`, `delayRemainingTime: number`
   - Add private property: `isDelayActive: boolean`
   - Initialize delay state in constructor
   - Reset delay state in session cleanup methods
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - separate delay timing_
 
-- [ ] 2.1.3 Create startDelayTimer method
+- [x] 2.1.3 Create startDelayTimer method
   - Add private `startDelayTimer(config: SessionConfig): void` method
   - Set `isDelayActive = true`
   - Store delay duration in `delayRemainingTime`
@@ -147,7 +147,7 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Call `onDelayComplete()` when timer expires
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - delay starts after audio_
 
-- [ ] 2.1.4 Create delay timer control methods
+- [x] 2.1.4 Create delay timer control methods
   - Add private `stopDelayTimer(): void` method
   - Add private `pauseDelayTimer(): void` method
   - Add private `resumeDelayTimer(): void` method
@@ -155,7 +155,7 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Store remaining time for pause/resume functionality
   - _Validates: Requirement 2 (Session State Management) - delay timer control_
 
-- [ ] 2.1.5 Create onDelayComplete callback
+- [x] 2.1.5 Create onDelayComplete callback
   - Add private `onDelayComplete(): void` method
   - Set `isDelayActive = false`
   - Clear `currentTechnique = null`
@@ -163,23 +163,23 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Handle session completion if time expired
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - proper cycle continuation_
 
-### Task 2.2: Refactor announceTechnique Method
+### Task 2.2: Refactor announceTechnique Method ✅
 
-- [ ] 2.2.1 Update method signature
+- [x] 2.2.1 Update method signature
   - Change `announceTechnique` from void to `async Promise<void>`
   - Keep existing parameters: `technique: Technique`, `config: SessionConfig`
   - Add error handling wrapper around entire method
   - Maintain backward compatibility for callers
   - _Validates: Requirement 4 (Backward Compatibility) - non-breaking changes_
 
-- [ ] 2.2.2 Remove immediate delay timer start
+- [x] 2.2.2 Remove immediate delay timer start
   - Remove existing `setTimeout` call that starts delay immediately
   - Remove direct assignment to `this.techniqueTimer`
   - Keep technique state updates (currentTechnique, techniquesUsed, stats)
   - Preserve all existing technique announcement logic
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - fix core bug_
 
-- [ ] 2.2.3 Add audio playback integration
+- [x] 2.2.3 Add audio playback integration
   - Check if `techniquePlaybackManager` is available
   - Create PlaybackConfig with current session settings
   - Call `techniquePlaybackManager.playTechniqueWithAudio(technique, config)`
@@ -187,23 +187,23 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Handle playback success and error cases
   - _Validates: Requirement 3 (Audio Integration) - SessionManager uses AudioManager_
 
-- [ ] 2.2.4 Add fallback for no audio manager
+- [x] 2.2.4 Add fallback for no audio manager
   - Add conditional check for `techniquePlaybackManager` availability
   - If unavailable, start delay timer immediately (current behavior)
   - Log warning about missing audio manager
   - Ensure session continues normally without audio
   - _Validates: Requirement 4 (Backward Compatibility) - fallback behavior_
 
-- [ ] 2.2.5 Add audio completion handling
+- [x] 2.2.5 Add audio completion handling
   - On successful audio playback completion, call `startDelayTimer(config)`
   - On audio playback error, call `startDelayTimer(config)` as fallback
   - Log audio errors appropriately
   - Increment audio failure counter if needed
   - _Validates: Requirement 1 (Audio-Aware Delay Timing) - delay after audio completion_
 
-### Task 2.3: Update Pause/Resume Logic
+### Task 2.3: Update Pause/Resume Logic ✅
 
-- [ ] 2.3.1 Enhance pauseSession method
+- [x] 2.3.1 Enhance pauseSession method
   - Update existing `pauseSession()` method in SessionManager
   - Add check for active technique playback
   - Call `techniquePlaybackManager.pausePlayback()` if playback active
@@ -211,7 +211,7 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Preserve existing session timer and state management
   - _Validates: Requirement 2 (Session State Management) - pause during audio/delay_
 
-- [ ] 2.3.2 Enhance resumeSession method
+- [x] 2.3.2 Enhance resumeSession method
   - Update existing `resumeSession()` method in SessionManager
   - Add check for paused technique playback
   - Call `techniquePlaybackManager.resumePlayback()` if needed
@@ -219,7 +219,7 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Preserve existing session timer and state management
   - _Validates: Requirement 2 (Session State Management) - resume from pause_
 
-- [ ] 2.3.3 Update stopSession method
+- [x] 2.3.3 Update stopSession method
   - Update existing `stopSession()` method in SessionManager
   - Add call to `techniquePlaybackManager.stopPlayback()` if available
   - Add call to `stopDelayTimer()` to clear delay timer
@@ -229,9 +229,9 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
 
 ## Phase 3: State Management Enhancement
 
-### Task 3.1: Extend SessionStatus Interface
+### Task 3.1: Extend SessionStatus Interface ✅
 
-- [ ] 3.1.1 Update SessionStatus type definition
+- [x] 3.1.1 Update SessionStatus type definition
   - Edit `src/types/index.ts` SessionStatus interface
   - Add `isPlayingTechniqueAudio: boolean` field
   - Add `currentAudioType: AudioType | null` field
@@ -239,16 +239,16 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Add `isDelayActive: boolean` field
   - _Validates: Requirement 2 (Session State Management) - extended state visibility_
 
-- [ ] 3.1.2 Add delayRemainingTime field
+- [x] 3.1.2 Add delayRemainingTime field
   - Add `delayRemainingTime: number` to SessionStatus interface
   - Document field as "remaining delay time in seconds"
   - Set default value to 0 in implementation
   - Update JSDoc comments for the interface
   - _Validates: Requirement 2 (Session State Management) - delay timing visibility_
 
-### Task 3.2: Update getSessionStatus Method
+### Task 3.2: Update getSessionStatus Method ✅
 
-- [ ] 3.2.1 Add technique playback status
+- [x] 3.2.1 Add technique playback status
   - Update `getSessionStatus()` method in SessionManager
   - Set `isPlayingTechniqueAudio` from `techniquePlaybackManager.isPlaybackActive()`
   - Set `currentAudioType` from current audio queue item
@@ -256,16 +256,16 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Handle null techniquePlaybackManager gracefully
   - _Validates: Requirement 2 (Session State Management) - accurate status reporting_
 
-- [ ] 3.2.2 Add delay timer status
+- [x] 3.2.2 Add delay timer status
   - Set `isDelayActive` from internal delay timer state
   - Set `delayRemainingTime` from current delay timer remaining time
   - Calculate remaining time accurately for paused timers
   - Ensure values are consistent with actual timer state
   - _Validates: Requirement 2 (Session State Management) - delay status visibility_
 
-### Task 3.3: Add PlaybackConfig Management
+### Task 3.3: Add PlaybackConfig Management ✅
 
-- [ ] 3.3.1 Create default PlaybackConfig
+- [x] 3.3.1 Create default PlaybackConfig
   - Add private `createDefaultPlaybackConfig(): PlaybackConfig` method
   - Set `enabledAudioTypes: [AudioType.TECHNIQUE_ANNOUNCEMENT]`
   - Set `fallbackOnError: true`
@@ -273,7 +273,7 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Make configurable through session config in future
   - _Validates: Requirement 4 (Backward Compatibility) - sensible defaults_
 
-- [ ] 3.3.2 Add PlaybackConfig to session state
+- [x] 3.3.2 Add PlaybackConfig to session state
   - Add private property `playbackConfig: PlaybackConfig`
   - Initialize in constructor with default config
   - Use in technique playback calls

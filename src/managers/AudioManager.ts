@@ -308,6 +308,27 @@ export class AudioManager {
     }
   }
 
+  /**
+   * Get the duration of an audio file in seconds
+   * @param filename - The audio file to get duration for
+   * @returns Promise that resolves to duration in seconds, or 0 if unknown
+   */
+  async getAudioDuration(filename: string): Promise<number> {
+    if (!this.audioContext) {
+      console.warn('AudioContext not initialized, returning 0 duration')
+      return 0
+    }
+
+    try {
+      // Load the audio buffer (this will use cache if already loaded)
+      const audioBuffer = await this.loadAudio(filename)
+      return audioBuffer.duration
+    } catch (error) {
+      console.warn(`Failed to get duration for audio file ${filename}:`, error)
+      return 0
+    }
+  }
+
   stopCurrentAudio(): void {
     if (this.currentSource) {
       try {

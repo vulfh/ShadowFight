@@ -479,4 +479,90 @@ describe('AudioManager - Instruction Audio', () => {
       expect(onComplete).not.toHaveBeenCalled()
     })
   })
+
+  describe('getAudioDuration', () => {
+    beforeEach(async () => {
+      await audioManager.init()
+      // Clear mock call count after initialization to test caching behavior
+      vi.clearAllMocks()
+    })
+
+    it('should return audio duration in seconds', async () => {
+      const filename = 'test-audio.wav'
+      
+      const duration = await audioManager.getAudioDuration(filename)
+      
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename))
+      expect(duration).toBe(2.5) // mockAudioBuffer.duration
+    })
+
+    it('should use cached audio buffer if already loaded', async () => {
+      const filename = 'cached-audio.wav'
+      
+      // Load audio first time
+      await audioManager.loadAudio(filename)
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+      
+      // Get duration should use cached buffer
+      const duration = await audioManager.getAudioDuration(filename)
+      
+      expect(mockFetch).toHaveBeenCalledTimes(1) // Should not fetch again
+      expect(duration).toBe(2.5)
+    })
+
+    it('should return 0 for unknown duration on load error', async () => {
+      const filename = 'nonexistent.wav'
+      
+      mockFetch.mockRejectedValueOnce(new Error('File not found'))
+      
+      const duration = await audioManager.getAudioDuration(filename)
+      
+      expect(duration).toBe(0)
+    })
+
+    it('should return 0 for unknown duration on decode error', async () => {
+      const filename = 'corrupt.wav'
+      
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(1024))
+      })
+      mockAudioContext.decodeAudioData.mockRejectedValueOnce(new Error('Decode failed'))
+      
+      const duration = await audioManager.getAudioDuration(filename)
+      
+      expect(duration).toBe(0)
+    })
+
+    it('should return 0 when AudioContext not initialized', async () => {
+      const uninitializedManager = new AudioManager()
+      const filename = 'test.wav'
+      
+      const duration = await uninitializedManager.getAudioDuration(filename)
+      
+      expect(duration).toBe(0)
+    })
+
+    it('should handle different audio buffer durations', async () => {
+      const filename = 'long-audio.wav'
+      const longAudioBuffer = { ...mockAudioBuffer, duration: 10.75 }
+      
+      mockAudioContext.decodeAudioData.mockResolvedValueOnce(longAudioBuffer)
+      
+      const duration = await audioManager.getAudioDuration(filename)
+      
+      expect(duration).toBe(10.75)
+    })
+
+    it('should handle zero duration audio files', async () => {
+      const filename = 'empty-audio.wav'
+      const emptyAudioBuffer = { ...mockAudioBuffer, duration: 0 }
+      
+      mockAudioContext.decodeAudioData.mockResolvedValueOnce(emptyAudioBuffer)
+      
+      const duration = await audioManager.getAudioDuration(filename)
+      
+      expect(duration).toBe(0)
+    })
+  })
 })

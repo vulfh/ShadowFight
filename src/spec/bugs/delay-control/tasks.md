@@ -292,7 +292,7 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
   - Maintain existing playAudio functionality
   - _Validates: Requirement 3 (Audio Integration) - audio completion callbacks_
 
-- [ ] 4.1.2 Add audio duration detection
+- [x] 4.1.2 Add audio duration detection
   - Add `getAudioDuration(filename: string): Promise<number>` method
   - Load audio buffer and return duration in seconds
   - Cache duration information for performance

@@ -358,4 +358,125 @@ describe('AudioManager - Instruction Audio', () => {
       expect(audioManager.isPlaying()).toBe(false)
     })
   })
+
+  describe('playAudioWithCallback', () => {
+    beforeEach(async () => {
+      await audioManager.init()
+    })
+
+    it('should play audio and call completion callback', async () => {
+      const onComplete = vi.fn()
+      const filename = 'test-audio.wav'
+      
+      await audioManager.playAudioWithCallback(filename, onComplete)
+      
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename))
+      expect(mockBufferSource.start).toHaveBeenCalledWith(0)
+      
+      // Simulate audio ending
+      if (mockBufferSource.onended) {
+        mockBufferSource.onended()
+      }
+      
+      expect(onComplete).toHaveBeenCalled()
+    })
+
+    it('should call error callback on audio load failure', async () => {
+      const onComplete = vi.fn()
+      const onError = vi.fn()
+      const filename = 'nonexistent.wav'
+      
+      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+      
+      await expect(audioManager.playAudioWithCallback(filename, onComplete, onError))
+        .rejects.toThrow()
+      
+      expect(onError).toHaveBeenCalledWith(expect.any(Error))
+      expect(onComplete).not.toHaveBeenCalled()
+    })
+
+    it('should call error callback on audio decode failure', async () => {
+      const onComplete = vi.fn()
+      const onError = vi.fn()
+      const filename = 'corrupt.wav'
+      
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(1024))
+      })
+      mockAudioContext.decodeAudioData.mockRejectedValueOnce(new Error('Decode failed'))
+      
+      await expect(audioManager.playAudioWithCallback(filename, onComplete, onError))
+        .rejects.toThrow('Decode failed')
+      
+      expect(onError).toHaveBeenCalledWith(expect.any(Error))
+      expect(onComplete).not.toHaveBeenCalled()
+    })
+
+    it('should handle missing AudioContext gracefully', async () => {
+      const onComplete = vi.fn()
+      const onError = vi.fn()
+      const filename = 'test.wav'
+      
+      // Create a new AudioManager without initialization
+      const uninitializedManager = new AudioManager()
+      
+      await expect(uninitializedManager.playAudioWithCallback(filename, onComplete, onError))
+        .rejects.toThrow('AudioContext not initialized')
+      
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining({
+        message: 'AudioContext not initialized'
+      }))
+      expect(onComplete).not.toHaveBeenCalled()
+    })
+
+    it('should work without error callback', async () => {
+      const onComplete = vi.fn()
+      const filename = 'test-audio.wav'
+      
+      await audioManager.playAudioWithCallback(filename, onComplete)
+      
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename))
+      expect(mockBufferSource.start).toHaveBeenCalledWith(0)
+      
+      // Simulate audio ending
+      if (mockBufferSource.onended) {
+        mockBufferSource.onended()
+      }
+      
+      expect(onComplete).toHaveBeenCalled()
+    })
+
+    it('should stop current audio before playing new audio', async () => {
+      const onComplete1 = vi.fn()
+      const onComplete2 = vi.fn()
+      
+      // Start first audio
+      await audioManager.playAudioWithCallback('audio1.wav', onComplete1)
+      expect(mockBufferSource.start).toHaveBeenCalledTimes(1)
+      
+      // Start second audio (should stop first)
+      await audioManager.playAudioWithCallback('audio2.wav', onComplete2)
+      expect(mockBufferSource.stop).toHaveBeenCalled()
+      expect(mockBufferSource.start).toHaveBeenCalledTimes(2)
+    })
+
+    it('should handle buffer source creation failure', async () => {
+      const onComplete = vi.fn()
+      const onError = vi.fn()
+      const filename = 'test.wav'
+      
+      mockAudioContext.createBufferSource.mockImplementation(() => {
+        throw new Error('Buffer source creation failed')
+      })
+      
+      await expect(audioManager.playAudioWithCallback(filename, onComplete, onError))
+        .rejects.toThrow('Buffer source creation failed')
+      
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('Buffer source creation failed')
+      }))
+      expect(onComplete).not.toHaveBeenCalled()
+    })
+  })
 })

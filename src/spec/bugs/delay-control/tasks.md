@@ -284,7 +284,7 @@ This task breakdown implements the delay control bug fix as specified in `spec.m
 
 ### Task 4.1: Enhance AudioManager for Callbacks
 
-- [ ] 4.1.1 Add playAudioWithCallback method
+- [x] 4.1.1 Add playAudioWithCallback method
   - Update `src/managers/AudioManager.ts`
   - Add `playAudioWithCallback(filename: string, onComplete: () => void, onError?: (error: Error) => void): Promise<void>`
   - Implement completion callback using `currentSource.onended`

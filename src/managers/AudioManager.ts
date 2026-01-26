@@ -259,6 +259,55 @@ export class AudioManager {
     }
   }
 
+  /**
+   * Play audio with completion and error callbacks
+   * @param filename - The audio file to play
+   * @param onComplete - Callback when audio completes successfully
+   * @param onError - Optional callback when audio fails to play
+   * @returns Promise that resolves when audio starts playing
+   */
+  async playAudioWithCallback(
+    filename: string, 
+    onComplete: () => void, 
+    onError?: (error: Error) => void
+  ): Promise<void> {
+    if (!this.audioContext || !this.gainNode) {
+      const error = new Error('AudioContext not initialized')
+      if (onError) {
+        onError(error)
+      }
+      throw error
+    }
+
+    try {
+      this.stopCurrentAudio()
+      const audioBuffer = await this.loadAudio(filename)
+      
+      this.currentSource = this.audioContext.createBufferSource()
+      this.currentSource.buffer = audioBuffer
+      this.currentSource.connect(this.gainNode)
+      
+      // Set up completion callback
+      this.currentSource.onended = () => {
+        this.currentSource = null
+        onComplete()
+      }
+      
+      // Start playing
+      this.currentSource.start(0)
+      
+    } catch (error) {
+      console.error(`Failed to play audio ${filename}:`, error)
+      const audioError = error instanceof Error ? error : new Error(`Failed to play audio ${filename}`)
+      
+      if (onError) {
+        onError(audioError)
+      }
+      
+      throw audioError
+    }
+  }
+
   stopCurrentAudio(): void {
     if (this.currentSource) {
       try {

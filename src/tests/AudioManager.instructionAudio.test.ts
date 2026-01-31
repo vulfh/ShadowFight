@@ -5,7 +5,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { AudioManager } from '../managers/AudioManager'
 import { MODES } from '../constants/modes'
-import { AUDIO_EVENTS, AUDIO_ERRORS } from '../constants/audio'
+import { AUDIO_EVENTS, AudioError } from '../constants/audio'
 
 // Mock Web Audio API
 const mockAudioContext = {
@@ -87,7 +87,7 @@ describe('AudioManager - Instruction Audio', () => {
         throw new Error('AudioContext creation failed')
       })
 
-      await expect(audioManager.init()).rejects.toThrow('AudioContext creation failed')
+      await expect(audioManager.init()).rejects.toThrow('Failed to create gain node')
     })
   })
 
@@ -101,7 +101,9 @@ describe('AudioManager - Instruction Audio', () => {
       
       await audioManager.playInstructionAudio(MODES.PERFORMING, onComplete)
       
-      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('instruction-for-performer.wav'))
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('instruction-for-performer.wav'), expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      }))
       expect(mockBufferSource.start).toHaveBeenCalledWith(0)
       expect(audioManager.isPlayingInstructionAudio()).toBe(true)
       expect(audioManager.getCurrentInstructionMode()).toBe(MODES.PERFORMING)
@@ -112,7 +114,9 @@ describe('AudioManager - Instruction Audio', () => {
       
       await audioManager.playInstructionAudio(MODES.RESPONDING, onComplete)
       
-      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('instruction-for-responder.wav'))
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('instruction-for-responder.wav'), expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      }))
       expect(mockBufferSource.start).toHaveBeenCalledWith(0)
       expect(audioManager.isPlayingInstructionAudio()).toBe(true)
       expect(audioManager.getCurrentInstructionMode()).toBe(MODES.RESPONDING)
@@ -157,7 +161,7 @@ describe('AudioManager - Instruction Audio', () => {
       mockFetch.mockRejectedValue(new Error('Network error'))
       
       await expect(audioManager.playInstructionAudio(MODES.PERFORMING))
-        .rejects.toThrow('Network error')
+        .rejects.toThrow('Audio playback failed')
       
       expect(audioManager.isPlayingInstructionAudio()).toBe(false)
     })
@@ -177,7 +181,7 @@ describe('AudioManager - Instruction Audio', () => {
       const uninitializedManager = new AudioManager()
       
       await expect(uninitializedManager.playInstructionAudio(MODES.PERFORMING))
-        .rejects.toThrow(AUDIO_ERRORS.LOAD_FAILED)
+        .rejects.toThrow('AudioContext not initialized')
     })
   })
 
@@ -307,13 +311,16 @@ describe('AudioManager - Instruction Audio', () => {
       mockAudioContext.decodeAudioData.mockRejectedValue(new Error('Decode failed'))
       
       await expect(audioManager.playInstructionAudio(MODES.PERFORMING))
-        .rejects.toThrow('Decode failed')
+        .rejects.toThrow('Audio playback failed')
       
       expect(errorListener).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: expect.objectContaining({
             mode: MODES.PERFORMING,
-            error: 'Decode failed'
+            error: 'Audio playback failed',
+            errorType: 'playback',
+            filename: 'instruction-for-performer.wav',
+            userMessage: expect.any(String)
           })
         })
       )
@@ -327,7 +334,7 @@ describe('AudioManager - Instruction Audio', () => {
       })
       
       await expect(audioManager.playInstructionAudio(MODES.PERFORMING))
-        .rejects.toThrow('Buffer source creation failed')
+        .rejects.toThrow('Failed to create audio buffer source')
     })
   })
 
@@ -370,7 +377,9 @@ describe('AudioManager - Instruction Audio', () => {
       
       await audioManager.playAudioWithCallback(filename, onComplete)
       
-      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename))
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename), expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      }))
       expect(mockBufferSource.start).toHaveBeenCalledWith(0)
       
       // Simulate audio ending
@@ -407,7 +416,7 @@ describe('AudioManager - Instruction Audio', () => {
       mockAudioContext.decodeAudioData.mockRejectedValueOnce(new Error('Decode failed'))
       
       await expect(audioManager.playAudioWithCallback(filename, onComplete, onError))
-        .rejects.toThrow('Decode failed')
+        .rejects.toThrow('Audio playback failed')
       
       expect(onError).toHaveBeenCalledWith(expect.any(Error))
       expect(onComplete).not.toHaveBeenCalled()
@@ -436,7 +445,9 @@ describe('AudioManager - Instruction Audio', () => {
       
       await audioManager.playAudioWithCallback(filename, onComplete)
       
-      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename))
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename), expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      }))
       expect(mockBufferSource.start).toHaveBeenCalledWith(0)
       
       // Simulate audio ending
@@ -471,10 +482,13 @@ describe('AudioManager - Instruction Audio', () => {
       })
       
       await expect(audioManager.playAudioWithCallback(filename, onComplete, onError))
-        .rejects.toThrow('Buffer source creation failed')
+        .rejects.toThrow('Failed to create audio buffer source')
       
+      expect(onError).toHaveBeenCalledWith(expect.any(AudioError))
       expect(onError).toHaveBeenCalledWith(expect.objectContaining({
-        message: expect.stringContaining('Buffer source creation failed')
+        message: 'Failed to create audio buffer source',
+        type: 'playback',
+        filename: 'test.wav'
       }))
       expect(onComplete).not.toHaveBeenCalled()
     })
@@ -492,7 +506,9 @@ describe('AudioManager - Instruction Audio', () => {
       
       const duration = await audioManager.getAudioDuration(filename)
       
-      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename))
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(filename), expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      }))
       expect(duration).toBe(2.5) // mockAudioBuffer.duration
     })
 

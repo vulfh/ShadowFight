@@ -1,5 +1,4 @@
 import { Technique,
-        SessionConfig, 
         NotificationOptions,
         FightListManagerCallbacks } from './types'
 import { TechniqueManager } from './managers/TechniqueManager'
@@ -9,6 +8,7 @@ import { ConfigManager } from './managers/ConfigManager'
 import { UIManager } from './managers/UIManager'
 import { FightListManager } from './managers/FightListManager'
 import { FightListUIManager } from './managers/FightListUIManager'
+import { TechniquePlaybackManager } from './managers/TechniquePlaybackManager'
 import { MigrationService } from './services/MigrationService'
 import { ConfirmModal } from './components/ConfirmModal'
 import { 
@@ -30,6 +30,7 @@ export class KravMagaTrainerApp {
   private uiManager: UIManager
   private fightListManager: FightListManager
   private fightListUIManager: FightListUIManager
+  private techniquePlaybackManager: TechniquePlaybackManager
   private migrationService: MigrationService
   private isInitialized: boolean = false
 
@@ -42,6 +43,9 @@ export class KravMagaTrainerApp {
     this.fightListManager = new FightListManager()
     this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager)
     this.migrationService = new MigrationService()
+    
+    // Initialize technique playback manager (will be properly connected in init())
+    this.techniquePlaybackManager = new TechniquePlaybackManager(this.audioManager)
   }
 
   async init(): Promise<void> {
@@ -61,9 +65,37 @@ export class KravMagaTrainerApp {
       // Set up audio manager integration with session manager
       this.sessionManager.setAudioManager(this.audioManager)
 
+      // Set up technique playback manager integration
+      this.techniquePlaybackManager.setAudioManager(this.audioManager)
+      this.sessionManager.setTechniquePlaybackManager(this.techniquePlaybackManager)
+
       // Initialize Fight List managers and hydrate UI
+      console.log('App: Initializing FightListManager...')
       await this.fightListManager.init()
-      await this.fightListUIManager.init()
+      console.log('App: FightListManager initialized')
+      
+      // Ensure DOM is ready before initializing UI manager
+      if (document.readyState !== 'complete') {
+        console.log('App: Waiting for DOM to be fully loaded...')
+        await new Promise(resolve => window.addEventListener('load', resolve))
+      }
+      
+      console.log('App: Initializing FightListUIManager...')
+      try {
+        await this.fightListUIManager.init()
+        console.log('App: FightListUIManager initialized successfully')
+        
+        // Immediately try to render fight lists after successful initialization
+        console.log('App: Attempting immediate fight list render...')
+        await this.fightListUIManager.renderFightLists()
+        console.log('App: Immediate fight list render completed')
+        
+      } catch (error) {
+        console.error('App: FightListUIManager initialization failed:', error)
+        console.log('App: Will use fallback render mechanism')
+        // Don't throw - continue with app initialization but log the error
+        // We'll add a fallback render later
+      }
 
       // Set up event flow contracts
       this.setupEventFlowContracts()
@@ -95,6 +127,34 @@ export class KravMagaTrainerApp {
 
       this.isInitialized = true
       console.log('Krav Maga Trainer App initialized successfully')
+
+      // Force a re-render of fight lists after full initialization
+      setTimeout(async () => {
+        console.log('App: Force re-rendering fight lists after initialization...')
+        try {
+          // Check if fight lists are already rendered
+          const container = document.getElementById('fightListContainer')
+          if (container && container.children.length === 0) {
+            console.log('App: Fight list container is empty, forcing render...')
+            
+            // Try the UI manager first
+            if (this.fightListUIManager.isReady()) {
+              await this.fightListUIManager.renderFightLists()
+            } else {
+              console.log('App: FightListUIManager not ready, using fallback render...')
+              this.manualFallbackRender()
+            }
+          } else if (container) {
+            console.log('App: Fight lists already rendered')
+          } else {
+            console.error('App: Fight list container not found')
+          }
+        } catch (error) {
+          console.error('App: Failed to render fight lists after initialization:', error)
+          // Last resort: try to render manually
+          this.manualFallbackRender()
+        }
+      }, 1000) // Increased delay to ensure everything is ready
 
       // Show welcome notification
       this.showNotification({
@@ -162,9 +222,8 @@ export class KravMagaTrainerApp {
         // Force session to continue without instruction audio
         this.sessionManager.skipInstructionAudio()
         
-        // Start technique cycle immediately
-        const config = this.configManager.getSessionConfig()
-        this.startTechniqueAnnouncementLoop(config)
+        // Start continuous UI updates for timer
+        this.startContinuousUIUpdates()
         
         this.showNotification({
           message: '<i class="fas fa-check-circle me-2"></i>Continuing session without instruction audio...',
@@ -445,8 +504,8 @@ export class KravMagaTrainerApp {
             this.updateSessionUI()
             this.disableConfigurationControls()
 
-            // Start the technique announcement loop (no instruction audio for regular sessions)
-            this.startTechniqueAnnouncementLoop(sessionConfig)
+            // Start continuous UI updates for timer (SessionManager handles technique cycle internally)
+            this.startContinuousUIUpdates()
 
             this.showNotification({
               message: SUCCESS_MESSAGES.SESSION_STARTED,
@@ -468,10 +527,10 @@ export class KravMagaTrainerApp {
       this.updateSessionUI()
       this.disableConfigurationControls()
 
-      // Start the technique announcement loop only if no instruction audio is playing
-      // If instruction audio is playing, the loop will be started by the completion callback
+      // Start continuous UI updates for timer only if no instruction audio is playing
+      // If instruction audio is playing, the UI updates will be started by the completion callback
       if (!this.sessionManager.isPlayingInstructionAudio() && !this.sessionManager.isWaitingForInstructionCompletion()) {
-        this.startTechniqueAnnouncementLoop(sessionConfig)
+        this.startContinuousUIUpdates()
       }
 
       this.showNotification({
@@ -553,13 +612,11 @@ export class KravMagaTrainerApp {
 
   private handleFirstTechniqueReady(): void {
     // Start the technique cycle now that instruction audio is complete
-    const config = this.configManager.getSessionConfig()
-    
-    // Tell SessionManager to start selecting techniques (it will use its stored config)
+    // The SessionManager will handle the complete technique cycle with audio-aware delay timing
     this.sessionManager.startTechniqueAfterInstruction()
     
-    // Start the announcement loop which will handle audio playback
-    this.startTechniqueAnnouncementLoop(config)
+    // Start continuous UI updates for timer
+    this.startContinuousUIUpdates()
   }
 
   private handleKeyboardShortcuts(e: KeyboardEvent): void {
@@ -629,62 +686,14 @@ export class KravMagaTrainerApp {
     if (timeConfigForm) timeConfigForm.style.pointerEvents = 'auto'
   }
 
-  private async startTechniqueAnnouncementLoop(config: SessionConfig): Promise<void> {
-    const announceNextTechnique = async () => {
-      if (!this.sessionManager.isActive) return
-
-      // Don't start technique cycle if we're still playing instruction audio or waiting for it to complete
-      if (this.sessionManager.isPlayingInstructionAudio() || this.sessionManager.isWaitingForInstructionCompletion()) {
-        // Wait and check again
-        setTimeout(announceNextTechnique, 500)
-        return
-      }
-
-      const status = this.sessionManager.getSessionStatus()
-      if (status.currentTechnique) {
-        // Play audio for the current technique
-        const audioSuccess = await this.sessionManager.announceTechniqueWithAudio(status.currentTechnique, this.audioManager)
-        
-        if (!audioSuccess) {
-          // const failureCount = this.sessionManager.incrementAudioFailureCount()
-          
-          // Show error notification
-          this.showNotification({
-            message: `${ERROR_MESSAGES.AUDIO_FAILURE} ${status.currentTechnique.name}`,
-            type: NOTIFICATION_TYPES.ERROR,
-            duration: 3000
-          })
-
-          // Check if we should stop the session
-          if (this.sessionManager.shouldStopSessionDueToAudioFailures()) {
-            this.showNotification({
-              message: ERROR_MESSAGES.MULTIPLE_AUDIO_FAILURES,
-              type: NOTIFICATION_TYPES.ERROR,
-              duration: 5000
-            })
-            this.handleStopSession()
-            return
-          }
-        } else {
-          // Reset failure count on success
-          this.sessionManager.resetAudioFailureCount()
-        }
-        
-        // Update UI
+  private startContinuousUIUpdates(): void {
+    const updateInterval = setInterval(() => {
+      if (this.sessionManager.isActive) {
         this.updateSessionUI()
+      } else {
+        clearInterval(updateInterval)
       }
-
-      // Schedule next announcement if session is still active
-      if (this.sessionManager.isActive && !this.sessionManager.isPaused) {
-        setTimeout(announceNextTechnique, config.delay * 1000)
-      }
-    }
-
-    // Start the loop
-    announceNextTechnique()
-
-    // Start continuous UI updates for timer
-    this.startContinuousUIUpdates()
+    }, 1000) // Update every second
   }
 
   private handleSessionRestoration(): void {
@@ -704,21 +713,10 @@ export class KravMagaTrainerApp {
         this.enableConfigurationControls()
       } else {
         this.disableConfigurationControls()
-        // Restart the technique announcement loop
-        const config = this.configManager.getSessionConfig()
-        this.startTechniqueAnnouncementLoop(config)
+        // Restart continuous UI updates (SessionManager handles technique cycle internally)
+        this.startContinuousUIUpdates()
       }
     }
-  }
-
-  private startContinuousUIUpdates(): void {
-    const updateInterval = setInterval(() => {
-      if (this.sessionManager.isActive) {
-        this.updateSessionUI()
-      } else {
-        clearInterval(updateInterval)
-      }
-    }, 1000) // Update every second
   }
 
   // Public methods for external access
@@ -732,5 +730,98 @@ export class KravMagaTrainerApp {
 
   public isReady(): boolean {
     return this.isInitialized
+  }
+
+  // Debug method to manually trigger fight list rendering
+  public async debugRenderFightLists(): Promise<void> {
+    console.log('App: Manual debug render triggered')
+    
+    // Ensure FightListManager is initialized
+    if (!this.fightListManager.isReady()) {
+      console.log('App: FightListManager not ready, initializing...')
+      try {
+        await this.fightListManager.init()
+      } catch (error) {
+        console.error('App: Failed to initialize FightListManager:', error)
+        return
+      }
+    }
+    
+    await this.fightListUIManager.renderFightLists()
+  }
+
+  // Debug method to check fight list data
+  public async debugFightListData(): Promise<void> {
+    console.log('App: Debug fight list data')
+    
+    // Ensure FightListManager is initialized
+    if (!this.fightListManager.isReady()) {
+      console.log('App: FightListManager not ready, initializing...')
+      try {
+        await this.fightListManager.init()
+      } catch (error) {
+        console.error('App: Failed to initialize FightListManager:', error)
+        return
+      }
+    }
+    
+    const fightLists = this.fightListManager.getFightLists()
+    const current = this.fightListManager.getCurrentFightList()
+    console.log('Fight lists:', fightLists)
+    console.log('Current fight list:', current)
+    console.log('Raw localStorage:', localStorage.getItem('kravMagaFightLists'))
+  }
+
+  // Manual fallback render for when UI manager fails
+  private manualFallbackRender(): void {
+    console.log('App: Attempting manual fallback render...')
+    try {
+      const container = document.getElementById('fightListContainer')
+      if (!container) {
+        console.error('App: Container not found for fallback render')
+        return
+      }
+
+      const fightLists = this.fightListManager.getFightLists()
+      if (fightLists.length === 0) {
+        container.innerHTML = '<div class="p-3 text-muted">No fight lists found</div>'
+        return
+      }
+
+      // Create proper Bootstrap cards for fight lists
+      container.innerHTML = fightLists.map(fl => `
+        <div class="fight-list-item card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="fas fa-chevron-down me-2 text-primary"></i>
+              ${fl.name}
+              <span class="badge bg-secondary ms-2">${fl.techniques.length} techniques</span>
+            </h5>
+            <div class="btn-group">
+              <span class="badge bg-${fl.mode === 'PERFORMING' ? 'warning' : 'info'} me-2">
+                ${fl.mode}
+              </span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="list-group">
+              ${fl.techniques.map(technique => `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>${technique.techniqueId}</span>
+                  <div class="d-flex align-items-center">
+                    <span class="badge bg-primary me-2">Priority ${technique.priority}</span>
+                    <span class="badge bg-success">Selected</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('')
+
+      console.log('App: Manual fallback render completed')
+    } catch (error) {
+      console.error('App: Manual fallback render failed:', error)
+    }
   }
 }

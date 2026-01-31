@@ -3,7 +3,12 @@ import {
   INSTRUCTION_AUDIO_FILES, 
   AUDIO_ERRORS, 
   AUDIO_EVENTS,
-  getInstructionAudioPath 
+  AUDIO_ERROR_TYPES,
+  AUDIO_CONFIG,
+  AudioError,
+  getInstructionAudioPath,
+  retryOperation,
+  createAudioError
 } from '../constants/audio'
 
 export class AudioManager {
@@ -21,17 +26,52 @@ export class AudioManager {
 
   async init(): Promise<void> {
     try {
+      // Check if AudioContext is supported
+      if (!window.AudioContext && !(window as any).webkitAudioContext) {
+        throw new AudioError(
+          'AudioContext not supported in this browser',
+          AUDIO_ERROR_TYPES.INITIALIZATION
+        )
+      }
+
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      this.gainNode = this.audioContext.createGain()
-      this.gainNode.connect(this.audioContext.destination)
-      this.gainNode.gain.value = this.volume
+      
+      // Handle suspended context
+      if (this.audioContext.state === 'suspended') {
+        try {
+          await this.audioContext.resume()
+        } catch (error) {
+          throw new AudioError(
+            AUDIO_ERRORS.SUSPENDED_CONTEXT,
+            AUDIO_ERROR_TYPES.INITIALIZATION,
+            undefined,
+            error instanceof Error ? error : undefined
+          )
+        }
+      }
+
+      // Create gain node with error handling
+      try {
+        this.gainNode = this.audioContext.createGain()
+        this.gainNode.connect(this.audioContext.destination)
+        this.gainNode.gain.value = this.volume
+      } catch (error) {
+        throw new AudioError(
+          AUDIO_ERRORS.GAIN_NODE_FAILED,
+          AUDIO_ERROR_TYPES.INITIALIZATION,
+          undefined,
+          error instanceof Error ? error : undefined
+        )
+      }
+
       this.isInitialized = true
       
-      // Preload instruction audio files
+      // Preload instruction audio files with retry logic
       await this.preloadInstructionAudio()
     } catch (error) {
-      console.error('Failed to initialize AudioManager:', error)
-      throw error
+      const audioError = createAudioError(error)
+      console.error('Failed to initialize AudioManager:', audioError)
+      throw audioError
     }
   }
 
@@ -59,7 +99,10 @@ export class AudioManager {
    */
   async playInstructionAudio(mode: Mode, onComplete?: () => void): Promise<void> {
     if (!this.audioContext || !this.gainNode) {
-      throw new Error(AUDIO_ERRORS.LOAD_FAILED)
+      throw new AudioError(
+        AUDIO_ERRORS.CONTEXT_NOT_INITIALIZED,
+        AUDIO_ERROR_TYPES.INITIALIZATION
+      )
     }
 
     try {
@@ -70,12 +113,22 @@ export class AudioManager {
       const filePath = getInstructionAudioPath(mode)
       const filename = filePath.replace('/Sounds/', '')
       
-      // Load and play the instruction audio
+      // Load and play the instruction audio with retry logic
       const audioBuffer = await this.loadAudio(filename)
       
-      this.currentSource = this.audioContext.createBufferSource()
-      this.currentSource.buffer = audioBuffer
-      this.currentSource.connect(this.gainNode)
+      // Create buffer source with error handling
+      try {
+        this.currentSource = this.audioContext.createBufferSource()
+        this.currentSource.buffer = audioBuffer
+        this.currentSource.connect(this.gainNode)
+      } catch (error) {
+        throw new AudioError(
+          AUDIO_ERRORS.BUFFER_SOURCE_FAILED,
+          AUDIO_ERROR_TYPES.PLAYBACK,
+          filename,
+          error instanceof Error ? error : undefined
+        )
+      }
       
       // Set up completion handling
       this.isPlayingInstruction = true
@@ -108,21 +161,39 @@ export class AudioManager {
       // Dispatch started event
       this.dispatchAudioEvent(AUDIO_EVENTS.STARTED, { mode, filePath })
       
-      // Start playing
-      this.currentSource.start(0)
+      // Start playing with error handling
+      try {
+        this.currentSource.start(0)
+      } catch (error) {
+        this.isPlayingInstruction = false
+        this.currentInstructionMode = null
+        this.currentSource = null
+        
+        throw new AudioError(
+          AUDIO_ERRORS.PLAYBACK_FAILED,
+          AUDIO_ERROR_TYPES.PLAYBACK,
+          filename,
+          error instanceof Error ? error : undefined
+        )
+      }
       
     } catch (error) {
       this.isPlayingInstruction = false
       this.currentInstructionMode = null
-      console.error(`Failed to play instruction audio for ${mode}:`, error)
       
-      // Dispatch error event
+      const audioError = createAudioError(error)
+      console.error(`Failed to play instruction audio for ${mode}:`, audioError)
+      
+      // Dispatch error event with enhanced error information
       this.dispatchAudioEvent(AUDIO_EVENTS.ERROR, { 
         mode, 
-        error: error instanceof Error ? error.message : AUDIO_ERRORS.PLAYBACK_FAILED 
+        error: audioError.message,
+        errorType: audioError.type,
+        filename: audioError.filename,
+        userMessage: audioError.getUserMessage()
       })
       
-      throw error
+      throw audioError
     }
   }
 
@@ -207,28 +278,93 @@ export class AudioManager {
 
   async loadAudio(filename: string): Promise<AudioBuffer> {
     if (!this.audioContext) {
-      throw new Error('AudioContext not initialized')
+      throw new AudioError(
+        AUDIO_ERRORS.CONTEXT_NOT_INITIALIZED,
+        AUDIO_ERROR_TYPES.INITIALIZATION,
+        filename
+      )
     }
 
+    // Return cached buffer if available
     if (this.audioBuffers.has(filename)) {
       return this.audioBuffers.get(filename)!
     }
 
-    try {
-      const base = (import.meta as any).env?.BASE_URL || '/'
-      const response = await fetch(`${base}Sounds/${filename}`)
-      if (!response.ok) {
-        throw new Error(`Failed to load audio file: ${filename}`)
-      }
+    // Use retry logic for loading audio
+    const audioBuffer = await retryOperation(async () => {
+      try {
+        const base = (import.meta as any).env?.BASE_URL || '/'
+        const url = `${base}Sounds/${filename}`
+        
+        // Add timeout to fetch request
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), AUDIO_CONFIG.LOAD_TIMEOUT)
+        
+        const response = await fetch(url, { 
+          signal: controller.signal 
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new AudioError(
+              `${AUDIO_ERRORS.FILE_NOT_FOUND}: ${filename}`,
+              AUDIO_ERROR_TYPES.NETWORK,
+              filename
+            )
+          } else {
+            throw new AudioError(
+              `${AUDIO_ERRORS.NETWORK_ERROR}: HTTP ${response.status}`,
+              AUDIO_ERROR_TYPES.NETWORK,
+              filename
+            )
+          }
+        }
 
-      const arrayBuffer = await response.arrayBuffer()
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
-      this.audioBuffers.set(filename, audioBuffer)
-      return audioBuffer
-    } catch (error) {
-      console.error(`Failed to load audio file ${filename}:`, error)
-      throw error
-    }
+        const arrayBuffer = await response.arrayBuffer()
+        
+        if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+          throw new AudioError(
+            `${AUDIO_ERRORS.LOAD_FAILED}: Empty audio file`,
+            AUDIO_ERROR_TYPES.DECODE,
+            filename
+          )
+        }
+
+        const decodedBuffer = await this.audioContext!.decodeAudioData(arrayBuffer)
+        
+        if (!decodedBuffer || decodedBuffer.length === 0) {
+          throw new AudioError(
+            AUDIO_ERRORS.DECODE_FAILED,
+            AUDIO_ERROR_TYPES.DECODE,
+            filename
+          )
+        }
+
+        return decodedBuffer
+      } catch (error) {
+        if (error instanceof AudioError) {
+          throw error
+        }
+        
+        // Handle AbortError (timeout)
+        if (error instanceof Error && error.name === 'AbortError') {
+          throw new AudioError(
+            AUDIO_ERRORS.TIMEOUT,
+            AUDIO_ERROR_TYPES.TIMEOUT,
+            filename,
+            error
+          )
+        }
+        
+        throw createAudioError(error, filename)
+      }
+    })
+
+    // Cache the successfully loaded buffer
+    this.audioBuffers.set(filename, audioBuffer)
+    return audioBuffer
   }
 
   async preloadAudio(filenames: string[]): Promise<void> {
@@ -242,20 +378,47 @@ export class AudioManager {
 
   async playAudio(filename: string): Promise<void> {
     if (!this.audioContext || !this.gainNode) {
-      throw new Error('AudioContext not initialized')
+      throw new AudioError(
+        AUDIO_ERRORS.CONTEXT_NOT_INITIALIZED,
+        AUDIO_ERROR_TYPES.INITIALIZATION,
+        filename
+      )
     }
 
     try {
       this.stopCurrentAudio()
       const audioBuffer = await this.loadAudio(filename)
       
-      this.currentSource = this.audioContext.createBufferSource()
-      this.currentSource.buffer = audioBuffer
-      this.currentSource.connect(this.gainNode)
-      this.currentSource.start(0)
+      // Create buffer source with error handling
+      try {
+        this.currentSource = this.audioContext.createBufferSource()
+        this.currentSource.buffer = audioBuffer
+        this.currentSource.connect(this.gainNode)
+      } catch (error) {
+        throw new AudioError(
+          AUDIO_ERRORS.BUFFER_SOURCE_FAILED,
+          AUDIO_ERROR_TYPES.PLAYBACK,
+          filename,
+          error instanceof Error ? error : undefined
+        )
+      }
+      
+      // Start playing with error handling
+      try {
+        this.currentSource.start(0)
+      } catch (error) {
+        this.currentSource = null
+        throw new AudioError(
+          AUDIO_ERRORS.PLAYBACK_FAILED,
+          AUDIO_ERROR_TYPES.PLAYBACK,
+          filename,
+          error instanceof Error ? error : undefined
+        )
+      }
     } catch (error) {
-      console.error(`Failed to play audio ${filename}:`, error)
-      throw error
+      const audioError = createAudioError(error, filename)
+      console.error(`Failed to play audio ${filename}:`, audioError)
+      throw audioError
     }
   }
 
@@ -272,7 +435,11 @@ export class AudioManager {
     onError?: (error: Error) => void
   ): Promise<void> {
     if (!this.audioContext || !this.gainNode) {
-      const error = new Error('AudioContext not initialized')
+      const error = new AudioError(
+        AUDIO_ERRORS.CONTEXT_NOT_INITIALIZED,
+        AUDIO_ERROR_TYPES.INITIALIZATION,
+        filename
+      )
       if (onError) {
         onError(error)
       }
@@ -283,9 +450,23 @@ export class AudioManager {
       this.stopCurrentAudio()
       const audioBuffer = await this.loadAudio(filename)
       
-      this.currentSource = this.audioContext.createBufferSource()
-      this.currentSource.buffer = audioBuffer
-      this.currentSource.connect(this.gainNode)
+      // Create buffer source with error handling
+      try {
+        this.currentSource = this.audioContext.createBufferSource()
+        this.currentSource.buffer = audioBuffer
+        this.currentSource.connect(this.gainNode)
+      } catch (error) {
+        const audioError = new AudioError(
+          AUDIO_ERRORS.BUFFER_SOURCE_FAILED,
+          AUDIO_ERROR_TYPES.PLAYBACK,
+          filename,
+          error instanceof Error ? error : undefined
+        )
+        if (onError) {
+          onError(audioError)
+        }
+        throw audioError
+      }
       
       // Set up completion callback
       this.currentSource.onended = () => {
@@ -293,12 +474,26 @@ export class AudioManager {
         onComplete()
       }
       
-      // Start playing
-      this.currentSource.start(0)
+      // Start playing with error handling
+      try {
+        this.currentSource.start(0)
+      } catch (error) {
+        this.currentSource = null
+        const audioError = new AudioError(
+          AUDIO_ERRORS.PLAYBACK_FAILED,
+          AUDIO_ERROR_TYPES.PLAYBACK,
+          filename,
+          error instanceof Error ? error : undefined
+        )
+        if (onError) {
+          onError(audioError)
+        }
+        throw audioError
+      }
       
     } catch (error) {
-      console.error(`Failed to play audio ${filename}:`, error)
-      const audioError = error instanceof Error ? error : new Error(`Failed to play audio ${filename}`)
+      const audioError = createAudioError(error, filename)
+      console.error(`Failed to play audio ${filename}:`, audioError)
       
       if (onError) {
         onError(audioError)
@@ -324,7 +519,8 @@ export class AudioManager {
       const audioBuffer = await this.loadAudio(filename)
       return audioBuffer.duration
     } catch (error) {
-      console.warn(`Failed to get duration for audio file ${filename}:`, error)
+      const audioError = createAudioError(error, filename)
+      console.warn(`Failed to get duration for audio file ${filename}:`, audioError)
       return 0
     }
   }
@@ -348,9 +544,29 @@ export class AudioManager {
   }
 
   setVolume(volume: number): void {
-    this.volume = Math.max(0, Math.min(1, volume))
+    // Validate volume range
+    if (typeof volume !== 'number' || isNaN(volume)) {
+      throw new AudioError(
+        `${AUDIO_ERRORS.INVALID_VOLUME}: Volume must be a number`,
+        AUDIO_ERROR_TYPES.VALIDATION
+      )
+    }
+    
+    if (volume < AUDIO_CONFIG.MIN_VOLUME || volume > AUDIO_CONFIG.MAX_VOLUME) {
+      throw new AudioError(
+        `${AUDIO_ERRORS.INVALID_VOLUME}: Volume must be between ${AUDIO_CONFIG.MIN_VOLUME} and ${AUDIO_CONFIG.MAX_VOLUME}`,
+        AUDIO_ERROR_TYPES.VALIDATION
+      )
+    }
+
+    this.volume = volume
     if (this.gainNode) {
-      this.gainNode.gain.value = this.volume
+      try {
+        this.gainNode.gain.value = this.volume
+      } catch (error) {
+        console.warn('Failed to set gain node volume:', error)
+        // Don't throw here as this is not critical
+      }
     }
   }
 
@@ -375,8 +591,26 @@ export class AudioManager {
   }
 
   async resumeAudioContext(): Promise<void> {
-    if (this.audioContext && this.audioContext.state === 'suspended') {
-      await this.audioContext.resume()
+    if (!this.audioContext) {
+      throw new AudioError(
+        AUDIO_ERRORS.CONTEXT_NOT_INITIALIZED,
+        AUDIO_ERROR_TYPES.INITIALIZATION
+      )
+    }
+
+    if (this.audioContext.state === 'suspended') {
+      try {
+        await this.audioContext.resume()
+      } catch (error) {
+        const audioError = new AudioError(
+          AUDIO_ERRORS.SUSPENDED_CONTEXT,
+          AUDIO_ERROR_TYPES.INITIALIZATION,
+          undefined,
+          error instanceof Error ? error : undefined
+        )
+        console.error('Failed to resume AudioContext:', audioError)
+        throw audioError
+      }
     }
   }
 
@@ -385,7 +619,8 @@ export class AudioManager {
       await this.playAudio(filename)
       return true
     } catch (error) {
-      console.error('Audio test failed:', error)
+      const audioError = createAudioError(error, filename)
+      console.error('Audio test failed:', audioError)
       return false
     }
   }

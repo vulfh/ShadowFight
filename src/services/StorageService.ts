@@ -120,20 +120,38 @@ export class StorageService {
    */
   public getAllFightLists(): FightList[] {
     try {
+      console.log('StorageService: Getting all fight lists from localStorage')
+      
+      // First check if data exists at all
+      const rawStorageData = localStorage.getItem(STORAGE_KEYS.FIGHT_LISTS)
+      console.log(`StorageService: Raw localStorage data for key "${STORAGE_KEYS.FIGHT_LISTS}":`, rawStorageData ? `${rawStorageData.length} characters` : 'null')
+      
       const data = this.getWithDecompression(STORAGE_KEYS.FIGHT_LISTS)
+      console.log(`StorageService: After decompression:`, data ? `${data.length} characters` : 'null')
+      
       if (!data) {
+        console.log('StorageService: No data found, returning empty array')
         return []
       }
 
       const lists = JSON.parse(data)
       if (!Array.isArray(lists)) {
-        console.error('Invalid fight lists data structure')
+        console.error('StorageService: Invalid fight lists data structure - not an array:', typeof lists)
         return []
       }
 
+      console.log(`StorageService: Successfully parsed ${lists.length} fight lists`)
+      lists.forEach((list, index) => {
+        if (list && list.name) {
+          console.log(`  ${index + 1}. "${list.name}" (${list.techniques?.length || 0} techniques)`)
+        } else {
+          console.log(`  ${index + 1}. Invalid list:`, list)
+        }
+      })
+
       return lists
     } catch (error) {
-      console.error('Error retrieving fight lists:', error)
+      console.error('StorageService: Error retrieving fight lists:', error)
       return []
     }
   }
@@ -257,9 +275,14 @@ export class StorageService {
     const data = localStorage.getItem(key)
     if (!data) return null
 
+    // Check if data is compressed
     if (this.isCompressed(data)) {
+      console.log('StorageService: Data is compressed, decompressing...')
       return this.decompress(data)
     }
+    
+    // Data is not compressed, return as-is
+    console.log('StorageService: Data is not compressed, returning as-is')
     return data
   }
 

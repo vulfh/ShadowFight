@@ -78,11 +78,14 @@ describe('FightListUIManager', () => {
     vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
     await fightListUIManager.init()
 
+    // Fight lists should be expanded by default now
+    expect(mockContainer.querySelector('.collapse')?.classList.contains('show')).toBe(true)
+
     const toggleButton = mockContainer.querySelector('.btn-link') as HTMLElement
     toggleButton.click()
 
-    // Check if expansion state is updated
-    expect(mockContainer.querySelector('.collapse')?.classList.contains('show')).toBe(true)
+    // After clicking, it should be collapsed
+    expect(mockContainer.querySelector('.collapse')?.classList.contains('show')).toBe(false)
   })
 
   it('should handle setting current fight list', async () => {

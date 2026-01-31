@@ -44,16 +44,77 @@ export class FightListUIManager {
    */
   async init(): Promise<void> {
     try {
-      if (!this.techniqueManager.isReady()) {
-        await this.techniqueManager.init()
+      console.log('FightListUIManager: Starting initialization...')
+      
+      // Wait for DOM to be ready
+      if (document.readyState !== 'complete') {
+        console.log('FightListUIManager: Waiting for DOM to be ready...')
+        await new Promise(resolve => {
+          if (document.readyState === 'complete') {
+            resolve(void 0)
+          } else {
+            window.addEventListener('load', () => resolve(void 0))
+          }
+        })
       }
-      this.setupEventListeners()
-      this.setupResponsiveHandling()
+      
+      // Verify container exists
+      const container = document.getElementById(UI.CONTAINER)
+      if (!container) {
+        console.error('FightListUIManager: Container not found during init. Available elements:')
+        const allElements = document.querySelectorAll('[id]')
+        allElements.forEach(el => console.log(`  - ${el.id}`))
+        throw new Error(`Container element '${UI.CONTAINER}' not found`)
+      }
+      
+      console.log('FightListUIManager: Container found:', container)
+      
+      // Ensure FightListManager is initialized before we proceed
+      if (!this.fightListManager.isReady()) {
+        console.log('FightListUIManager: FightListManager not ready, waiting for initialization...')
+        // Wait for FightListManager to be ready (it should be initialized by the app)
+        let attempts = 0
+        while (!this.fightListManager.isReady() && attempts < 10) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+          attempts++
+        }
+        
+        if (!this.fightListManager.isReady()) {
+          console.warn('FightListUIManager: FightListManager still not ready, forcing initialization...')
+          await this.fightListManager.init()
+        }
+      }
+      
+      // Initialize TechniqueManager
+      if (!this.techniqueManager.isReady()) {
+        console.log('FightListUIManager: Initializing TechniqueManager...')
+        try {
+          await this.techniqueManager.init()
+        } catch (error) {
+          console.warn('FightListUIManager: TechniqueManager initialization failed, continuing without it:', error)
+          // Continue without TechniqueManager - it's not critical for basic rendering
+        }
+      }
+      
+      // Set up event listeners (non-critical)
+      try {
+        this.setupEventListeners()
+        this.setupResponsiveHandling()
+      } catch (error) {
+        console.warn('FightListUIManager: Event listener setup failed:', error)
+        // Continue - event listeners are not critical for initial render
+      }
+      
+      console.log('FightListUIManager: Rendering fight lists...')
       await this.renderFightLists()
+      
       this.isInitialized = true
+      console.log('FightListUIManager: Initialization complete')
     } catch (error) {
       console.error('Failed to initialize FightListUIManager:', error)
-      throw new Error('Failed to initialize FightListUIManager')
+      // Mark as initialized anyway to prevent infinite retry loops
+      this.isInitialized = true
+      throw error
     }
   }
 
@@ -139,13 +200,66 @@ export class FightListUIManager {
    * Render all fight lists in the container
    */
   async renderFightLists(): Promise<void> {
+    console.log('FightListUIManager: Starting renderFightLists()')
+    console.log('FightListUIManager: Looking for container with ID:', UI.CONTAINER)
+    
     const container = document.getElementById(UI.CONTAINER)
-    if (!container) return
+    if (!container) {
+      console.error('FightListUIManager: Container element not found:', UI.CONTAINER)
+      console.error('FightListUIManager: Available elements with similar IDs:')
+      const allElements = document.querySelectorAll('[id*="fight"], [id*="Fight"], [id*="list"], [id*="List"]')
+      allElements.forEach(el => console.log(`  - ${el.id}`))
+      return
+    }
 
-    const fightLists = this.fightListManager.getFightLists()
-    const currentFightList = this.fightListManager.getCurrentFightList()
+    console.log('FightListUIManager: Container found:', container)
+
+    let fightLists: any[] = []
+    let currentFightList: any = null
+    
+    try {
+      // Check if FightListManager is initialized
+      if (!this.fightListManager.isReady()) {
+        console.warn('FightListUIManager: FightListManager not ready, initializing...')
+        await this.fightListManager.init()
+      }
+      
+      fightLists = this.fightListManager.getFightLists()
+      currentFightList = this.fightListManager.getCurrentFightList()
+    } catch (error) {
+      console.error('FightListUIManager: Error getting fight lists:', error)
+      
+      // Show error state in UI
+      const errorState = document.createElement('div')
+      errorState.className = 'text-center p-4'
+      errorState.innerHTML = `
+        <div class="text-danger">
+          <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+          <h5>Error Loading Fight Lists</h5>
+          <p>There was an error loading your fight lists: ${error instanceof Error ? error.message : 'Unknown error'}</p>
+          <button class="btn btn-primary" onclick="location.reload()">
+            <i class="fas fa-refresh me-1"></i>Reload Page
+          </button>
+        </div>
+      `
+      container.appendChild(errorState)
+      return
+    }
+    
+    console.log(`FightListUIManager: Rendering ${fightLists.length} fight lists`)
+    console.log(`FightListUIManager: Current fight list: ${currentFightList?.name || 'none'}`)
+    
+    if (fightLists.length === 0) {
+      console.warn('FightListUIManager: No fight lists found to render')
+    }
 
     container.innerHTML = ''
+
+    // Expand all fight lists by default if none are explicitly expanded
+    if (this.uiState.expandedFightLists.length === 0 && fightLists.length > 0) {
+      this.uiState.expandedFightLists = fightLists.map(fl => fl.id)
+      console.log('FightListUIManager: Expanding all fight lists by default')
+    }
 
     // Add "Create New" button
     // const newButton = document.createElement('button')
@@ -154,14 +268,36 @@ export class FightListUIManager {
     // newButton.innerHTML = '<i class="fas fa-plus"></i> Create New Fight List'
     // container.appendChild(newButton)
 
+    if (fightLists.length === 0) {
+      // Show empty state message
+      const emptyState = document.createElement('div')
+      emptyState.className = 'text-center p-4'
+      emptyState.innerHTML = `
+        <div class="text-muted">
+          <i class="fas fa-list-ul fa-3x mb-3"></i>
+          <h5>No Fight Lists Found</h5>
+          <p>Your fight lists will appear here once they're loaded.</p>
+          <button class="btn btn-primary" onclick="window.app?.debugRenderFightLists()">
+            <i class="fas fa-refresh me-1"></i>Refresh
+          </button>
+        </div>
+      `
+      container.appendChild(emptyState)
+      console.log('FightListUIManager: Displayed empty state message')
+      return
+    }
+
     // Render each fight list
-    fightLists.forEach(fightList => {
+    fightLists.forEach((fightList, index) => {
+      console.log(`FightListUIManager: Rendering fight list ${index + 1}: "${fightList.name}"`)
       const fightListElement = this.createFightListElement(
         fightList, 
         fightList.id === currentFightList?.id
       )
       container.appendChild(fightListElement)
     })
+    
+    console.log(`FightListUIManager: Finished rendering ${fightLists.length} fight lists`)
   }
 
   /**
@@ -183,9 +319,10 @@ export class FightListUIManager {
     element.innerHTML = `
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-          <button class="btn btn-link text-decoration-none" type="button">
-            <i class="fas fa-chevron-${isExpanded ? 'down' : 'right'} me-2"></i>
+          <button class="btn btn-link text-decoration-none p-0" type="button">
+            <i class="fas fa-chevron-${isExpanded ? 'down' : 'right'} me-2 text-primary"></i>
             ${fightList.name}
+            <span class="badge bg-secondary ms-2">${fightList.techniques.length} techniques</span>
           </button>
           ${modeBadge}
         </h5>

@@ -170,27 +170,18 @@ export class AudioPlaybackQueue {
    */
   private async playAudioItem(item: AudioQueueItem): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      // Use AudioManager to play the audio
-      this.audioManager.playAudio(item.file)
-        .then(() => {
-          // Set up completion callback
-          if (this.audioManager.isPlaying()) {
-            // Wait for audio to complete
-            const checkCompletion = () => {
-              if (!this.audioManager.isPlaying()) {
-                resolve()
-              } else {
-                // Check again in 100ms
-                setTimeout(checkCompletion, 100)
-              }
-            }
-            checkCompletion()
-          } else {
-            // Audio completed immediately (or failed to start)
-            resolve()
-          }
-        })
-        .catch(reject)
+      // Use AudioManager's callback-based method for accurate completion detection
+      this.audioManager.playAudioWithCallback(
+        item.file,
+        () => {
+          // Audio completed successfully
+          resolve()
+        },
+        (error: Error) => {
+          // Audio failed to play
+          reject(error)
+        }
+      ).catch(reject)
     })
   }
 

@@ -131,7 +131,7 @@
 }
 
 /* Tablet Design (768px - 1024px) */
-@media (min-width: 9999px) and (max-width: 9999px) {
+@media (min-width: 768px) and (max-width: 1024px) {
   /* Two-column layout for fight lists */
   .fight-list-container {
     grid-template-columns: repeat(2, 1fr);
@@ -391,7 +391,7 @@
 }
 
 /* Desktop Design (1024px+) */
-@media (min-width: 9999px) {
+@media (min-width: 1024px) {
   .fight-list-container {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -709,7 +709,7 @@
   }
 
   /* Wide screen */
-  @media (min-width: 9999px) {
+  @media (min-width: 1440px) {
     .fight-list-container {
       grid-template-columns: repeat(4, 1fr);
     }
@@ -720,7 +720,7 @@
   }
 
   /* Ultra-wide screen */
-  @media (min-width: 9999px) {
+  @media (min-width: 1920px) {
     .fight-list-container {
       grid-template-columns: repeat(5, 1fr);
     }
@@ -1026,7 +1026,7 @@
 }
 
 /* Tablet Styles for Technique Add Modal */
-@media (min-width: 9999px) {
+@media (min-width: 768px) {
   .technique-add-modal__content {
     max-width: 90%;
   }
@@ -1164,7 +1164,7 @@
 }
 
 /* Small Mobile Devices */
-@media (min-width: 9999px) {
+@media (max-width: 480px) {
   .technique-add-modal__content {
     max-height: 95vh;
   }

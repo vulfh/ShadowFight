@@ -30,15 +30,26 @@ export class FightListManager {
    */
   async init(): Promise<void> {
     try {
+      console.log('FightListManager: Starting initialization...')
       this.loadFightLists()
       this.loadCurrentFightList()
       
+      console.log(`FightListManager: Loaded ${this.fightLists.length} fight lists from storage`)
+      
       // Create default fight list if none exist
       if (this.fightLists.length === 0) {
+        console.log('FightListManager: No fight lists found, creating default...')
         await this.createDefaultFightList()
+      } else {
+        console.log('FightListManager: Using existing fight lists from storage')
+        // Log the loaded fight lists for debugging
+        this.fightLists.forEach((fl, index) => {
+          console.log(`  ${index + 1}. "${fl.name}" (${fl.techniques?.length || 0} techniques, mode: ${fl.mode || 'undefined'})`)
+        })
       }
       
       this.isInitialized = true
+      console.log('FightListManager: Initialization complete')
     } catch (error) {
       console.error('Failed to initialize FightListManager:', error)
       throw new Error('Failed to initialize FightListManager')
@@ -50,25 +61,46 @@ export class FightListManager {
    */
   private loadFightLists(): void {
     try {
+      console.log('FightListManager: Loading fight lists from storage...')
+      
+      // Debug: Check what's actually in localStorage
+      const rawData = localStorage.getItem('kravMagaFightLists')
+      console.log('FightListManager: Raw localStorage data:', rawData ? `${rawData.length} characters` : 'null')
+      
       const fightLists = this.storageService.getAllFightLists()
+      console.log(`FightListManager: Retrieved ${fightLists.length} fight lists from storage`)
       
-      // Validate each fight list
-      const validFightLists: FightList[] = fightLists.map(fightList => {
-        if (!fightList) {
-          return null as unknown as FightList
-        }
-        const validation = this.storageService.validateFightList(fightList)
-        if (validation.isValid) {
-          return fightList
-        } else {
-          console.warn(`Invalid fight list ${fightList.id}:`, validation.errors)
-          return null as unknown as FightList
-        }
-      }) ?? [];
+      if (fightLists.length > 0) {
+        fightLists.forEach((fl, index) => {
+          console.log(`  ${index + 1}. "${fl.name}" (${fl.techniques?.length || 0} techniques, mode: ${fl.mode || 'undefined'})`)
+        })
+      } else {
+        console.warn('FightListManager: No fight lists found in storage')
+      }
       
+      // Validate each fight list and filter out invalid ones
+      const validFightLists: FightList[] = fightLists
+        .filter(fightList => {
+          if (fightList === null || fightList === undefined) {
+            console.warn('FightListManager: Filtering out null/undefined fight list')
+            return false
+          }
+          return true
+        })
+        .filter(fightList => {
+          const validation = this.storageService.validateFightList(fightList)
+          if (validation.isValid) {
+            return true
+          } else {
+            console.warn(`FightListManager: Invalid fight list ${fightList.id}:`, validation.errors)
+            return false
+          }
+        })
+      
+      console.log(`FightListManager: ${validFightLists.length} valid fight lists after filtering`)
       this.fightLists = validFightLists
     } catch (error) {
-      console.warn('Failed to load fight lists from storage:', error)
+      console.error('FightListManager: Failed to load fight lists from storage:', error)
       this.fightLists = []
     }
   }

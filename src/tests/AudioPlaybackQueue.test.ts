@@ -21,6 +21,11 @@ describe('AudioPlaybackQueue', () => {
     // Create mock AudioManager
     mockAudioManager = {
       playAudio: vi.fn().mockResolvedValue(undefined),
+      playAudioWithCallback: vi.fn().mockImplementation((_filename: string, onComplete: () => void, _onError?: (error: Error) => void) => {
+        // Simulate successful audio playback by calling onComplete immediately
+        setTimeout(() => onComplete(), 0)
+        return Promise.resolve()
+      }),
       stopCurrentAudio: vi.fn(),
       isPlaying: vi.fn().mockReturnValue(false)
     } as any
@@ -89,7 +94,7 @@ describe('AudioPlaybackQueue', () => {
   describe('playback functionality', () => {
     it('should return immediately for empty queue', async () => {
       await expect(audioPlaybackQueue.play()).resolves.toBeUndefined()
-      expect(mockAudioManager.playAudio).not.toHaveBeenCalled()
+      expect(mockAudioManager.playAudioWithCallback).not.toHaveBeenCalled()
     })
 
     it('should throw error if already playing', async () => {
@@ -116,7 +121,11 @@ describe('AudioPlaybackQueue', () => {
       
       await audioPlaybackQueue.play()
       
-      expect(mockAudioManager.playAudio).toHaveBeenCalledWith(testFile)
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenCalledWith(
+        testFile, 
+        expect.any(Function), 
+        expect.any(Function)
+      )
       expect(audioPlaybackQueue.isPlayingAudio()).toBe(false) // Should be completed
     })
 
@@ -129,9 +138,9 @@ describe('AudioPlaybackQueue', () => {
       
       await audioPlaybackQueue.play()
       
-      expect(mockAudioManager.playAudio).toHaveBeenCalledTimes(2)
-      expect(mockAudioManager.playAudio).toHaveBeenNthCalledWith(1, 'first.wav') // Higher priority first
-      expect(mockAudioManager.playAudio).toHaveBeenNthCalledWith(2, 'second.wav')
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenCalledTimes(2)
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenNthCalledWith(1, 'first.wav', expect.any(Function), expect.any(Function)) // Higher priority first
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenNthCalledWith(2, 'second.wav', expect.any(Function), expect.any(Function))
     })
   })
 
@@ -180,17 +189,23 @@ describe('AudioPlaybackQueue', () => {
       audioPlaybackQueue.enqueue('optional.wav', AudioType.TECHNIQUE_FEEDBACK, 1, true) // Lower priority
       
       // Mock first audio (required) to succeed, second (optional) to fail
-      mockAudioManager.playAudio = vi.fn()
-        .mockResolvedValueOnce(undefined) // Required audio succeeds
-        .mockRejectedValueOnce(new Error('Audio load failed')) // Optional audio fails
+      mockAudioManager.playAudioWithCallback = vi.fn()
+        .mockImplementationOnce((_filename: string, onComplete: () => void) => {
+          setTimeout(() => onComplete(), 0) // Required audio succeeds
+          return Promise.resolve()
+        })
+        .mockImplementationOnce((_filename: string, _onComplete: () => void, onError?: (error: Error) => void) => {
+          setTimeout(() => onError?.(new Error('Audio load failed')), 0) // Optional audio fails
+          return Promise.resolve()
+        })
       
       mockAudioManager.isPlaying = vi.fn().mockReturnValue(false)
       
       await audioPlaybackQueue.play()
       
-      expect(mockAudioManager.playAudio).toHaveBeenCalledTimes(2)
-      expect(mockAudioManager.playAudio).toHaveBeenNthCalledWith(1, 'required.wav') // Higher priority first
-      expect(mockAudioManager.playAudio).toHaveBeenNthCalledWith(2, 'optional.wav') // Lower priority second
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenCalledTimes(2)
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenNthCalledWith(1, 'required.wav', expect.any(Function), expect.any(Function)) // Higher priority first
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenNthCalledWith(2, 'optional.wav', expect.any(Function), expect.any(Function)) // Lower priority second
     })
 
     it('should stop queue on required audio failure', async () => {
@@ -198,12 +213,15 @@ describe('AudioPlaybackQueue', () => {
       audioPlaybackQueue.enqueue('after-failure.wav', AudioType.TECHNIQUE_FEEDBACK, 1, true)
       
       // Mock first audio to fail
-      mockAudioManager.playAudio = vi.fn()
-        .mockRejectedValueOnce(new Error('Required audio failed'))
+      mockAudioManager.playAudioWithCallback = vi.fn()
+        .mockImplementationOnce((_filename: string, _onComplete: () => void, onError?: (error: Error) => void) => {
+          setTimeout(() => onError?.(new Error('Required audio failed')), 0)
+          return Promise.resolve()
+        })
       
       await expect(audioPlaybackQueue.play()).rejects.toThrow('Required audio failed')
       
-      expect(mockAudioManager.playAudio).toHaveBeenCalledTimes(1)
+      expect(mockAudioManager.playAudioWithCallback).toHaveBeenCalledTimes(1)
       expect(audioPlaybackQueue.isPlayingAudio()).toBe(false)
     })
   })

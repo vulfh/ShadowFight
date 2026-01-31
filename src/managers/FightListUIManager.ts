@@ -255,11 +255,9 @@ export class FightListUIManager {
 
     container.innerHTML = ''
 
-    // Expand all fight lists by default if none are explicitly expanded
-    if (this.uiState.expandedFightLists.length === 0 && fightLists.length > 0) {
-      this.uiState.expandedFightLists = fightLists.map(fl => fl.id)
-      console.log('FightListUIManager: Expanding all fight lists by default')
-    }
+    // Keep fight lists collapsed by default
+    // Only expand if explicitly set in UI state
+    console.log('FightListUIManager: Fight lists will be collapsed by default')
 
     // Add "Create New" button
     // const newButton = document.createElement('button')
@@ -486,16 +484,29 @@ export class FightListUIManager {
       this.uiState.expandedFightLists.splice(index, 1)
     }
 
+    // Update the UI immediately
     const collapseElement = document.querySelector(`#techniques-${fightListId}`)
-    if (collapseElement) {
-      collapseElement.classList.toggle('show')
-    }
-
     const chevron = document.querySelector(`[data-id="${fightListId}"] .fa-chevron-right, 
                                          [data-id="${fightListId}"] .fa-chevron-down`)
+    
+    const isExpanded = this.uiState.expandedFightLists.includes(fightListId)
+    
+    if (collapseElement) {
+      if (isExpanded) {
+        collapseElement.classList.add('show')
+      } else {
+        collapseElement.classList.remove('show')
+      }
+    }
+
     if (chevron) {
-      chevron.classList.toggle('fa-chevron-right')
-      chevron.classList.toggle('fa-chevron-down')
+      if (isExpanded) {
+        chevron.classList.remove('fa-chevron-right')
+        chevron.classList.add('fa-chevron-down')
+      } else {
+        chevron.classList.remove('fa-chevron-down')
+        chevron.classList.add('fa-chevron-right')
+      }
     }
   }
 

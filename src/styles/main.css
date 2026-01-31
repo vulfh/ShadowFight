@@ -52,6 +52,7 @@ header h1 {
   box-shadow: var(--box-shadow);
   transition: var(--transition);
   height: 100%;
+  background: white !important;
 }
 
 .card:hover {

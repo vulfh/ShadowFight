@@ -10,7 +10,7 @@
 
 /* Fight List Item Styles */
 .fight-list-item {
-  background: white;
+  background: white !important;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   transition: var(--transition);
@@ -27,8 +27,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%) !important;
   color: white;
+  cursor: pointer;
+  user-select: none;
 }
 
 .fight-list-title {
@@ -39,6 +41,7 @@
 
 .fight-list-content {
   padding: 1rem;
+  background: white !important;
 }
 
 /* Technique Grid Styles */
@@ -58,6 +61,26 @@
 
 .technique-item:hover {
   background: #e9ecef;
+}
+
+/* Collapse/Expand Animation */
+.collapse {
+  transition: height 0.35s ease;
+  overflow: hidden;
+}
+
+.collapse:not(.show) {
+  height: 0;
+}
+
+.collapse.show {
+  height: auto;
+}
+
+.collapsing {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.35s ease;
 }
 
 /* Mobile-First Design (320px - 768px) */
@@ -747,7 +770,8 @@
 @media (prefers-reduced-motion: reduce) {
   .fight-list-item,
   .technique-item,
-  .technique-selector {
+  .technique-selector,
+  .collapse {
     transition: none;
   }
 }

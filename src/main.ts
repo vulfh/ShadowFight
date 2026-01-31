@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <div class="card-body">
                 <div class="list-group">
-                  ${fl.techniques.map(technique => `
+                  ${fl.techniques.map((technique: import('./types').FightListTechnique) => `
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                       <span>${technique.techniqueId}</span>
                       <div class="d-flex align-items-center">

@@ -416,7 +416,7 @@
 /* Desktop Design (1024px+) */
 @media (min-width: 1024px) {
   .fight-list-container {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .technique-item {
@@ -478,7 +478,7 @@
   }
 
   .technique-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
@@ -734,7 +734,7 @@
   /* Wide screen */
   @media (min-width: 1440px) {
     .fight-list-container {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: 1fr;
     }
 
     .technique-grid {
@@ -745,7 +745,7 @@
   /* Ultra-wide screen */
   @media (min-width: 1920px) {
     .fight-list-container {
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: 1fr;
     }
 
     .technique-grid {

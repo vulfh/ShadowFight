@@ -1,64 +1,58 @@
 /**
- * Audio-related type definitions for the Krav Maga Shadow Fighting Trainer
+ * Audio Types and Interfaces for Shadow Fight Training App
  * 
- * This module defines types for the extensible audio playback system that supports
- * multiple audio types per technique and sequential audio playback with delay control.
+ * This module defines the type system for audio playback functionality,
+ * including audio types, queue items, and playback configuration.
  */
 
 /**
- * Enumeration of audio types that can be played during technique cycles.
- * 
- * This enum is designed to be extensible for future audio enhancements while
- * maintaining backward compatibility with existing technique announcements.
+ * Enumeration of different audio types used in the application.
+ * Each type represents a different category of audio content with
+ * specific playback characteristics and priorities.
  */
 export enum AudioType {
-  /** Primary technique announcement audio (current functionality) */
+  /** Audio announcing the technique name or description */
   TECHNIQUE_ANNOUNCEMENT = 'technique_announcement',
   
-  /** Detailed technique instruction audio (future enhancement) */
+  /** Audio providing detailed instructions for performing the technique */
   TECHNIQUE_INSTRUCTION = 'technique_instruction',
   
-  /** Performance feedback audio (future enhancement) */
+  /** Audio providing feedback on technique performance */
   TECHNIQUE_FEEDBACK = 'technique_feedback',
   
-  /** Technique correction guidance audio (future enhancement) */
+  /** Audio providing corrections or adjustments to technique */
   TECHNIQUE_CORRECTION = 'technique_correction'
 }
 
 /**
  * Represents a single audio item in the playback queue.
- * 
- * Audio items are played sequentially, with higher priority items played first.
- * Optional items can be skipped if they fail to load or play, while required
- * items will stop the queue if they fail.
+ * Contains all necessary information for audio playback and queue management.
  */
 export interface AudioQueueItem {
-  /** Path to the audio file (relative to audio base path) */
-  file: string
+  /** Path to the audio file to be played */
+  file: string;
   
-  /** Type of audio content for categorization and handling */
-  type: AudioType
+  /** Type of audio content, determines playback behavior and priority */
+  type: AudioType;
   
-  /** Priority for queue ordering (higher numbers = higher priority, default: 1) */
-  priority: number
+  /** Priority level for queue ordering (higher numbers play first) */
+  priority: number;
   
-  /** Whether this audio can be skipped if it fails (default: true for non-announcement audio) */
-  optional: boolean
+  /** Whether this audio is optional (can be skipped on error) or required */
+  optional: boolean;
 }
 
 /**
- * Configuration for audio playback behavior during technique cycles.
- * 
- * This configuration determines which audio types are enabled, how errors
- * are handled, and retry behavior for failed audio playback.
+ * Configuration for audio playback behavior.
+ * Controls which audio types are enabled and how errors are handled.
  */
 export interface PlaybackConfig {
-  /** Array of audio types that should be played (default: [TECHNIQUE_ANNOUNCEMENT]) */
-  enabledAudioTypes: AudioType[]
+  /** Array of audio types that are enabled for playback (default: [TECHNIQUE_ANNOUNCEMENT]) */
+  enabledAudioTypes: AudioType[];
   
-  /** Whether to continue with delay timing if audio fails (default: true) */
-  fallbackOnError: boolean
+  /** Whether to continue session if audio playback fails (default: true) */
+  fallbackOnError: boolean;
   
   /** Maximum number of retry attempts for failed audio (default: 1) */
-  maxRetries: number
+  maxRetries: number;
 }

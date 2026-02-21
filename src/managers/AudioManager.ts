@@ -253,7 +253,7 @@ export class AudioManager {
       this.currentSource.buffer = audioBuffer
       this.currentSource.connect(this.gainNode)
 
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         if (!this.currentSource) {
           resolve()
           return

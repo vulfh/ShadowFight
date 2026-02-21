@@ -252,7 +252,18 @@ export class AudioManager {
       this.currentSource = this.audioContext.createBufferSource()
       this.currentSource.buffer = audioBuffer
       this.currentSource.connect(this.gainNode)
-      this.currentSource.start(0)
+
+      return new Promise((resolve, reject) => {
+        if (!this.currentSource) {
+          resolve()
+          return
+        }
+        this.currentSource.onended = () => {
+          this.currentSource = null
+          resolve()
+        }
+        this.currentSource.start(0)
+      })
     } catch (error) {
       console.error(`Failed to play audio ${filename}:`, error)
       throw error

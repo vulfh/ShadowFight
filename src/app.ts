@@ -640,43 +640,48 @@ export class KravMagaTrainerApp {
         return
       }
 
-      const status = this.sessionManager.getSessionStatus()
-      if (status.currentTechnique) {
-        // Play audio for the current technique
-        const audioSuccess = await this.sessionManager.announceTechniqueWithAudio(status.currentTechnique, this.audioManager)
-        
-        if (!audioSuccess) {
-          // const failureCount = this.sessionManager.incrementAudioFailureCount()
-          
-          // Show error notification
-          this.showNotification({
-            message: `${ERROR_MESSAGES.AUDIO_FAILURE} ${status.currentTechnique.name}`,
-            type: NOTIFICATION_TYPES.ERROR,
-            duration: 3000
-          })
+      // Use the session's config (e.g. only fight list techniques when a fight list was selected)
+      const sessionConfig = this.sessionManager.getCurrentSessionConfig() ?? config
 
-          // Check if we should stop the session
-          if (this.sessionManager.shouldStopSessionDueToAudioFailures()) {
-            this.showNotification({
-              message: ERROR_MESSAGES.MULTIPLE_AUDIO_FAILURES,
-              type: NOTIFICATION_TYPES.ERROR,
-              duration: 5000
-            })
-            this.handleStopSession()
-            return
-          }
-        } else {
-          // Reset failure count on success
-          this.sessionManager.resetAudioFailureCount()
-        }
-        
-        // Update UI
-        this.updateSessionUI()
+      // Select next technique (delay count will start after this announcement ends)
+      const technique = this.sessionManager.selectAndSetNextTechnique(sessionConfig)
+      if (!technique) {
+        setTimeout(announceNextTechnique, 500)
+        return
       }
 
-      // Schedule next announcement if session is still active
+      // Update UI so current technique is shown
+      this.updateSessionUI()
+
+      // Play audio for the technique (awaits until playback ends)
+      const audioSuccess = await this.sessionManager.announceTechniqueWithAudio(technique, this.audioManager)
+
+      if (!audioSuccess) {
+        // Show error notification
+        this.showNotification({
+          message: `${ERROR_MESSAGES.AUDIO_FAILURE} ${technique.name}`,
+          type: NOTIFICATION_TYPES.ERROR,
+          duration: 3000
+        })
+
+        // Check if we should stop the session
+        if (this.sessionManager.shouldStopSessionDueToAudioFailures()) {
+          this.showNotification({
+            message: ERROR_MESSAGES.MULTIPLE_AUDIO_FAILURES,
+            type: NOTIFICATION_TYPES.ERROR,
+            duration: 5000
+          })
+          this.handleStopSession()
+          return
+        }
+      } else {
+        // Reset failure count on success
+        this.sessionManager.resetAudioFailureCount()
+      }
+
+      // Delay count starts here — after the technique announcement (audio) ends
       if (this.sessionManager.isActive && !this.sessionManager.isPaused) {
-        setTimeout(announceNextTechnique, config.delay * 1000)
+        setTimeout(announceNextTechnique, sessionConfig.delay * 1000)
       }
     }
 

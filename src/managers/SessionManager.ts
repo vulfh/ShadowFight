@@ -80,9 +80,8 @@ export class SessionManager {
     // Start with instruction audio if fight list is available and hasn't been played this session
     if (this.shouldPlayInstructionAudio()) {
       await this.playInstructionAudioForSession()
-    } else {
-      this.scheduleNextTechnique(config)
     }
+    // Else: app's technique announcement loop will call selectAndSetNextTechnique()
   }
 
   async startSessionWithFightList(config: SessionConfig, fightList: FightList): Promise<void> {
@@ -94,7 +93,7 @@ export class SessionManager {
       throw new Error(`Please select at least one technique in ${fightList.name}`)
     }
 
-    // Get selected techniques from fight list
+    // Get selected techniques from fight list (only these will be used in the session)
     const selectedTechniques = fightList.techniques
       .filter(t => t.selected)
       .map(flTechnique => {
@@ -102,6 +101,7 @@ export class SessionManager {
         if (!technique) return null
         return {
           ...technique,
+          selected: true, // All techniques in this list are eligible for this session
           weight: flTechnique.priority // Use fight list priority as weight
         }
       })
@@ -273,11 +273,7 @@ export class SessionManager {
    * Start technique cycle (called externally after instruction audio completes)
    */
   startTechniqueAfterInstruction(): void {
-    if (this._instructionAudioCompleted || !this.currentFightList) {
-      if (this.currentSessionConfig) {
-        this.scheduleNextTechnique(this.currentSessionConfig)
-      }
-    }
+    // App's technique announcement loop will call selectAndSetNextTechnique()
   }
 
   pauseSession(): void {
@@ -356,26 +352,21 @@ export class SessionManager {
     }
   }
 
-  private scheduleNextTechnique(config: SessionConfig): void {
-    if (!this._isActive || this._isPaused) return
+  /**
+   * Select and set the next technique (no timer).
+   * Used by the app loop so the delay count starts only after announcement audio ends.
+   */
+  selectAndSetNextTechnique(config: SessionConfig): Technique | null {
+    if (!this._isActive || this._isPaused) return null
 
     const selectedTechniques = config.techniques.filter(t => t.selected)
-    if (selectedTechniques.length === 0) return
+    if (selectedTechniques.length === 0) return null
 
     const technique = this.selectionStrategy.selectTechnique(selectedTechniques)
-    this.announceTechnique(technique, config)
-  }
-
-  private announceTechnique(technique: Technique, config: SessionConfig): void {
     this.currentTechnique = technique
     this.techniquesUsed++
     this.updateSessionStats(technique)
-
-    // Schedule next technique after delay
-    this.techniqueTimer = window.setTimeout(() => {
-      this.currentTechnique = null
-      this.scheduleNextTechnique(config)
-    }, config.delay * 1000)
+    return technique
   }
 
   private updateSessionStats(technique: Technique): void {
@@ -414,6 +405,13 @@ export class SessionManager {
 
   isReadyToStartWithFightList(fightList: FightList): boolean {
     return fightList.techniques.filter(t => t.selected).length > 0
+  }
+
+  /**
+   * Returns the config used to start the current session (e.g. only fight list techniques when a fight list was selected).
+   */
+  getCurrentSessionConfig(): SessionConfig | null {
+    return this.currentSessionConfig
   }
 
   getSessionStatus(): SessionStatus {
@@ -520,6 +518,7 @@ export class SessionManager {
         techniquesUsed: this.techniquesUsed,
         sessionStats: this.sessionStats,
         currentFightList: this.currentFightList,
+        currentSessionConfig: this.currentSessionConfig,
         instructionAudioCompleted: this._instructionAudioCompleted,
         instructionAudioPlayedThisSession: this._instructionAudioPlayedThisSession,
         waitingForInstructionCompletion: this._waitingForInstructionCompletion,
@@ -547,6 +546,7 @@ export class SessionManager {
           this.techniquesUsed = state.techniquesUsed
           this.sessionStats = state.sessionStats
           this.currentFightList = state.currentFightList
+          this.currentSessionConfig = state.currentSessionConfig ?? null
           this._instructionAudioCompleted = state.instructionAudioCompleted || false
           this._instructionAudioPlayedThisSession = state.instructionAudioPlayedThisSession || false
           this._waitingForInstructionCompletion = state.waitingForInstructionCompletion || false

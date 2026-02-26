@@ -16,9 +16,10 @@ Voice Notes for Techniques
 - [ ] T007 Implement microphone access using the Web Audio API.
 - [ ] T008 Add error handling for microphone unavailability, displaying an error message with system error details.
 - [ ] T009 Create a popup window for recording notes with the following elements:
-  - "Click Start when ready. Click Cancel to cancel recording."
-  - Countdown timer (5 to 1) with a "Cancel" button.
-  - "Recording started..." message with a "Stop" button.
+  - Header with a title and close button.
+  - Main section with a text box (placeholder: "Enter note title here"), a "Start Recording" button, and a "Cancel" button.
+  - Recording state with a progress bar and a "Stop Recording" button.
+  - Footer with "Approve" and "Dismiss" buttons after recording stops.
 - [ ] T010 Implement recording start, stop, and cancel functionality.
 
 ## Phase 4: Note Approval Process

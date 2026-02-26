@@ -148,3 +148,27 @@ Once the user clicks "Stop" during the recording process, the recording should b
      - The window will include two buttons:
        - **Confirm**: Deletes the note and removes it from the list.
        - **Cancel**: Closes the confirmation window without deleting the note.
+
+### Updated Note Recording Window Design
+
+The design of the note recording window will now align with the design of the "Add New Fight List" window. This includes:
+
+1. **Header Section**:
+   - A title bar with the text "Record Note".
+   - A close button ("X") in the top-right corner.
+
+2. **Main Section**:
+   - A centered text box with the placeholder: "Enter note title here".
+   - A large record button below the text box, labeled "Start Recording".
+   - A cancel button next to the record button, labeled "Cancel".
+
+3. **Recording State**:
+   - When recording starts, the "Start Recording" button changes to "Stop Recording".
+   - A progress bar appears below the buttons to indicate the recording duration.
+
+4. **Footer Section**:
+   - Once recording is stopped, the footer displays two buttons:
+     - "Approve" to save the note.
+     - "Dismiss" to discard the note.
+
+This updated design ensures consistency across the application and improves the user experience.

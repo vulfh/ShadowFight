@@ -144,3 +144,24 @@ The application already includes a `ConfirmModal` component, which can be reused
 2. **Bug Fixes and Updates**
    - Address any bugs or issues reported by users.
    - Release updates to improve performance and add new features as needed.
+
+## Updated Plan for Note Recording Window
+
+To ensure consistency in the user interface, the note recording window will adopt the same design principles as the "Add New Fight List" window. This includes:
+
+1. **UI Components**:
+   - A header with a title and close button.
+   - A main section with input fields and action buttons.
+   - A footer for additional actions.
+
+2. **Behavior**:
+   - The "Start Recording" button transitions to "Stop Recording" during recording.
+   - A progress bar is displayed to show the recording duration.
+   - The footer displays "Approve" and "Dismiss" buttons after recording stops.
+
+3. **Implementation Steps**:
+   - Update the UI layout to match the "Add New Fight List" window.
+   - Reuse existing styles and components where possible.
+   - Test the updated design to ensure functionality and usability.
+
+This plan ensures a cohesive design language across the application.

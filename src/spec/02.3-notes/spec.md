@@ -1,7 +1,8 @@
 # Specification: Voice Notes for Techniques
 
 ## Overview
-This feature introduces the ability to record and play voice notes associated with specific techniques in specific modes. These notes enhance the training experience by providing additional context or instructions for each technique.
+This feature introduces the ability to record and play voice notes associated with specific techniques in specific modes.
+These notes enhance the training experience by providing additional context or instructions for each technique.
 
 ## Functional Requirements
 
@@ -30,6 +31,7 @@ This feature introduces the ability to record and play voice notes associated wi
 2. **Playing Notes**
    - A user enables the "Play Notes" checkbox.
    - During training, after a technique is announced, its associated notes are played sequentially.
+   - The delay between techniques starts once note playing has been finished.
 
 3. **Technique Reuse**
    - A user adds a technique with notes to a new fight list.

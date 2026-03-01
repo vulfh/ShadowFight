@@ -49,6 +49,14 @@ export type FightListTechnique = {
   selected: boolean
 }
 
+export interface VoiceNote {
+  id: string
+  techniqueId: string
+  mode: Mode
+  title: string
+  storageKey: string
+}
+
 export type FightListManager = {
   fightLists: FightList[]
   currentFightList: string | null
@@ -120,6 +128,7 @@ export interface UserConfig {
   techniques: Technique[]
   lastSaved: string | null
   currentFightListId: string | null
+  playNotes: boolean
 }
 
 // Session types

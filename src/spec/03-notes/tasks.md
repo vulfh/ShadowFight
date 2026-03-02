@@ -30,7 +30,7 @@
 **Checkpoint**: Foundation ready — user story implementation can begin.
 
 - [X] T002 [P] Add `VoiceNote` type and extend state for `playNotes` in src/types/index.ts
-- [ ] T003 [P] Add storage key(s) for voice notes and playNotes in src/constants/storage.ts
+- [X] T003 [P] Add storage key(s) for voice notes and playNotes in src/constants/storage.ts
 - [ ] T004 Implement VoiceNoteService: CRUD, IndexedDB for audio blobs, enforce 100MB total and 15 notes per (techniqueId, mode), unique title per (techniqueId, mode) in src/services/VoiceNoteService.ts
 - [ ] T005 When a technique is removed from a fight list, delete all notes for that technique (wire VoiceNoteService into FightListManager or save path in src/managers/FightListManager.ts)
 - [ ] T006 [P] Persist and load "Play Notes" checkbox in existing config/state (e.g. extend ConfigManager or add key in src/constants/storage.ts and src/managers/ConfigManager.ts)

@@ -2,7 +2,8 @@
 export const DEFAULT_CONFIG = {
   DURATION: 5,
   DELAY: 3,
-  VOLUME: 80
+  VOLUME: 80,
+  PLAY_NOTES: false
 } as const
 
 // Default fight list values

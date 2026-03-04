@@ -15,7 +15,8 @@ export class ConfigManager {
     volume: DEFAULT_CONFIG.VOLUME,
     techniques: [],
     lastSaved: null,
-    currentFightListId: null
+    currentFightListId: null,
+    playNotes: DEFAULT_CONFIG.PLAY_NOTES
   }
   private isInitialized: boolean = false
 
@@ -32,14 +33,15 @@ export class ConfigManager {
       if (savedConfig) {
         const parsed = JSON.parse(savedConfig)
         // Only load the properties we want to keep in ConfigManager
-        const { duration, delay, volume, techniques, lastSaved, currentFightListId } = parsed
+        const { duration, delay, volume, techniques, lastSaved, currentFightListId, playNotes } = parsed
         this.config = { 
           duration: duration ?? DEFAULT_CONFIG.DURATION,
           delay: delay ?? DEFAULT_CONFIG.DELAY,
           volume: volume ?? DEFAULT_CONFIG.VOLUME,
           techniques: techniques ?? [],
           lastSaved: lastSaved ?? null,
-          currentFightListId: currentFightListId ?? null
+          currentFightListId: currentFightListId ?? null,
+          playNotes: playNotes ?? DEFAULT_CONFIG.PLAY_NOTES
         }
       }
     } catch (error) {
@@ -116,7 +118,8 @@ export class ConfigManager {
       volume: DEFAULT_CONFIG.VOLUME,
       techniques: [],
       lastSaved: null,
-      currentFightListId: null
+      currentFightListId: null,
+      playNotes: DEFAULT_CONFIG.PLAY_NOTES
     }
     this.saveConfig()
   }
@@ -200,6 +203,16 @@ export class ConfigManager {
 
   setCurrentFightListId(id: string | null): void {
     this.config.currentFightListId = id
+    this.saveConfig()
+  }
+
+  // Play Notes Management
+  getPlayNotes(): boolean {
+    return this.config.playNotes
+  }
+
+  setPlayNotes(enabled: boolean): void {
+    this.config.playNotes = enabled
     this.saveConfig()
   }
 }

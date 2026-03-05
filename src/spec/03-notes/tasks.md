@@ -31,9 +31,9 @@
 
 - [X] T002 [P] Add `VoiceNote` type and extend state for `playNotes` in src/types/index.ts
 - [X] T003 [P] Add storage key(s) for voice notes and playNotes in src/constants/storage.ts
-- [ ] T004 Implement VoiceNoteService: CRUD, IndexedDB for audio blobs, enforce 100MB total and 15 notes per (techniqueId, mode), unique title per (techniqueId, mode) in src/services/VoiceNoteService.ts
-- [ ] T005 When a technique is removed from a fight list, delete all notes for that technique (wire VoiceNoteService into FightListManager or save path in src/managers/FightListManager.ts)
-- [ ] T006 [P] Persist and load "Play Notes" checkbox in existing config/state (e.g. extend ConfigManager or add key in src/constants/storage.ts and src/managers/ConfigManager.ts)
+- [X] T004 Implement VoiceNoteService: CRUD, IndexedDB for audio blobs, enforce 100MB total and 15 notes per (techniqueId, mode), unique title per (techniqueId, mode) in src/services/VoiceNoteService.ts
+- 
+- [X] T006 [P] Persist and load "Play Notes" checkbox in existing config/state (e.g. extend ConfigManager or add key in src/constants/storage.ts and src/managers/ConfigManager.ts)
 
 ---
 
@@ -43,7 +43,7 @@
 
 **Independent Test**: From a fight list, click Add Note on a technique, complete countdown, record, enter title, Approve; note appears in list after refresh; duplicate title is rejected.
 
-- [ ] T007 [P] [US1] Add "Add Note" button per technique in the fight list view in src/managers/FightListUIManager.ts
+- [X] T007 [P] [US1] Add "Add Note" button per technique in the fight list view in src/managers/FightListUIManager.ts
 - [ ] T008 [P] [US1] Create VoiceNoteRecordModal: header "Record Note", title input "Enter note title here", Start Recording / Cancel; countdown 5→1 then "Recording started...", Stop; 1 min max with progress bar; align with "Add New Fight List" window style in src/components/VoiceNoteRecordModal.ts
 - [ ] T009 [US1] Add Note Approval step to VoiceNoteRecordModal: "Note name" text box, "Play the note" button, Approve (validate non-empty title, unique per technique+mode) / Dismiss; show "Note title cannot be empty" when empty on Approve in src/components/VoiceNoteRecordModal.ts
 - [ ] T010 [US1] Wire Add Note to open VoiceNoteRecordModal with techniqueId and fight list mode; on Approve save via VoiceNoteService and refresh fight list notes in src/managers/FightListUIManager.ts

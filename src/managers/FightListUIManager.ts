@@ -228,6 +228,10 @@ export class FightListUIManager {
                data-id="${technique.id}">
             <span>${technique.techniqueId}</span>
             <div class="d-flex align-items-center">
+              <button class="btn btn-sm btn-outline-primary me-2 add-note-btn" 
+                      title="Add Voice Note">
+                <i class="fas fa-microphone"></i>
+              </button>
               <select class="form-select form-select-sm me-2 priority-select" 
                       style="width: 100px;">
                 ${this.renderPriorityOptions(technique.priority)}
@@ -287,6 +291,17 @@ export class FightListUIManager {
     // Add technique
     const addBtn = element.querySelector('.add-technique')
     addBtn?.addEventListener('click', () => this.showTechniqueAddModal(fightList))
+
+    // Add note buttons
+    const addNoteBtns = element.querySelectorAll('.add-note-btn')
+    addNoteBtns.forEach(btn => {
+      const techniqueItem = btn.closest('[data-id]') as HTMLElement
+      if (techniqueItem) {
+        btn.addEventListener('click', () => {
+          this.showVoiceNoteRecordModal(fightList.id, techniqueItem.dataset.id!)
+        })
+      }
+    })
 
     // Remove technique buttons
     const removeBtns = element.querySelectorAll('.remove-technique')
@@ -425,6 +440,19 @@ export class FightListUIManager {
     })
 
     modal.show()
+  }
+
+  /**
+   * Show voice note recording modal
+   * This will be implemented in T010 to wire up the VoiceNoteRecordModal component
+   */
+  private showVoiceNoteRecordModal(fightListId: string, techniqueId: string): void {
+    // TODO: Implement in T010 - open VoiceNoteRecordModal with techniqueId and fight list mode
+    console.log(`Add Note clicked for technique ${techniqueId} in fight list ${fightListId}`)
+    this.showNotification({ 
+      message: 'Voice note recording will be implemented in T008-T010', 
+      type: 'info' 
+    })
   }
 
   /**

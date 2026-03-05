@@ -13,7 +13,9 @@ import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
 import { TechniqueAddModal } from '../components/TechniqueAddModal'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { VoiceNoteRecordModal } from '../components/VoiceNoteRecordModal'
 import { TechniqueManager } from './TechniqueManager'
+import { VoiceNoteService } from '../services/VoiceNoteService'
 
 /**
  * Manages the UI components and interactions for fight lists
@@ -32,12 +34,15 @@ export class FightListUIManager {
 
   // Event flow callbacks
   private managerCallbacks: FightListManagerCallbacks | null = null
+  private voiceNoteService: VoiceNoteService
 
   constructor(
     private readonly fightListManager: FightListManager,
     private readonly uiManager: UIManager,
     private readonly techniqueManager: TechniqueManager = new TechniqueManager()
-  ) {}
+  ) {
+    this.voiceNoteService = new VoiceNoteService()
+  }
 
   /**
    * Initialize the UI manager and set up event listeners
@@ -446,15 +451,57 @@ export class FightListUIManager {
 
   /**
    * Show voice note recording modal
-   * This will be implemented in T010 to wire up the VoiceNoteRecordModal component
    */
   private showVoiceNoteRecordModal(fightListId: string, techniqueId: string): void {
-    // TODO: Implement in T010 - open VoiceNoteRecordModal with techniqueId and fight list mode
-    console.log(`Add Note clicked for technique ${techniqueId} in fight list ${fightListId}`)
-    this.showNotification({ 
-      message: 'Voice note recording will be implemented in T008-T010', 
-      type: 'info' 
-    })
+    const fightList = this.fightListManager.getFightList(fightListId);
+    if (!fightList) {
+      this.showNotification({ 
+        message: 'Fight list not found', 
+        type: 'error' 
+      });
+      return;
+    }
+
+    const modal = new VoiceNoteRecordModal({
+      techniqueId,
+      mode: fightList.mode || MODES.RESPONDING,
+      voiceNoteService: this.voiceNoteService,
+      onApprove: async (audioBlob: Blob, title: string) => {
+        try {
+          const note = await this.voiceNoteService.createNote(
+            techniqueId,
+            fightList.mode || MODES.RESPONDING,
+            title,
+            audioBlob
+          );
+
+          if (note) {
+            this.showNotification({ 
+              message: 'Voice note saved successfully', 
+              type: 'success' 
+            });
+            // Refresh the fight list to show the new note
+            await this.renderFightLists();
+          } else {
+            this.showNotification({ 
+              message: 'Failed to save voice note. Check limits and title uniqueness.', 
+              type: 'error' 
+            });
+          }
+        } catch (error) {
+          console.error('Failed to save voice note:', error);
+          this.showNotification({ 
+            message: error instanceof Error ? error.message : 'Failed to save voice note', 
+            type: 'error' 
+          });
+        }
+      },
+      onCancel: () => {
+        // Note was dismissed, no action needed
+      }
+    });
+
+    modal.show();
   }
 
   /**

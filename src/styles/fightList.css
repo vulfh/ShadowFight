@@ -1273,3 +1273,48 @@
     color: #adb5bd;
   }
 }
+
+/* Voice Note Button Styles - Prevent layout shift */
+.add-note-btn {
+  flex-shrink: 0;
+  min-width: 36px;
+  width: 36px;
+  padding: 0.25rem 0.5rem;
+  border-width: 1px !important;
+  margin: 0 !important;
+}
+
+.add-note-btn:focus,
+.add-note-btn:active,
+.add-note-btn:hover {
+  box-shadow: none !important;
+  transform: none !important;
+  outline: none !important;
+  border-width: 1px !important;
+}
+
+.add-note-btn:focus-visible {
+  outline: 2px solid var(--primary-color) !important;
+  outline-offset: 2px;
+}
+
+/* Ensure button container doesn't shift */
+.list-group-item .d-flex.align-items-center {
+  flex-shrink: 0;
+  gap: 0.5rem;
+  min-width: fit-content;
+}
+
+.list-group-item .d-flex.align-items-center > * {
+  flex-shrink: 0;
+}
+
+/* Prevent list item from shifting on button interaction */
+.list-group-item {
+  position: relative;
+}
+
+.list-group-item:has(.add-note-btn:focus),
+.list-group-item:has(.add-note-btn:active) {
+  transform: none !important;
+}

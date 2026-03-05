@@ -297,7 +297,9 @@ export class FightListUIManager {
     addNoteBtns.forEach(btn => {
       const techniqueItem = btn.closest('[data-id]') as HTMLElement
       if (techniqueItem) {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           this.showVoiceNoteRecordModal(fightList.id, techniqueItem.dataset.id!)
         })
       }

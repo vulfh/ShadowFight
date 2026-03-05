@@ -1,13 +1,15 @@
 import { Mode } from '../constants/modes';
+import { VoiceNoteService } from '../services/VoiceNoteService';
 
 export interface VoiceNoteRecordModalOptions {
   techniqueId: string;
   mode: Mode;
-  onRecordingComplete: (audioBlob: Blob, title: string) => void;
+  voiceNoteService: VoiceNoteService;
+  onApprove: (audioBlob: Blob, title: string) => void;
   onCancel?: () => void;
 }
 
-type RecordingState = 'initial' | 'countdown' | 'recording' | 'stopped';
+type RecordingState = 'initial' | 'countdown' | 'recording' | 'stopped' | 'approval';
 
 export class VoiceNoteRecordModal {
   private modal: HTMLElement;
@@ -15,6 +17,7 @@ export class VoiceNoteRecordModal {
   private state: RecordingState = 'initial';
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
+  private recordedAudioBlob: Blob | null = null;
   private recordingStartTime: number = 0;
   private recordingTimer: number | null = null;
   private countdownTimer: number | null = null;
@@ -239,15 +242,183 @@ export class VoiceNoteRecordModal {
       this.state = 'stopped';
       
       this.mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-        const titleInput = this.modal.querySelector('#voice-note-title-input') as HTMLInputElement;
-        const title = titleInput.value.trim();
-        
-        this.close();
-        this.options.onRecordingComplete(audioBlob, title);
+        this.recordedAudioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        this.showApprovalStep();
       };
 
       this.mediaRecorder.stop();
+    }
+  }
+
+  private showApprovalStep(): void {
+    this.state = 'approval';
+    
+    // Get the title from the initial input
+    const initialTitleInput = this.modal.querySelector('#voice-note-title-input') as HTMLInputElement;
+    const initialTitle = initialTitleInput?.value.trim() || '';
+
+    const modalContent = `
+      <div class="voice-note-modal__content">
+        <header class="voice-note-modal__header">
+          <h2 id="voice-note-modal-title">Note Approval</h2>
+          <button type="button" class="voice-note-modal__close" aria-label="Close modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="voice-note-modal__body">
+          <input 
+            type="text" 
+            id="approval-title-input"
+            class="voice-note-modal__input" 
+            placeholder="Note name"
+            value="${initialTitle}"
+            aria-label="Note title"
+          />
+          <div class="voice-note-modal__error" id="approval-error" role="alert" aria-live="polite"></div>
+          <button type="button" class="voice-note-modal__button voice-note-modal__button--secondary" id="play-note-btn">
+            <i class="fas fa-play me-2"></i>Play the note
+          </button>
+        </div>
+        <footer class="voice-note-modal__footer">
+          <button type="button" class="voice-note-modal__button voice-note-modal__button--cancel" id="dismiss-btn">
+            Dismiss
+          </button>
+          <button type="button" class="voice-note-modal__button voice-note-modal__button--primary" id="approve-btn">
+            Approve
+          </button>
+        </footer>
+      </div>
+    `;
+
+    this.modal.innerHTML = modalContent;
+    this.setupApprovalEventListeners();
+  }
+
+  private setupApprovalEventListeners(): void {
+    // Close button
+    const closeBtn = this.modal.querySelector('.voice-note-modal__close');
+    closeBtn?.addEventListener('click', () => this.dismiss());
+
+    // Dismiss button
+    const dismissBtn = this.modal.querySelector('#dismiss-btn');
+    dismissBtn?.addEventListener('click', () => this.dismiss());
+
+    // Approve button
+    const approveBtn = this.modal.querySelector('#approve-btn');
+    approveBtn?.addEventListener('click', () => this.approve());
+
+    // Play note button
+    const playBtn = this.modal.querySelector('#play-note-btn');
+    playBtn?.addEventListener('click', () => this.playRecordedNote());
+
+    // Escape key to dismiss
+    document.addEventListener('keydown', this.handleApprovalEscapeKey);
+
+    // Close on outside click
+    this.modal.addEventListener('click', (e) => {
+      if (e.target === this.modal) {
+        this.dismiss();
+      }
+    });
+
+    // Clear error on input
+    const titleInput = this.modal.querySelector('#approval-title-input') as HTMLInputElement;
+    titleInput?.addEventListener('input', () => {
+      this.clearApprovalError();
+    });
+  }
+
+  private handleApprovalEscapeKey = (e: KeyboardEvent): void => {
+    if (e.key === 'Escape') {
+      this.dismiss();
+    }
+  };
+
+  private playRecordedNote(): void {
+    if (!this.recordedAudioBlob) {
+      return;
+    }
+
+    const audioUrl = URL.createObjectURL(this.recordedAudioBlob);
+    const audio = new Audio(audioUrl);
+
+    audio.onended = () => {
+      URL.revokeObjectURL(audioUrl);
+    };
+
+    audio.onerror = (error) => {
+      URL.revokeObjectURL(audioUrl);
+      console.error('Error playing recorded note:', error);
+      this.showApprovalError('Failed to play the note');
+    };
+
+    audio.play().catch(error => {
+      console.error('Failed to play audio:', error);
+      this.showApprovalError('Failed to play the note');
+    });
+  }
+
+  private approve(): void {
+    const titleInput = this.modal.querySelector('#approval-title-input') as HTMLInputElement;
+    const title = titleInput.value.trim();
+
+    // Validate non-empty title
+    if (!title) {
+      this.showApprovalError('Note title cannot be empty');
+      titleInput.focus();
+      return;
+    }
+
+    // Validate unique title per technique+mode
+    if (!this.options.voiceNoteService.isTitleUnique(this.options.techniqueId, this.options.mode, title)) {
+      this.showApprovalError('A note with this title already exists for this technique and mode');
+      titleInput.focus();
+      return;
+    }
+
+    if (!this.recordedAudioBlob) {
+      this.showApprovalError('No recording available');
+      return;
+    }
+
+    this.close();
+    this.options.onApprove(this.recordedAudioBlob, title);
+  }
+
+  private dismiss(): void {
+    this.close();
+    if (this.options.onCancel) {
+      this.options.onCancel();
+    }
+  }
+
+  private showApprovalError(message: string): void {
+    const errorElement = this.modal.querySelector('#approval-error') as HTMLElement;
+    const titleInput = this.modal.querySelector('#approval-title-input') as HTMLInputElement;
+    
+    if (errorElement) {
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+    
+    if (titleInput) {
+      titleInput.classList.add('voice-note-modal__input--error');
+      titleInput.setAttribute('aria-invalid', 'true');
+    }
+  }
+
+  private clearApprovalError(): void {
+    const errorElement = this.modal.querySelector('#approval-error') as HTMLElement;
+    const titleInput = this.modal.querySelector('#approval-title-input') as HTMLInputElement;
+    
+    if (errorElement) {
+      errorElement.textContent = '';
+      errorElement.style.display = 'none';
+    }
+    
+    if (titleInput) {
+      titleInput.classList.remove('voice-note-modal__input--error');
+      titleInput.removeAttribute('aria-invalid');
     }
   }
 
@@ -271,15 +442,26 @@ export class VoiceNoteRecordModal {
 
   private close(): void {
     document.removeEventListener('keydown', this.handleEscapeKey);
+    document.removeEventListener('keydown', this.handleApprovalEscapeKey);
     if (this.modal.parentElement) {
       document.body.removeChild(this.modal);
     }
+    // Restore body overflow and padding
     document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
 
   public show(): void {
+    // Calculate scrollbar width to prevent layout shift
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    
     document.body.appendChild(this.modal);
     document.body.style.overflow = 'hidden';
+    
+    // Add padding to compensate for removed scrollbar
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
     
     // Focus the title input
     const titleInput = this.modal.querySelector('#voice-note-title-input') as HTMLInputElement;

@@ -106,6 +106,22 @@
   box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
 }
 
+.voice-note-modal__input--error {
+  border-color: var(--danger-color);
+}
+
+.voice-note-modal__input--error:focus {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.voice-note-modal__error {
+  display: none;
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
 .voice-note-modal__status {
   text-align: center;
   font-size: 1.1rem;
@@ -226,6 +242,24 @@
 
 .voice-note-modal__button--danger:active:not(:disabled) {
   background: #b02a37;
+  transform: scale(0.98);
+}
+
+.voice-note-modal__button--secondary {
+  background: #6c757d;
+  color: white;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.voice-note-modal__button--secondary:hover:not(:disabled) {
+  background: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.voice-note-modal__button--secondary:active:not(:disabled) {
+  background: #545b62;
   transform: scale(0.98);
 }
 

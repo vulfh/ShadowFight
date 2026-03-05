@@ -44,7 +44,7 @@
 **Independent Test**: From a fight list, click Add Note on a technique, complete countdown, record, enter title, Approve; note appears in list after refresh; duplicate title is rejected.
 
 - [X] T007 [P] [US1] Add "Add Note" button per technique in the fight list view in src/managers/FightListUIManager.ts
-- [ ] T008 [P] [US1] Create VoiceNoteRecordModal: header "Record Note", title input "Enter note title here", Start Recording / Cancel; countdown 5→1 then "Recording started...", Stop; 1 min max with progress bar; align with "Add New Fight List" window style in src/components/VoiceNoteRecordModal.ts
+- [X] T008 [P] [US1] Create VoiceNoteRecordModal: header "Record Note", title input "Enter note title here", Start Recording / Cancel; countdown 5→1 then "Recording started...", Stop; 1 min max with progress bar; align with "Add New Fight List" window style in src/components/VoiceNoteRecordModal.ts
 - [ ] T009 [US1] Add Note Approval step to VoiceNoteRecordModal: "Note name" text box, "Play the note" button, Approve (validate non-empty title, unique per technique+mode) / Dismiss; show "Note title cannot be empty" when empty on Approve in src/components/VoiceNoteRecordModal.ts
 - [ ] T010 [US1] Wire Add Note to open VoiceNoteRecordModal with techniqueId and fight list mode; on Approve save via VoiceNoteService and refresh fight list notes in src/managers/FightListUIManager.ts
 

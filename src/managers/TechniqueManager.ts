@@ -88,7 +88,10 @@ export class TechniqueManager {
       // Hand-Grip
       { name: 'Left Hand Grip', modes:[MODES.RESPONDING], file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       { name: 'Right Hand Grip', modes:[MODES.RESPONDING], file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-      
+
+     //Knee-Protection
+          { name: 'Left Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
+          { name: 'Right Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'yamin-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
       // Knees
       // { name: 'Vertical Knee Strike', file: 'vertical_knee_strike.wav', category: 'Knees', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },
       

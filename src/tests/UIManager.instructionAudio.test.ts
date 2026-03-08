@@ -60,7 +60,8 @@ describe('UIManager - Instruction Audio UI Integration', () => {
           [TECHNIQUE_CATEGORIES.WEAPONS]: 0,
           [TECHNIQUE_CATEGORIES.HAND_GRIP]: 0,
           [TECHNIQUE_CATEGORIES.KNIFE]: 0,
-          [TECHNIQUE_CATEGORIES.SLIP]: 0
+          [TECHNIQUE_CATEGORIES.SLIP]: 0,
+          [TECHNIQUE_CATEGORIES.KNEE_PROTECTION]: 0
         },
         sessionDuration: 0
       },

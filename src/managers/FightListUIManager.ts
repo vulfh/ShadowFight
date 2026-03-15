@@ -237,6 +237,14 @@ export class FightListUIManager {
             : notes.map(note => `
                 <div class="note-item d-flex justify-content-between align-items-center py-1" data-note-id="${note.id}">
                   <span class="small"><i class="fas fa-microphone me-1 text-muted"></i>${note.title}</span>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-xs btn-outline-secondary note-play-btn" title="Play note">
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-xs btn-outline-danger note-delete-btn" title="Delete note">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
                 </div>
               `).join('');
 
@@ -323,6 +331,39 @@ export class FightListUIManager {
           e.preventDefault();
           e.stopPropagation();
           this.showVoiceNoteRecordModal(fightList.id, techniqueItem.dataset.id!)
+        })
+      }
+    })
+
+    // Note play buttons
+    const notePlayBtns = element.querySelectorAll('.note-play-btn')
+    notePlayBtns.forEach(btn => {
+      const noteItem = btn.closest('[data-note-id]') as HTMLElement
+      if (noteItem) {
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          try {
+            await this.voiceNoteService.playNote(noteItem.dataset.noteId!)
+          } catch (error) {
+            this.showNotification({ 
+              message: error instanceof Error ? error.message : 'Failed to play note', 
+              type: 'error' 
+            })
+          }
+        })
+      }
+    })
+
+    // Note delete buttons
+    const noteDeleteBtns = element.querySelectorAll('.note-delete-btn')
+    noteDeleteBtns.forEach(btn => {
+      const noteItem = btn.closest('[data-note-id]') as HTMLElement
+      if (noteItem) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.showNoteDeleteConfirmation(noteItem.dataset.noteId!, fightList.id)
         })
       }
     })
@@ -519,6 +560,14 @@ export class FightListUIManager {
     });
 
     modal.show();
+  }
+
+  /**
+   * Show delete confirmation for a voice note (implemented in T013)
+   */
+  private showNoteDeleteConfirmation(noteId: string, fightListId: string): void {
+    // Implemented in T013
+    console.log(`Delete note ${noteId} from fight list ${fightListId}`)
   }
 
   /**

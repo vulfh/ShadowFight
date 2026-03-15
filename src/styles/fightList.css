@@ -1318,3 +1318,12 @@
 .list-group-item:has(.add-note-btn:active) {
   transform: none !important;
 }
+
+/* Notes section within technique items */
+.notes-section {
+  border-color: #dee2e6 !important;
+}
+
+.note-item {
+  min-height: 28px;
+}

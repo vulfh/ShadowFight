@@ -207,7 +207,7 @@ export class FightListUIManager {
         </div>
       </div>
       <div class="card-body collapse ${isExpanded ? 'show' : ''}" id="techniques-${fightList.id}">
-        ${this.renderTechniquesList(fightList.techniques)}
+        ${this.renderTechniquesList(fightList.techniques, fightList.mode)}
         <button class="btn btn-sm btn-primary add-technique mt-2">
           <i class="fas fa-plus"></i> Add Technique
         </button>
@@ -221,32 +221,49 @@ export class FightListUIManager {
   /**
    * Render the list of techniques for a fight list
    */
-  private renderTechniquesList(techniques: FightListTechnique[]): string {
+  private renderTechniquesList(techniques: FightListTechnique[], mode?: Mode): string {
     if (techniques.length === 0) {
       return '<p class="text-muted">No techniques added yet.</p>'
     }
 
     return `
       <div class="list-group">
-        ${techniques.map(technique => `
-          <div class="list-group-item d-flex justify-content-between align-items-center" 
-               data-id="${technique.id}">
-            <span>${technique.techniqueId}</span>
-            <div class="d-flex align-items-center">
-              <button class="btn btn-sm btn-outline-primary me-2 add-note-btn" 
-                      title="Add Voice Note">
-                <i class="fas fa-microphone"></i>
-              </button>
-              <select class="form-select form-select-sm me-2 priority-select" 
-                      style="width: 100px;">
-                ${this.renderPriorityOptions(technique.priority)}
-              </select>
-              <button class="btn btn-sm btn-outline-danger remove-technique">
-                <i class="fas fa-times"></i>
-              </button>
+        ${techniques.map(technique => {
+          const notes = mode
+            ? this.voiceNoteService.getNotesForTechniqueMode(technique.techniqueId, mode)
+            : [];
+          const notesHtml = notes.length === 0
+            ? '<p class="text-muted small mb-0">No notes available.</p>'
+            : notes.map(note => `
+                <div class="note-item d-flex justify-content-between align-items-center py-1" data-note-id="${note.id}">
+                  <span class="small"><i class="fas fa-microphone me-1 text-muted"></i>${note.title}</span>
+                </div>
+              `).join('');
+
+          return `
+            <div class="list-group-item" data-id="${technique.id}">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>${technique.techniqueId}</span>
+                <div class="d-flex align-items-center">
+                  <button class="btn btn-sm btn-outline-primary me-2 add-note-btn"
+                          title="Add Voice Note">
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                  <select class="form-select form-select-sm me-2 priority-select"
+                          style="width: 100px;">
+                    ${this.renderPriorityOptions(technique.priority)}
+                  </select>
+                  <button class="btn btn-sm btn-outline-danger remove-technique">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="notes-section mt-2 ps-2 border-start border-2">
+                ${notesHtml}
+              </div>
             </div>
-          </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     `
   }

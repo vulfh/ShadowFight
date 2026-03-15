@@ -58,7 +58,7 @@
 
 **Independent Test**: Expand a technique; see notes for that mode; play a note; delete with confirmation; list updates; "No notes available." when empty.
 
-- [ ] T011 [US2] Add expandable list of notes per technique in fight list view; show only notes for that fight list's mode; show "No notes available." when empty in src/managers/FightListUIManager.ts
+- [X] T011 [US2] Add expandable list of notes per technique in fight list view; show only notes for that fight list's mode; show "No notes available." when empty in src/managers/FightListUIManager.ts
 - [ ] T012 [US2] Add Play and Delete button per note in the expandable list in src/managers/FightListUIManager.ts
 - [ ] T013 [US2] Implement delete confirmation modal: "Are you sure you want to delete this note? This action cannot be undone." with Confirm and Cancel; on Confirm delete via VoiceNoteService and refresh list in src/managers/FightListUIManager.ts
 

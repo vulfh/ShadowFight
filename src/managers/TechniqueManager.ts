@@ -59,7 +59,10 @@ export class TechniqueManager {
           { name: 'Left Axe Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-patish.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Axe Kick',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'yamin-beitat-patish.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Turn Back Round House Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
-          { name: 'Right Turn Back Round House Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Right Turn Back Round House Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
+          { name: 'Left Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
 
           { name: 'Left Side Knee Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-bereh-mihatsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
           { name: 'Right Side Knee Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-bereh-mihatsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },

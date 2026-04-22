@@ -11,6 +11,7 @@ import { FIGHT_LIST_UI_ELEMENTS as UI } from '../constants/ui-elements'
 import { MODES } from '../constants/modes'
 import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
+import { ConfigManager } from './ConfigManager'
 import { TechniqueAddModal } from '../components/TechniqueAddModal'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { VoiceNoteRecordModal } from '../components/VoiceNoteRecordModal'
@@ -39,7 +40,8 @@ export class FightListUIManager {
   constructor(
     private readonly fightListManager: FightListManager,
     private readonly uiManager: UIManager,
-    private readonly techniqueManager: TechniqueManager = new TechniqueManager()
+    private readonly techniqueManager: TechniqueManager = new TechniqueManager(),
+    private readonly configManager: ConfigManager | null = null
   ) {
     this.voiceNoteService = new VoiceNoteService()
   }
@@ -152,12 +154,23 @@ export class FightListUIManager {
 
     container.innerHTML = ''
 
-    // Add "Create New" button
-    // const newButton = document.createElement('button')
-    // newButton.id = UI.NEW_BTN
-    // newButton.className = 'btn btn-primary mb-3'
-    // newButton.innerHTML = '<i class="fas fa-plus"></i> Create New Fight List'
-    // container.appendChild(newButton)
+    // Play Notes checkbox (persisted via ConfigManager)
+    const playNotes = this.configManager?.getPlayNotes() ?? false
+    const playNotesBar = document.createElement('div')
+    playNotesBar.className = 'play-notes-bar d-flex align-items-center px-3 py-2 border-bottom'
+    playNotesBar.innerHTML = `
+      <div class="form-check mb-0">
+        <input class="form-check-input" type="checkbox" id="playNotesCheckbox" ${playNotes ? 'checked' : ''}>
+        <label class="form-check-label" for="playNotesCheckbox">
+          <i class="fas fa-music me-1"></i>Play Notes
+        </label>
+      </div>
+    `
+    const checkbox = playNotesBar.querySelector('#playNotesCheckbox') as HTMLInputElement
+    checkbox.addEventListener('change', () => {
+      this.configManager?.setPlayNotes(checkbox.checked)
+    })
+    container.appendChild(playNotesBar)
 
     // Render each fight list
     fightLists.forEach(fightList => {

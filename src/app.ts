@@ -40,7 +40,7 @@ export class KravMagaTrainerApp {
     this.configManager = new ConfigManager()
     this.uiManager = new UIManager()
     this.fightListManager = new FightListManager()
-    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager)
+    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager, undefined, this.configManager)
     this.migrationService = new MigrationService()
   }
 

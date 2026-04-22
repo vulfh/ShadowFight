@@ -60,7 +60,7 @@
 
 - [X] T011 [US2] Add expandable list of notes per technique in fight list view; show only notes for that fight list's mode; show "No notes available." when empty in src/managers/FightListUIManager.ts
 - [X] T012 [US2] Add Play and Delete button per note in the expandable list in src/managers/FightListUIManager.ts
-- [ ] T013 [US2] Implement delete confirmation modal: "Are you sure you want to delete this note? This action cannot be undone." with Confirm and Cancel; on Confirm delete via VoiceNoteService and refresh list in src/managers/FightListUIManager.ts
+- [X] T013 [US2] Implement delete confirmation modal: "Are you sure you want to delete this note? This action cannot be undone." with Confirm and Cancel; on Confirm delete via VoiceNoteService and refresh list in src/managers/FightListUIManager.ts
 
 **Checkpoint**: User Stories 1 and 2 work — record notes and manage them in the list.
 
@@ -72,7 +72,7 @@
 
 **Independent Test**: Enable Play Notes, start session; after each technique audio, voice notes play in order; delay countdown starts only after notes finish.
 
-- [ ] T014 [US3] Add "Play Notes" checkbox to fight list/session UI and persist its state in the same state object as other session prefs in src/managers/FightListUIManager.ts (or session UI location)
+- [X] T014 [US3] Add "Play Notes" checkbox to fight list/session UI and persist its state in the same state object as other session prefs in src/managers/FightListUIManager.ts (or session UI location)
 - [ ] T015 [US3] In startTechniqueAnnouncementLoop after announceTechniqueWithAudio: if playNotes is checked and session has a fight list, load notes for (currentTechnique, fightList.mode) and play sequentially (Web Audio or blob URL); when all done, start delay (setTimeout for next technique) in src/app.ts
 
 **Checkpoint**: All three user stories work — record, list/play/delete, and play during session.

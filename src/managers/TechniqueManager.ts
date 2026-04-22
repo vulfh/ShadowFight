@@ -59,7 +59,10 @@ export class TechniqueManager {
           { name: 'Left Axe Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-patish.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Axe Kick',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'yamin-beitat-patish.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Turn Back Round House Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
-          { name: 'Right Turn Back Round House Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Right Turn Back Round House Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
+          { name: 'Left Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
 
           { name: 'Left Side Knee Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-bereh-mihatsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
           { name: 'Right Side Knee Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-bereh-mihatsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
@@ -88,7 +91,10 @@ export class TechniqueManager {
       // Hand-Grip
       { name: 'Left Hand Grip', modes:[MODES.RESPONDING], file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       { name: 'Right Hand Grip', modes:[MODES.RESPONDING], file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-      
+
+     //Knee-Protection
+          { name: 'Left Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
+          { name: 'Right Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'yamin-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
       // Knees
       // { name: 'Vertical Knee Strike', file: 'vertical_knee_strike.wav', category: 'Knees', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },
       

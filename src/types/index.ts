@@ -30,6 +30,7 @@ export type TechniqueCategory =
   | 'Hand-Grip'
   |'Knife'
   | 'Slip'
+  | 'Knee-Protection'
 export type PriorityLevel = 'high' | 'medium' | 'low'
 
 // Fight List Types

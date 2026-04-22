@@ -17,7 +17,8 @@ const TECHNIQUE_CATEGORIES = [
   'Weapons',
   'Hand-Grip',
   'Knife',
-  'Slip'
+  'Slip',
+  'Knee-Protection'
 ] as const;
 
 export class TechniqueAddModal {

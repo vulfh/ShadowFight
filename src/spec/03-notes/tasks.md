@@ -73,7 +73,7 @@
 **Independent Test**: Enable Play Notes, start session; after each technique audio, voice notes play in order; delay countdown starts only after notes finish.
 
 - [X] T014 [US3] Add "Play Notes" checkbox to fight list/session UI and persist its state in the same state object as other session prefs in src/managers/FightListUIManager.ts (or session UI location)
-- [ ] T015 [US3] In startTechniqueAnnouncementLoop after announceTechniqueWithAudio: if playNotes is checked and session has a fight list, load notes for (currentTechnique, fightList.mode) and play sequentially (Web Audio or blob URL); when all done, start delay (setTimeout for next technique) in src/app.ts
+- [X] T015 [US3] In startTechniqueAnnouncementLoop after announceTechniqueWithAudio: if playNotes is checked and session has a fight list, load notes for (currentTechnique, fightList.mode) and play sequentially (Web Audio or blob URL); when all done, start delay (setTimeout for next technique) in src/app.ts
 
 **Checkpoint**: All three user stories work — record, list/play/delete, and play during session.
 

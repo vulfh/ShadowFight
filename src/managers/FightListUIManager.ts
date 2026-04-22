@@ -563,11 +563,32 @@ export class FightListUIManager {
   }
 
   /**
-   * Show delete confirmation for a voice note (implemented in T013)
+   * Show delete confirmation for a voice note
    */
-  private showNoteDeleteConfirmation(noteId: string, fightListId: string): void {
-    // Implemented in T013
-    console.log(`Delete note ${noteId} from fight list ${fightListId}`)
+  private showNoteDeleteConfirmation(noteId: string, _fightListId: string): void {
+    const modal = new ConfirmModal({
+      title: 'Delete Note',
+      message: 'Are you sure you want to delete this note? This action cannot be undone.',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      confirmButtonClass: 'danger',
+      onConfirm: async () => {
+        try {
+          await this.voiceNoteService.deleteNote(noteId)
+          await this.renderFightLists()
+          this.showNotification({ message: 'Note deleted successfully', type: 'success' })
+        } catch (error) {
+          this.showNotification({
+            message: error instanceof Error ? error.message : 'Failed to delete note',
+            type: 'error'
+          })
+        }
+      },
+      onCancel: () => {
+        // User cancelled, no action needed
+      }
+    })
+    modal.show()
   }
 
   /**

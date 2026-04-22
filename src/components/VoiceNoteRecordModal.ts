@@ -56,6 +56,7 @@ export class VoiceNoteRecordModal {
             placeholder="Enter note title here"
             aria-label="Note title"
           />
+          <div class="voice-note-modal__error" id="mic-error" role="alert" aria-live="polite" style="display: none;"></div>
           <div class="voice-note-modal__status" id="recording-status"></div>
           <div class="voice-note-modal__progress-container" id="progress-container" style="display: none;">
             <div class="voice-note-modal__progress-bar" id="progress-bar"></div>
@@ -199,12 +200,15 @@ export class VoiceNoteRecordModal {
 
     } catch (error) {
       console.error('Failed to start recording:', error);
-      const statusElement = this.modal.querySelector('#recording-status') as HTMLElement;
-      statusElement.textContent = `Microphone error: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      statusElement.style.color = 'red';
-      
+      this.state = 'initial';
+      this.showMicError(error instanceof Error ? error.message : 'Microphone unavailable');
+
       const actionBtn = this.modal.querySelector('#action-btn') as HTMLButtonElement;
       actionBtn.disabled = true;
+      actionBtn.textContent = 'Start Recording';
+
+      const statusElement = this.modal.querySelector('#recording-status') as HTMLElement;
+      statusElement.textContent = '';
     }
   }
 
@@ -419,6 +423,15 @@ export class VoiceNoteRecordModal {
     if (titleInput) {
       titleInput.classList.remove('voice-note-modal__input--error');
       titleInput.removeAttribute('aria-invalid');
+    }
+  }
+
+  private showMicError(systemMessage: string): void {
+    const errorElement = this.modal.querySelector('#mic-error') as HTMLElement;
+    
+    if (errorElement) {
+      errorElement.textContent = `Microphone unavailable: ${systemMessage}`;
+      errorElement.style.display = 'block';
     }
   }
 

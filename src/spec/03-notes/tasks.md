@@ -83,7 +83,7 @@
 
 **Purpose**: Microphone errors and logging.
 
-- [ ] T016 Handle microphone unavailable in recording: show error message (include system message if available) and disable recording in src/components/VoiceNoteRecordModal.ts
+- [X] T016 Handle microphone unavailable in recording: show error message (include system message if available) and disable recording in src/components/VoiceNoteRecordModal.ts
 - [ ] T017 [P] Log note actions (record, delete, play) for debugging/analytics in src/services/VoiceNoteService.ts and where playback is triggered (app or AudioManager)
 
 ---

@@ -101,8 +101,17 @@ export class TechniqueManager {
           { name: 'Left Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkirat-gav-mi-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkirat-gav-mi-lemamala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
 
-          { name: 'Right Hand Knife Threat To Left Neck', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
-          { name: 'Left Hand Knife Threat To Right Neck', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
+          { name: 'Right Hand Knife Threat To Left Neck Next to Wall', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+          { name: 'Left Hand Knife Threat To Right Neck Next To Wall', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+
+          { name: 'Left Hand Knife Threat Blade To Throat', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Hand Knife Threat To Right Neck', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
+          { name: 'Left Hand Knife Threat Blade To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-samin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Hand Knife Threat Blade To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
+           { name: 'Left Hand Knife Threat Point To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-lahav-legurgoret-yad-yashara-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Hand Knife Threat Point To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-yashara-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
           { name: 'Left Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },

@@ -69,6 +69,7 @@ export type FightListUIState = {
   isEditing: boolean
   selectedFightList: string | null
   expandedFightLists: string[]
+  expandedNotesSections: string[]
 }
 
 // Fight List Validation

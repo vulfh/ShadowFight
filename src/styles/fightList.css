@@ -1324,6 +1324,19 @@
   border-color: #dee2e6 !important;
 }
 
+.notes-toggle {
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.notes-toggle:hover {
+  color: #212529;
+}
+
+.notes-content {
+  border-color: #dee2e6 !important;
+}
+
 .note-item {
   min-height: 28px;
 }

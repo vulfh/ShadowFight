@@ -263,6 +263,24 @@
   transform: scale(0.98);
 }
 
+.voice-note-modal__button--success {
+  background: var(--success-color);
+  color: white;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.voice-note-modal__button--success:hover:not(:disabled) {
+  background: #157347;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.voice-note-modal__button--success:active:not(:disabled) {
+  background: #146c43;
+  transform: scale(0.98);
+}
+
 /* Tablet Styles */
 @media (min-width: 768px) and (max-width: 1024px) {
   .voice-note-modal__content {

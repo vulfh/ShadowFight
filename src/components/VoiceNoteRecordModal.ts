@@ -177,14 +177,13 @@ export class VoiceNoteRecordModal {
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           this.audioChunks.push(event.data);
+          console.log('[VoiceNoteRecordModal] Audio chunk received, size:', event.data.size, 'total chunks:', this.audioChunks.length);
         }
       };
 
-      this.mediaRecorder.onstop = () => {
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      this.mediaRecorder.start();
+      // Note: onstop is set in stopRecording() to handle blob creation and stream cleanup
+      console.log('[VoiceNoteRecordModal] Starting MediaRecorder with 100ms timeslice');
+      this.mediaRecorder.start(100); // collect data every 100ms to ensure chunks are available
 
       // Update progress bar
       this.recordingTimer = window.setInterval(() => {
@@ -244,12 +243,18 @@ export class VoiceNoteRecordModal {
 
     if (this.mediaRecorder && this.state === 'recording') {
       this.state = 'stopped';
-      
+
       this.mediaRecorder.onstop = () => {
-        this.recordedAudioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        // Stop all stream tracks to release the microphone
+        this.mediaRecorder?.stream?.getTracks().forEach(track => track.stop());
+
+        const mimeType = this.mediaRecorder?.mimeType || 'audio/webm';
+        this.recordedAudioBlob = new Blob(this.audioChunks, { type: mimeType });
+        console.log('[VoiceNoteRecordModal] Recording stopped, blob size:', this.recordedAudioBlob.size, 'type:', mimeType, 'chunks:', this.audioChunks.length);
         this.showApprovalStep();
       };
 
+      // stop() fires a final ondataavailable (captured by existing handler) then onstop
       this.mediaRecorder.stop();
     }
   }
@@ -279,7 +284,7 @@ export class VoiceNoteRecordModal {
             aria-label="Note title"
           />
           <div class="voice-note-modal__error" id="approval-error" role="alert" aria-live="polite"></div>
-          <button type="button" class="voice-note-modal__button voice-note-modal__button--secondary" id="play-note-btn">
+          <button type="button" class="voice-note-modal__button voice-note-modal__button--success" id="play-note-btn">
             <i class="fas fa-play me-2"></i>Play the note
           </button>
         </div>
@@ -313,7 +318,7 @@ export class VoiceNoteRecordModal {
 
     // Play note button
     const playBtn = this.modal.querySelector('#play-note-btn');
-    playBtn?.addEventListener('click', () => this.playRecordedNote());
+    playBtn?.addEventListener('click', () => this.playRecordedNote().catch(e => console.error(e)));
 
     // Escape key to dismiss
     document.addEventListener('keydown', this.handleApprovalEscapeKey);
@@ -338,28 +343,94 @@ export class VoiceNoteRecordModal {
     }
   };
 
-  private playRecordedNote(): void {
+  private async playRecordedNote(): Promise<void> {
+    console.log('[VoiceNoteRecordModal] Play button clicked');
+    
     if (!this.recordedAudioBlob) {
+      console.error('[VoiceNoteRecordModal] No recorded audio blob available');
+      this.showApprovalError('No audio recorded');
       return;
     }
 
-    const audioUrl = URL.createObjectURL(this.recordedAudioBlob);
-    const audio = new Audio(audioUrl);
+    console.log('[VoiceNoteRecordModal] Creating audio URL from blob, size:', this.recordedAudioBlob.size, 'type:', this.recordedAudioBlob.type);
 
-    audio.onended = () => {
-      URL.revokeObjectURL(audioUrl);
+    try {
+      // Decode the recorded audio and re-encode as WAV to fix the Infinity duration issue
+      // that occurs with WebM/Opus streaming format from MediaRecorder
+      const arrayBuffer = await this.recordedAudioBlob.arrayBuffer();
+      const audioContext = new AudioContext();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      const wavBlob = this.audioBufferToWav(audioBuffer);
+
+      const audioUrl = URL.createObjectURL(wavBlob);
+      const audio = new Audio(audioUrl);
+
+      audio.onended = () => {
+        console.log('[VoiceNoteRecordModal] Audio playback completed');
+        URL.revokeObjectURL(audioUrl);
+        audioContext.close();
+      };
+
+      audio.onerror = () => {
+        const err = audio.error;
+        console.error('[VoiceNoteRecordModal] Audio element error:', err?.code, err?.message);
+        URL.revokeObjectURL(audioUrl);
+        audioContext.close();
+        this.showApprovalError(`Failed to play the note (code: ${err?.code})`);
+      };
+
+      await audio.play();
+      console.log('[VoiceNoteRecordModal] audio.play() resolved successfully');
+    } catch (error) {
+      console.error('[VoiceNoteRecordModal] Failed to play audio:', (error as Error).name, (error as Error).message);
+      this.showApprovalError(`Failed to play: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Convert an AudioBuffer to a WAV Blob with proper duration metadata
+   */
+  private audioBufferToWav(buffer: AudioBuffer): Blob {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const format = 1; // PCM
+    const bitDepth = 16;
+    const bytesPerSample = bitDepth / 8;
+    const blockAlign = numChannels * bytesPerSample;
+    const byteRate = sampleRate * blockAlign;
+    const dataLength = buffer.length * blockAlign;
+    const wavBuffer = new ArrayBuffer(44 + dataLength);
+    const view = new DataView(wavBuffer);
+
+    const writeString = (offset: number, str: string) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
     };
 
-    audio.onerror = (error) => {
-      URL.revokeObjectURL(audioUrl);
-      console.error('Error playing recorded note:', error);
-      this.showApprovalError('Failed to play the note');
-    };
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + dataLength, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, format, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitDepth, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataLength, true);
 
-    audio.play().catch(error => {
-      console.error('Failed to play audio:', error);
-      this.showApprovalError('Failed to play the note');
-    });
+    // Interleave channels and convert float32 to int16
+    let offset = 44;
+    for (let i = 0; i < buffer.length; i++) {
+      for (let ch = 0; ch < numChannels; ch++) {
+        const sample = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+
+    return new Blob([wavBuffer], { type: 'audio/wav' });
   }
 
   private approve(): void {

@@ -27,7 +27,8 @@ export class FightListUIManager {
     isCreating: false,
     isEditing: false,
     selectedFightList: null,
-    expandedFightLists: []
+    expandedFightLists: [],
+    expandedNotesSections: []
   }
 
   private touchStartX: number = 0
@@ -245,13 +246,11 @@ export class FightListUIManager {
           const notes = mode
             ? this.voiceNoteService.getNotesForTechniqueMode(technique.techniqueId, mode)
             : [];
-          const notesHtml = notes.length === 0
-            ? '<p class="text-muted small mb-0">No notes available.</p>'
-            : notes.map(note => `
+          const notesHtml = notes.map(note => `
                 <div class="note-item d-flex justify-content-between align-items-center py-1" data-note-id="${note.id}">
                   <span class="small"><i class="fas fa-microphone me-1 text-muted"></i>${note.title}</span>
                   <div class="d-flex gap-1">
-                    <button class="btn btn-xs btn-outline-secondary note-play-btn" title="Play note">
+                    <button class="btn btn-xs btn-outline-success note-play-btn" title="Play note">
                       <i class="fas fa-play"></i>
                     </button>
                     <button class="btn btn-xs btn-outline-danger note-delete-btn" title="Delete note">
@@ -261,8 +260,21 @@ export class FightListUIManager {
                 </div>
               `).join('');
 
+          const isNotesExpanded = this.uiState.expandedNotesSections.includes(technique.id);
+          const notesSectionHtml = notes.length === 0 ? '' : `
+              <div class="notes-section mt-2">
+                <button class="btn btn-link btn-sm notes-toggle p-0 text-decoration-none" type="button">
+                  <i class="fas fa-chevron-${isNotesExpanded ? 'down' : 'right'} me-1"></i>Notes
+                </button>
+                <div class="notes-content collapse ${isNotesExpanded ? 'show' : ''}" id="notes-${technique.id}">
+                  <div class="ps-2 border-start border-2 mt-1">
+                    ${notesHtml}
+                  </div>
+                </div>
+              </div>`;
+
           return `
-            <div class="list-group-item" data-id="${technique.id}">
+            <div class="list-group-item" data-id="${technique.id}" data-technique-id="${technique.techniqueId}">
               <div class="d-flex justify-content-between align-items-center">
                 <span>${technique.techniqueId}</span>
                 <div class="d-flex align-items-center">
@@ -279,9 +291,7 @@ export class FightListUIManager {
                   </button>
                 </div>
               </div>
-              <div class="notes-section mt-2 ps-2 border-start border-2">
-                ${notesHtml}
-              </div>
+              ${notesSectionHtml}
             </div>
           `;
         }).join('')}
@@ -338,12 +348,12 @@ export class FightListUIManager {
     // Add note buttons
     const addNoteBtns = element.querySelectorAll('.add-note-btn')
     addNoteBtns.forEach(btn => {
-      const techniqueItem = btn.closest('[data-id]') as HTMLElement
-      if (techniqueItem) {
+      const techniqueItem = btn.closest('.list-group-item') as HTMLElement
+      if (techniqueItem?.dataset.techniqueId) {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          this.showVoiceNoteRecordModal(fightList.id, techniqueItem.dataset.id!)
+          this.showVoiceNoteRecordModal(fightList.id, techniqueItem.dataset.techniqueId!)
         })
       }
     })
@@ -377,6 +387,19 @@ export class FightListUIManager {
           e.preventDefault()
           e.stopPropagation()
           this.showNoteDeleteConfirmation(noteItem.dataset.noteId!, fightList.id)
+        })
+      }
+    })
+
+    // Notes section toggle
+    const notesToggleBtns = element.querySelectorAll('.notes-toggle')
+    notesToggleBtns.forEach(btn => {
+      const techniqueItem = btn.closest('.list-group-item') as HTMLElement
+      if (techniqueItem?.dataset.id) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.updateNotesSectionExpansion(techniqueItem.dataset.id!)
         })
       }
     })
@@ -429,6 +452,32 @@ export class FightListUIManager {
         this.handleMobileSwipeOnItem(element, deltaX > 0 ? 'right' : 'left')
       }
     })
+  }
+
+  /**
+   * Update notes section expansion state for a technique
+   */
+  private updateNotesSectionExpansion(techniqueEntryId: string): void {
+    const index = this.uiState.expandedNotesSections.indexOf(techniqueEntryId)
+    if (index === -1) {
+      this.uiState.expandedNotesSections.push(techniqueEntryId)
+    } else {
+      this.uiState.expandedNotesSections.splice(index, 1)
+    }
+
+    const collapseElement = document.querySelector(`#notes-${techniqueEntryId}`)
+    if (collapseElement) {
+      collapseElement.classList.toggle('show')
+    }
+
+    const chevron = document.querySelector(
+      `[data-id="${techniqueEntryId}"] .notes-toggle .fa-chevron-right, 
+       [data-id="${techniqueEntryId}"] .notes-toggle .fa-chevron-down`
+    )
+    if (chevron) {
+      chevron.classList.toggle('fa-chevron-right')
+      chevron.classList.toggle('fa-chevron-down')
+    }
   }
 
   /**

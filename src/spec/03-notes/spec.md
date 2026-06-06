@@ -78,7 +78,7 @@ These notes enhance the training experience by providing additional context or i
    - The notes are also deleted.
 
 2. **What happens if there are no notes for a technique in the Fight List UI?**
-   - Display a message: "No notes available."
+   - The notes section is **hidden** entirely; no "Notes" header or empty-state message is shown.
 
 3. **How should the system handle microphone unavailability during recording?**
    - Display an error message and disable recording. Include the original system error message if available.
@@ -131,6 +131,9 @@ Once the user clicks "Stop" during the recording process, the recording should b
 
 1. **Expandable List of Notes**
    - The Fight List UI component will include an expandable list of notes for each technique.
+   - Each technique's notes are grouped under a collapsible section titled **"Notes"**.
+   - The notes section is **collapsed by default**; the user expands it to view or manage notes.
+   - If a technique has **no notes** for the current fight list mode, the notes section is **not shown** at all.
    - The list will display only the notes associated with the specific mode of the Fight List.
      - For example, if Fight List A is in "Performance Mode":
        - Technique T has 2 notes for "Performance Mode" and 3 notes for "Responding Mode".

@@ -82,7 +82,7 @@ src/spec/03-notes/
 
 ### Phase 3: Fight List UI – notes list and actions
 
-- Expandable list of notes per technique in the fight list view; show only notes for that fight list’s mode; show “No notes available.” when empty.
+- Expandable list of notes per technique in the fight list view; show only notes for that fight list’s mode; hide notes section when a technique has no notes.
 - Per note: Play, Delete. Delete opens confirmation (“Are you sure… This action cannot be undone.”); Confirm deletes via service and refreshes list.
 
 ### Phase 4: Play Notes in session

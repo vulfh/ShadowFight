@@ -56,9 +56,11 @@
 
 **Goal**: Expandable list of notes per technique (for current list mode only); Play and Delete per note; delete confirmation.
 
-**Independent Test**: Expand a technique; see notes for that mode; play a note; delete with confirmation; list updates; "No notes available." when empty.
+**Independent Test**: Expand a technique; see notes for that mode; play a note; delete with confirmation; list updates; notes section hidden when a technique has no notes.
 
-- [X] T011 [US2] Add expandable list of notes per technique in fight list view; show only notes for that fight list's mode; show "No notes available." when empty in src/managers/FightListUIManager.ts
+- [X] T011 [US2] Add expandable list of notes per technique in fight list view; show only notes for that fight list's mode in src/managers/FightListUIManager.ts
+- [X] T011a [US2] Collapsible "Notes" section per technique: titled "Notes", collapsed by default; expand/collapse toggles note list visibility in src/managers/FightListUIManager.ts
+- [X] T011b [US2] Hide notes section entirely when a technique has no notes for the current mode in src/managers/FightListUIManager.ts
 - [X] T012 [US2] Add Play and Delete button per note in the expandable list in src/managers/FightListUIManager.ts
 - [X] T013 [US2] Implement delete confirmation modal: "Are you sure you want to delete this note? This action cannot be undone." with Confirm and Cancel; on Confirm delete via VoiceNoteService and refresh list in src/managers/FightListUIManager.ts
 
@@ -84,7 +86,7 @@
 **Purpose**: Microphone errors and logging.
 
 - [X] T016 Handle microphone unavailable in recording: show error message (include system message if available) and disable recording in src/components/VoiceNoteRecordModal.ts
-- [ ] T017 [P] Log note actions (record, delete, play) for debugging/analytics in src/services/VoiceNoteService.ts and where playback is triggered (app or AudioManager)
+- [X] T017 [P] Log note actions (record, delete, play) for debugging/analytics in src/services/VoiceNoteService.ts and where playback is triggered (app or AudioManager)
 
 ---
 

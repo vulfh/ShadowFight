@@ -3,6 +3,40 @@ import { Mode } from '../constants/modes';
 import { STORAGE_KEYS } from '../constants/storage';
 
 /**
+ * Structured log entry for voice note actions
+ */
+interface VoiceNoteLogEntry {
+  action: 'record' | 'delete' | 'play' | 'play_sequential'
+  noteId?: string
+  techniqueId?: string
+  mode?: Mode
+  title?: string
+  durationMs?: number
+  noteCount?: number
+  error?: string
+  timestamp: string
+}
+
+/**
+ * Log a voice note action for debugging/analytics
+ */
+function logNoteAction(entry: VoiceNoteLogEntry): void {
+  const label = `[VoiceNote:${entry.action.toUpperCase()}]`
+  const parts: string[] = [entry.timestamp]
+  if (entry.techniqueId) parts.push(`technique=${entry.techniqueId}`)
+  if (entry.mode) parts.push(`mode=${entry.mode}`)
+  if (entry.noteId) parts.push(`noteId=${entry.noteId}`)
+  if (entry.title) parts.push(`title="${entry.title}"`)
+  if (entry.noteCount !== undefined) parts.push(`count=${entry.noteCount}`)
+  if (entry.durationMs !== undefined) parts.push(`duration=${entry.durationMs}ms`)
+  if (entry.error) {
+    console.error(`${label} ${parts.join(' ')} error=${entry.error}`)
+  } else {
+    console.log(`${label} ${parts.join(' ')}`)
+  }
+}
+
+/**
  * Service for managing voice notes associated with techniques.
  * Handles CRUD operations, audio blob storage in IndexedDB, and enforces limits.
  * 
@@ -229,17 +263,13 @@ export class VoiceNoteService {
       allNotes.push(note);
       this.saveAllNotesMetadata(allNotes);
 
-      console.log(`Created voice note: ${noteId} for technique ${techniqueId} in mode ${mode}`);
+      logNoteAction({ action: 'record', noteId, techniqueId, mode, title: note.title, timestamp: new Date().toISOString() });
       return note;
     } catch (error) {
-      console.error('Failed to create voice note:', error);
+      logNoteAction({ action: 'record', techniqueId, mode, title, error: error instanceof Error ? error.message : String(error), timestamp: new Date().toISOString() });
       return null;
     }
   }
-
-  /**
-   * Save audio blob to IndexedDB
-   */
   private async saveAudioBlob(storageKey: string, blob: Blob): Promise<void> {
     await this.ensureDB();
 
@@ -312,10 +342,10 @@ export class VoiceNoteService {
       const updatedNotes = allNotes.filter(n => n.id !== noteId);
       this.saveAllNotesMetadata(updatedNotes);
 
-      console.log(`Deleted voice note: ${noteId}`);
+      logNoteAction({ action: 'delete', noteId, techniqueId: note.techniqueId, mode: note.mode, title: note.title, timestamp: new Date().toISOString() });
       return true;
     } catch (error) {
-      console.error('Failed to delete voice note:', error);
+      logNoteAction({ action: 'delete', noteId, error: error instanceof Error ? error.message : String(error), timestamp: new Date().toISOString() });
       return false;
     }
   }
@@ -411,24 +441,24 @@ export class VoiceNoteService {
       return new Promise((resolve, reject) => {
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
+        const startTime = Date.now();
 
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
-          console.log(`Finished playing note: ${noteId}`);
+          logNoteAction({ action: 'play', noteId, techniqueId: note.techniqueId, mode: note.mode, title: note.title, durationMs: Date.now() - startTime, timestamp: new Date().toISOString() });
           resolve();
         };
 
         audio.onerror = (error) => {
           URL.revokeObjectURL(audioUrl);
-          console.error(`Error playing note ${noteId}:`, error);
+          logNoteAction({ action: 'play', noteId, techniqueId: note.techniqueId, mode: note.mode, title: note.title, error: String(error), timestamp: new Date().toISOString() });
           reject(error);
         };
 
-        console.log(`Playing note: ${noteId}`);
         audio.play().catch(reject);
       });
     } catch (error) {
-      console.error('Failed to play note:', error);
+      logNoteAction({ action: 'play', noteId, error: error instanceof Error ? error.message : String(error), timestamp: new Date().toISOString() });
       throw error;
     }
   }
@@ -439,6 +469,7 @@ export class VoiceNoteService {
    * @returns Promise that resolves when all notes have been played
    */
   public async playNotesSequentially(noteIds: string[]): Promise<void> {
+    logNoteAction({ action: 'play_sequential', noteCount: noteIds.length, timestamp: new Date().toISOString() });
     for (const noteId of noteIds) {
       await this.playNote(noteId);
     }

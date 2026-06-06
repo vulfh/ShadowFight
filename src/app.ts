@@ -690,10 +690,11 @@ export class KravMagaTrainerApp {
               currentFightList.mode
             )
             if (notes.length > 0) {
+              console.log(`[VoiceNote:SESSION_PLAYBACK] Playing ${notes.length} notes for technique=${technique.name} mode=${currentFightList.mode} timestamp=${new Date().toISOString()}`)
               try {
                 await this.voiceNoteService.playNotesSequentially(notes.map(n => n.id))
               } catch (error) {
-                console.warn('Failed to play voice notes:', error)
+                console.error(`[VoiceNote:SESSION_PLAYBACK] Failed to play notes for technique=${technique.name} error=${error instanceof Error ? error.message : String(error)} timestamp=${new Date().toISOString()}`)
               }
             }
           }

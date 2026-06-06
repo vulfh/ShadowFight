@@ -18,5 +18,6 @@ export const DEFAULT_UI_STATE = {
   isCreating: false,
   isEditing: false,
   selectedFightList: null,
-  expandedFightLists: []
+  expandedFightLists: [],
+  expandedNotesSections: []
 } as const

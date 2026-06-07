@@ -206,11 +206,20 @@ export class InputModal {
       document.body.removeChild(this.modal);
     }
     document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
 
   public show(): void {
+    // Calculate scrollbar width to prevent layout shift
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    
     document.body.appendChild(this.modal);
     this.input.focus();
-    document.body.style.overflow = 'hidden'; // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+    
+    // Add padding to compensate for removed scrollbar
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
   }
 }

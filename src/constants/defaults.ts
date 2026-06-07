@@ -2,7 +2,8 @@
 export const DEFAULT_CONFIG = {
   DURATION: 5,
   DELAY: 3,
-  VOLUME: 80
+  VOLUME: 80,
+  PLAY_NOTES: false
 } as const
 
 // Default fight list values
@@ -17,5 +18,6 @@ export const DEFAULT_UI_STATE = {
   isCreating: false,
   isEditing: false,
   selectedFightList: null,
-  expandedFightLists: []
+  expandedFightLists: [],
+  expandedNotesSections: []
 } as const

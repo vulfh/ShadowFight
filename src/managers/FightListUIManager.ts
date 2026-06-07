@@ -11,9 +11,12 @@ import { FIGHT_LIST_UI_ELEMENTS as UI } from '../constants/ui-elements'
 import { MODES } from '../constants/modes'
 import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
+import { ConfigManager } from './ConfigManager'
 import { TechniqueAddModal } from '../components/TechniqueAddModal'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { VoiceNoteRecordModal } from '../components/VoiceNoteRecordModal'
 import { TechniqueManager } from './TechniqueManager'
+import { VoiceNoteService } from '../services/VoiceNoteService'
 
 /**
  * Manages the UI components and interactions for fight lists
@@ -24,7 +27,8 @@ export class FightListUIManager {
     isCreating: false,
     isEditing: false,
     selectedFightList: null,
-    expandedFightLists: []
+    expandedFightLists: [],
+    expandedNotesSections: []
   }
 
   private touchStartX: number = 0
@@ -32,12 +36,16 @@ export class FightListUIManager {
 
   // Event flow callbacks
   private managerCallbacks: FightListManagerCallbacks | null = null
+  private voiceNoteService: VoiceNoteService
 
   constructor(
     private readonly fightListManager: FightListManager,
     private readonly uiManager: UIManager,
-    private readonly techniqueManager: TechniqueManager = new TechniqueManager()
-  ) {}
+    private readonly techniqueManager: TechniqueManager = new TechniqueManager(),
+    private readonly configManager: ConfigManager | null = null
+  ) {
+    this.voiceNoteService = new VoiceNoteService()
+  }
 
   /**
    * Initialize the UI manager and set up event listeners
@@ -147,12 +155,23 @@ export class FightListUIManager {
 
     container.innerHTML = ''
 
-    // Add "Create New" button
-    // const newButton = document.createElement('button')
-    // newButton.id = UI.NEW_BTN
-    // newButton.className = 'btn btn-primary mb-3'
-    // newButton.innerHTML = '<i class="fas fa-plus"></i> Create New Fight List'
-    // container.appendChild(newButton)
+    // Play Notes checkbox (persisted via ConfigManager)
+    const playNotes = this.configManager?.getPlayNotes() ?? false
+    const playNotesBar = document.createElement('div')
+    playNotesBar.className = 'play-notes-bar d-flex align-items-center px-3 py-2 border-bottom'
+    playNotesBar.innerHTML = `
+      <div class="form-check mb-0">
+        <input class="form-check-input" type="checkbox" id="playNotesCheckbox" ${playNotes ? 'checked' : ''}>
+        <label class="form-check-label" for="playNotesCheckbox">
+          <i class="fas fa-music me-1"></i>Play Notes
+        </label>
+      </div>
+    `
+    const checkbox = playNotesBar.querySelector('#playNotesCheckbox') as HTMLInputElement
+    checkbox.addEventListener('change', () => {
+      this.configManager?.setPlayNotes(checkbox.checked)
+    })
+    container.appendChild(playNotesBar)
 
     // Render each fight list
     fightLists.forEach(fightList => {
@@ -202,7 +221,7 @@ export class FightListUIManager {
         </div>
       </div>
       <div class="card-body collapse ${isExpanded ? 'show' : ''}" id="techniques-${fightList.id}">
-        ${this.renderTechniquesList(fightList.techniques)}
+        ${this.renderTechniquesList(fightList.techniques, fightList.mode)}
         <button class="btn btn-sm btn-primary add-technique mt-2">
           <i class="fas fa-plus"></i> Add Technique
         </button>
@@ -216,28 +235,66 @@ export class FightListUIManager {
   /**
    * Render the list of techniques for a fight list
    */
-  private renderTechniquesList(techniques: FightListTechnique[]): string {
+  private renderTechniquesList(techniques: FightListTechnique[], mode?: Mode): string {
     if (techniques.length === 0) {
       return '<p class="text-muted">No techniques added yet.</p>'
     }
 
     return `
       <div class="list-group">
-        ${techniques.map(technique => `
-          <div class="list-group-item d-flex justify-content-between align-items-center" 
-               data-id="${technique.id}">
-            <span>${technique.techniqueId}</span>
-            <div class="d-flex align-items-center">
-              <select class="form-select form-select-sm me-2 priority-select" 
-                      style="width: 100px;">
-                ${this.renderPriorityOptions(technique.priority)}
-              </select>
-              <button class="btn btn-sm btn-outline-danger remove-technique">
-                <i class="fas fa-times"></i>
-              </button>
+        ${techniques.map(technique => {
+          const notes = mode
+            ? this.voiceNoteService.getNotesForTechniqueMode(technique.techniqueId, mode)
+            : [];
+          const notesHtml = notes.map(note => `
+                <div class="note-item d-flex justify-content-between align-items-center py-1" data-note-id="${note.id}">
+                  <span class="small"><i class="fas fa-microphone me-1 text-muted"></i>${note.title}</span>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-xs btn-outline-success note-play-btn" title="Play note">
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-xs btn-outline-danger note-delete-btn" title="Delete note">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('');
+
+          const isNotesExpanded = this.uiState.expandedNotesSections.includes(technique.id);
+          const notesSectionHtml = notes.length === 0 ? '' : `
+              <div class="notes-section mt-2">
+                <button class="btn btn-link btn-sm notes-toggle p-0 text-decoration-none" type="button">
+                  <i class="fas fa-chevron-${isNotesExpanded ? 'down' : 'right'} me-1"></i>Notes
+                </button>
+                <div class="notes-content collapse ${isNotesExpanded ? 'show' : ''}" id="notes-${technique.id}">
+                  <div class="ps-2 border-start border-2 mt-1">
+                    ${notesHtml}
+                  </div>
+                </div>
+              </div>`;
+
+          return `
+            <div class="list-group-item" data-id="${technique.id}" data-technique-id="${technique.techniqueId}">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>${technique.techniqueId}</span>
+                <div class="d-flex align-items-center">
+                  <button class="btn btn-sm btn-outline-primary me-2 add-note-btn"
+                          title="Add Voice Note">
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                  <select class="form-select form-select-sm me-2 priority-select"
+                          style="width: 100px;">
+                    ${this.renderPriorityOptions(technique.priority)}
+                  </select>
+                  <button class="btn btn-sm btn-outline-danger remove-technique">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              ${notesSectionHtml}
             </div>
-          </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     `
   }
@@ -288,6 +345,65 @@ export class FightListUIManager {
     const addBtn = element.querySelector('.add-technique')
     addBtn?.addEventListener('click', () => this.showTechniqueAddModal(fightList))
 
+    // Add note buttons
+    const addNoteBtns = element.querySelectorAll('.add-note-btn')
+    addNoteBtns.forEach(btn => {
+      const techniqueItem = btn.closest('.list-group-item') as HTMLElement
+      if (techniqueItem?.dataset.techniqueId) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.showVoiceNoteRecordModal(fightList.id, techniqueItem.dataset.techniqueId!)
+        })
+      }
+    })
+
+    // Note play buttons
+    const notePlayBtns = element.querySelectorAll('.note-play-btn')
+    notePlayBtns.forEach(btn => {
+      const noteItem = btn.closest('[data-note-id]') as HTMLElement
+      if (noteItem) {
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          try {
+            await this.voiceNoteService.playNote(noteItem.dataset.noteId!)
+          } catch (error) {
+            this.showNotification({ 
+              message: error instanceof Error ? error.message : 'Failed to play note', 
+              type: 'error' 
+            })
+          }
+        })
+      }
+    })
+
+    // Note delete buttons
+    const noteDeleteBtns = element.querySelectorAll('.note-delete-btn')
+    noteDeleteBtns.forEach(btn => {
+      const noteItem = btn.closest('[data-note-id]') as HTMLElement
+      if (noteItem) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.showNoteDeleteConfirmation(noteItem.dataset.noteId!, fightList.id)
+        })
+      }
+    })
+
+    // Notes section toggle
+    const notesToggleBtns = element.querySelectorAll('.notes-toggle')
+    notesToggleBtns.forEach(btn => {
+      const techniqueItem = btn.closest('.list-group-item') as HTMLElement
+      if (techniqueItem?.dataset.id) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.updateNotesSectionExpansion(techniqueItem.dataset.id!)
+        })
+      }
+    })
+
     // Remove technique buttons
     const removeBtns = element.querySelectorAll('.remove-technique')
     removeBtns.forEach(btn => {
@@ -336,6 +452,32 @@ export class FightListUIManager {
         this.handleMobileSwipeOnItem(element, deltaX > 0 ? 'right' : 'left')
       }
     })
+  }
+
+  /**
+   * Update notes section expansion state for a technique
+   */
+  private updateNotesSectionExpansion(techniqueEntryId: string): void {
+    const index = this.uiState.expandedNotesSections.indexOf(techniqueEntryId)
+    if (index === -1) {
+      this.uiState.expandedNotesSections.push(techniqueEntryId)
+    } else {
+      this.uiState.expandedNotesSections.splice(index, 1)
+    }
+
+    const collapseElement = document.querySelector(`#notes-${techniqueEntryId}`)
+    if (collapseElement) {
+      collapseElement.classList.toggle('show')
+    }
+
+    const chevron = document.querySelector(
+      `[data-id="${techniqueEntryId}"] .notes-toggle .fa-chevron-right, 
+       [data-id="${techniqueEntryId}"] .notes-toggle .fa-chevron-down`
+    )
+    if (chevron) {
+      chevron.classList.toggle('fa-chevron-right')
+      chevron.classList.toggle('fa-chevron-down')
+    }
   }
 
   /**
@@ -424,6 +566,90 @@ export class FightListUIManager {
       }
     })
 
+    modal.show()
+  }
+
+  /**
+   * Show voice note recording modal
+   */
+  private showVoiceNoteRecordModal(fightListId: string, techniqueId: string): void {
+    const fightList = this.fightListManager.getFightList(fightListId);
+    if (!fightList) {
+      this.showNotification({ 
+        message: 'Fight list not found', 
+        type: 'error' 
+      });
+      return;
+    }
+
+    const modal = new VoiceNoteRecordModal({
+      techniqueId,
+      mode: fightList.mode || MODES.RESPONDING,
+      voiceNoteService: this.voiceNoteService,
+      onApprove: async (audioBlob: Blob, title: string) => {
+        try {
+          const note = await this.voiceNoteService.createNote(
+            techniqueId,
+            fightList.mode || MODES.RESPONDING,
+            title,
+            audioBlob
+          );
+
+          if (note) {
+            this.showNotification({ 
+              message: 'Voice note saved successfully', 
+              type: 'success' 
+            });
+            // Refresh the fight list to show the new note
+            await this.renderFightLists();
+          } else {
+            this.showNotification({ 
+              message: 'Failed to save voice note. Check limits and title uniqueness.', 
+              type: 'error' 
+            });
+          }
+        } catch (error) {
+          console.error('Failed to save voice note:', error);
+          this.showNotification({ 
+            message: error instanceof Error ? error.message : 'Failed to save voice note', 
+            type: 'error' 
+          });
+        }
+      },
+      onCancel: () => {
+        // Note was dismissed, no action needed
+      }
+    });
+
+    modal.show();
+  }
+
+  /**
+   * Show delete confirmation for a voice note
+   */
+  private showNoteDeleteConfirmation(noteId: string, _fightListId: string): void {
+    const modal = new ConfirmModal({
+      title: 'Delete Note',
+      message: 'Are you sure you want to delete this note? This action cannot be undone.',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      confirmButtonClass: 'danger',
+      onConfirm: async () => {
+        try {
+          await this.voiceNoteService.deleteNote(noteId)
+          await this.renderFightLists()
+          this.showNotification({ message: 'Note deleted successfully', type: 'success' })
+        } catch (error) {
+          this.showNotification({
+            message: error instanceof Error ? error.message : 'Failed to delete note',
+            type: 'error'
+          })
+        }
+      },
+      onCancel: () => {
+        // User cancelled, no action needed
+      }
+    })
     modal.show()
   }
 

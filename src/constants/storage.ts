@@ -40,7 +40,19 @@ export const STORAGE_KEYS = {
    * @type {string}
    * @constant
    */
-  FIGHT_LIST_VERSION: 'kravMagaFightListVersion'
+  FIGHT_LIST_VERSION: 'kravMagaFightListVersion',
+  /**
+   * Key for storing all voice notes metadata (array of VoiceNote objects or index by technique/mode)
+   * @type {string}
+   * @constant
+   */
+  VOICE_NOTES: 'kravMagaVoiceNotes',
+  /**
+   * Key for storing the Play Notes preference (boolean)
+   * @type {string}
+   * @constant
+   */
+  PLAY_NOTES_ENABLED: 'kravMagaPlayNotesEnabled'
 } as const;
 
 /**

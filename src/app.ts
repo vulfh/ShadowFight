@@ -10,6 +10,7 @@ import { UIManager } from './managers/UIManager'
 import { FightListManager } from './managers/FightListManager'
 import { FightListUIManager } from './managers/FightListUIManager'
 import { MigrationService } from './services/MigrationService'
+import { VoiceNoteService } from './services/VoiceNoteService'
 import { ConfirmModal } from './components/ConfirmModal'
 import { 
   UI_ELEMENTS, 
@@ -31,6 +32,7 @@ export class KravMagaTrainerApp {
   private fightListManager: FightListManager
   private fightListUIManager: FightListUIManager
   private migrationService: MigrationService
+  private voiceNoteService: VoiceNoteService
   private isInitialized: boolean = false
 
   constructor() {
@@ -40,8 +42,9 @@ export class KravMagaTrainerApp {
     this.configManager = new ConfigManager()
     this.uiManager = new UIManager()
     this.fightListManager = new FightListManager()
-    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager)
+    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager, undefined, this.configManager)
     this.migrationService = new MigrationService()
+    this.voiceNoteService = new VoiceNoteService()
   }
 
   async init(): Promise<void> {
@@ -677,6 +680,25 @@ export class KravMagaTrainerApp {
       } else {
         // Reset failure count on success
         this.sessionManager.resetAudioFailureCount()
+
+        // Play voice notes if enabled and session has a fight list
+        if (this.configManager.getPlayNotes()) {
+          const currentFightList = this.fightListManager.getCurrentFightList()
+          if (currentFightList && currentFightList.mode) {
+            const notes = this.voiceNoteService.getNotesForTechniqueMode(
+              technique.name,
+              currentFightList.mode
+            )
+            if (notes.length > 0) {
+              console.log(`[VoiceNote:SESSION_PLAYBACK] Playing ${notes.length} notes for technique=${technique.name} mode=${currentFightList.mode} timestamp=${new Date().toISOString()}`)
+              try {
+                await this.voiceNoteService.playNotesSequentially(notes.map(n => n.id))
+              } catch (error) {
+                console.error(`[VoiceNote:SESSION_PLAYBACK] Failed to play notes for technique=${technique.name} error=${error instanceof Error ? error.message : String(error)} timestamp=${new Date().toISOString()}`)
+              }
+            }
+          }
+        }
       }
 
       // Delay count starts here — after the technique announcement (audio) ends

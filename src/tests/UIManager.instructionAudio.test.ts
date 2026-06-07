@@ -51,7 +51,7 @@ describe('UIManager - Instruction Audio UI Integration', () => {
       techniquesUsed: 0,
       sessionStats: {
         totalTechniques: 0,
-        techniquesByCategory: {cd ../add-tech-9
+        techniquesByCategory: {
           [TECHNIQUE_CATEGORIES.PUNCHES]: 0,
           [TECHNIQUE_CATEGORIES.STRIKES]: 0,
           [TECHNIQUE_CATEGORIES.KICKS]: 0,

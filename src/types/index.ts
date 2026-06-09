@@ -28,8 +28,9 @@ export type TechniqueCategory =
   | 'Defenses/Grabs'
   | 'Weapons'
   | 'Hand-Grip'
-  |'Knife'
+  | 'Knife'
   | 'Slip'
+  | 'Defence'
   | 'Knee-Protection'
 export type PriorityLevel = 'high' | 'medium' | 'low'
 

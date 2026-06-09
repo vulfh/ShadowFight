@@ -52,7 +52,19 @@ export class TechniqueManager {
           { name: 'Left Slipping Against Front Kick In Live Zone', modes: [MODES.PERFORMING], file: 'smol-agana-neged-beita-regila-tsad-hay.wav', category: 'Slip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Slipping Against Front Kick In Live Zone', modes: [MODES.PERFORMING], file: 'yamin-agana-neged-beita-regila-tsad-hay.wav', category: 'Slip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
 
-          { name: 'Left Question Mark Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Left Internal Defence Against Round Kick - Side Kick', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-magal-1.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Round Kick - Side Kick', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-magal-1.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+
+
+          { name: 'Left Internal Defence Against Round Kick - Back Kick', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-magal-2.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Round Kick - Back Kick', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-magal-2.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+
+          { name: 'Left Internal Defence Against Side Kick', modes: [MODES.PERFORMING], file: 'smol-agan-pnimit-neged-beita-le-tsad.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Side Kick - Back Kick', modes: [MODES.PERFORMING], file: 'yamin-agan-pnimit-neged-beita-le-tsad.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+
+
+
+          { name: 'Left Question Mark Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Question Mark Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Back Round House Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-le-ahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Back Round House Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-le-ahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
@@ -60,6 +72,11 @@ export class TechniqueManager {
           { name: 'Right Axe Kick',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'yamin-beitat-patish.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Turn Back Round House Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Turn Back Round House Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-leahor-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Block Front Round House Kick', modes: [MODES.PERFORMING], file: 'smol-agana-neged-magal-lefanim-ima-shok.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Block Front Round House Kick', modes: [MODES.PERFORMING], file: 'yamin-agana-neged-magal-lefanim-ima-shok.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Block  Round House Kick To Ribs', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-beitat-magal-le-tslaot.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Block Round House Kick To Ribs', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-beitat-magal-le-tslaot.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
 
           { name: 'Left Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
@@ -84,6 +101,18 @@ export class TechniqueManager {
           { name: 'Left Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkirat-gav-mi-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkirat-gav-mi-lemamala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
 
+          { name: 'Right Hand Knife Threat To Left Neck Next to Wall', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+          { name: 'Left Hand Knife Threat To Right Neck Next To Wall', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+
+          { name: 'Left Hand Knife Threat Blade To Throat', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Hand Knife Threat To Right Neck', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
+          { name: 'Left Hand Knife Threat Blade To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-samin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Hand Knife Threat Blade To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
+           { name: 'Left Hand Knife Threat Point To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-lahav-legurgoret-yad-yashara-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Hand Knife Threat Point To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-yashara-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
           { name: 'Left Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
       
@@ -91,6 +120,8 @@ export class TechniqueManager {
       // Hand-Grip
       { name: 'Left Hand Grip', modes:[MODES.RESPONDING], file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       { name: 'Right Hand Grip', modes:[MODES.RESPONDING], file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+      { name: 'Laying Both Hands Grip', modes:[MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
 
      //Knee-Protection
           { name: 'Left Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },

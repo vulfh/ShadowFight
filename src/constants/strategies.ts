@@ -16,6 +16,7 @@ export const TECHNIQUE_CATEGORIES = {
   HAND_GRIP: 'Hand-Grip',
   KNIFE: 'Knife',
   SLIP: 'Slip',
+  DEFENCE: 'Defence',
   KNEE_PROTECTION: 'Knee-Protection'
 } as const
 

@@ -18,6 +18,7 @@ const TECHNIQUE_CATEGORIES = [
   'Hand-Grip',
   'Knife',
   'Slip',
+  'Defence',
   'Knee-Protection'
 ] as const;
 

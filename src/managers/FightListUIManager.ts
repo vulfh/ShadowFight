@@ -273,17 +273,18 @@ export class FightListUIManager {
                 </div>
               </div>`;
 
+          const isLongName = technique.techniqueId.length > 15;
           return `
             <div class="list-group-item" data-id="${technique.id}" data-technique-id="${technique.techniqueId}">
-              <div class="d-flex justify-content-between align-items-center">
-                <span>${technique.techniqueId}</span>
-                <div class="d-flex align-items-center">
-                  <button class="btn btn-sm btn-outline-primary me-2 add-note-btn"
+              <div class="d-flex align-items-center" style="gap:0.5rem;">
+                <span class="technique-name${isLongName ? ' technique-name--long' : ''}">${technique.techniqueId}</span>
+                <div class="technique-actions">
+                  <button class="btn btn-sm btn-outline-primary add-note-btn"
                           title="Add Voice Note">
                     <i class="fas fa-microphone"></i>
                   </button>
-                  <select class="form-select form-select-sm me-2 priority-select"
-                          style="width: 100px;">
+                  <select class="form-select form-select-sm priority-select"
+                          style="width: 90px;">
                     ${this.renderPriorityOptions(technique.priority)}
                   </select>
                   <button class="btn btn-sm btn-outline-danger remove-technique">

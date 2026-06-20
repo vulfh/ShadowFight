@@ -88,8 +88,18 @@ export class TechniqueManager {
           { name: 'Right Underhook Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'yamin-gziza-kidmit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'RIGHT' },
           { name: 'Left Underhook Back Kick',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-gziza-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'LEFT' },
           { name: 'Right Underhook Back Kick', modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'yamin-gziza-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'RIGHT' },
-          { name: 'Left Underhook Back  And Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-gziza-kidmit-ve-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'LEFT' },
-          { name: 'Right Underhook Back  And Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-gziza-kidmit-ve-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'RIGHT' },
+          { name: 'Left Underhook Back And Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-gziza-kidmit-ve-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'LEFT' },
+          { name: 'Right Underhook Back And Front Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-gziza-kidmit-ve-ahorit.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'FOOT', side: 'RIGHT' },
+
+          { name: 'Right Regular Hill Kick To Chin', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-im-akev-le-santer.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Regular Hill Kick To Chin', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-im-akev-le-santer.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
+          { name: 'Right Regular Backward Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Regular Backward Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+
+          { name: 'Right Snooker Backward Kick', modes: [MODES.PERFORMING], file: 'yamin-beitat-snukeret-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },
+          { name: 'Left Snooker Backward Kick', modes: [MODES.PERFORMING], file: 'smol-beitat-snukeret-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'LEFT' },
+
 
           // { name: 'Heel Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'SHIN', side: 'RIGHT' },
 
@@ -111,7 +121,8 @@ export class TechniqueManager {
           { name: 'Right Hand Knife Threat Blade To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
            { name: 'Left Hand Knife Threat Point To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-lahav-legurgoret-yad-yashara-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
-          { name: 'Right Hand Knife Threat Point To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-yashara-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+          { name: 'Right Hand Knife Threat Point To Right Neck.Straight Hand', modes: [MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-yashara-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
 
           { name: 'Left Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },

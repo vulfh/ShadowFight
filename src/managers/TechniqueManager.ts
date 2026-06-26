@@ -100,6 +100,9 @@ export class TechniqueManager {
           { name: 'Right Snooker Backward Kick', modes: [MODES.PERFORMING], file: 'yamin-beitat-snukeret-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },
           { name: 'Left Snooker Backward Kick', modes: [MODES.PERFORMING], file: 'smol-beitat-snukeret-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'LEFT' },
 
+          { name: 'Right Front Kick Left Round House Jump Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-u-beitat-nagal-benitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Front Kick Right Round House Jump Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-u-beitat-nagal-benitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+
 
           // { name: 'Heel Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'SHIN', side: 'RIGHT' },
 
@@ -131,7 +134,9 @@ export class TechniqueManager {
       // Hand-Grip
       { name: 'Left Hand Grip', modes:[MODES.RESPONDING], file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       { name: 'Right Hand Grip', modes:[MODES.RESPONDING], file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-      { name: 'Laying Both Hands Grip', modes:[MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+      { name: 'Laying Both Hands Grip', modes: [MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+          { name: 'Left Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'smol-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'yamin-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
 
      //Knee-Protection

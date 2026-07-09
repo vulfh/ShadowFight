@@ -17,7 +17,7 @@
 
 ---
 
-### Task 0-A · Verify `mapPriorityToNumber`, seeding, and removal in `FightListManager`
+### ✅ Task 0-A · Verify `mapPriorityToNumber`, seeding, and removal in `FightListManager`
 **File:** `src/managers/FightListManager.ts`
 
 Four read-only checks — no code change expected if all pass:
@@ -37,7 +37,7 @@ Four read-only checks — no code change expected if all pass:
 **Done:** All four checks confirmed; no diff produced.
 
 
-### Task 0-B · Pre-select priority in `TechniqueAddModal.renderTechniqueList()`
+### ✅ Task 0-B · Pre-select priority in `TechniqueAddModal.renderTechniqueList()`
 **File:** `src/components/TechniqueAddModal.ts`
 
 **Context:** Currently the priority `<select>` renders options 1–5 with no option pre-selected,

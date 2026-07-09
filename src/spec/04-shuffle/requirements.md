@@ -15,10 +15,10 @@ The feature extends the existing strategy pattern in `TechniqueSelectionStrategy
 - **Play_Mode_Selector**: The dropdown UI control that lets the user choose one of the four play modes before starting a session.
 - **Session**: An active training run started via the play/pause/stop controls, managed by `SessionManager`.
 - **FightList**: A named collection of `FightListTechnique` entries, each with a `priority` (1–5) and a `selected` flag.
-- **FightListTechnique**: A record `{ id, techniqueId, priority: number (1–5), selected: boolean }` belonging to a FightList. The `priority` field is the per-FightList override and is the authoritative value used during sessions.
-- **Technique**: A technique entity with `name`, `file`, `weight`, `priority` (high/medium/low), and other metadata. The `priority` field here is the global default used to seed new FightListTechnique entries.
-- **Default_Priority**: The numeric priority (1–5) derived from a Technique's global `priority` field using the mapping: `low→1`, `medium→3`, `high→5`. Used as the initial value for a new FightListTechnique entry.
-- **Per_FightList_Priority**: The `priority` field on a `FightListTechnique`, which may differ from the Technique's Default_Priority. This is the value used by all selection strategies during a session.
+- **FightListTechnique**: A record `{ id, techniqueId, priority: number (1–5), selected: boolean }` belonging to exactly one FightList. The `priority` field is per-FightList and is the authoritative priority value used during sessions. It is created when the technique is added to the FightList and destroyed when the technique is removed from it.
+- **Technique**: A global technique entity with `name`, `file`, `weight`, `priority` (`high`/`medium`/`low`), and other metadata. The `priority` field is a global default used only to seed `FightListTechnique.priority` at add-time; it is never written to by FightList operations.
+- **Default_Priority**: The numeric priority (1–5) derived from a `Technique`'s global `priority` field at add-time using the mapping: `low→1`, `medium→3`, `high→5`. Used once as the initial `FightListTechnique.priority`; subsequent changes to the per-FightList priority do not affect this global value.
+- **Per_FightList_Priority**: The `FightListTechnique.priority` value. Scoped to a single FightList entry; changing it in one FightList has no effect on the same technique's priority in any other FightList or on the global `Technique.priority`.
 - **Play_Mode**: One of four enumerated values — `random`, `unifiedRandom`, `ordered`, `prioritized` — that determines the technique selection algorithm for a session.
 - **Round**: In Unified Random mode, a complete pass through all selected techniques before repetition is allowed.
 - **Anti_Starvation_Window**: In Prioritized mode, a per-technique counter that tracks how many consecutive picks have elapsed since a technique was last selected; triggers a forced pick when the counter reaches 5.
@@ -32,17 +32,19 @@ The feature extends the existing strategy pattern in `TechniqueSelectionStrategy
 
 ### Requirement 0: Per-FightList Technique Priority (Prerequisite)
 
-**User Story:** As a trainer, I want each technique's priority to be independently configurable per FightList, so that the same technique can be high-priority in one list and low-priority in another without affecting the global technique definition.
+**User Story:** As a trainer, I want each technique's priority to be independently configurable per FightList, so that the same technique can be high-priority in one list and low-priority in another without affecting the global technique definition or other FightLists.
 
 #### Acceptance Criteria
 
-1. WHEN a technique is added to a FightList, THE system SHALL seed the new `FightListTechnique.priority` from the technique's global `priority` field using the mapping: `low → 1`, `medium → 3`, `high → 5`.
-2. WHEN a technique is added via the Add Technique modal, THE priority dropdown SHALL be pre-selected to the technique's Default_Priority value, allowing the user to override it before confirming the addition.
-3. WHEN a technique entry is displayed in the FightList edit view, THE priority dropdown SHALL reflect the current Per_FightList_Priority value stored on the `FightListTechnique` record.
-4. WHEN the user changes the priority dropdown for a technique in the FightList edit view and confirms, THE system SHALL persist the updated Per_FightList_Priority to the `FightListTechnique` record without modifying the technique's global `priority` field.
-5. WHEN the user changes the priority dropdown during the add-technique flow and confirms the addition, THE system SHALL use the user-selected value as the initial Per_FightList_Priority for that `FightListTechnique` record.
-6. IF a technique's global `priority` value is not one of `low`, `medium`, or `high`, THEN THE system SHALL default the seeded Per_FightList_Priority to 3 (Medium).
-7. WHEN a session is active, THE selection strategies SHALL use `FightListTechnique.priority` (the Per_FightList_Priority) as the authoritative priority value, not the technique's global `priority` field.
+1. THE `FightListTechnique.priority` field (a number 1–5) IS the authoritative, per-FightList priority for that technique entry. It is stored directly on the `FightListTechnique` record inside the FightList and is independent of every other FightList.
+2. WHEN a technique is added to a FightList, THE system SHALL seed the new `FightListTechnique.priority` from the technique's global `priority` field using the mapping: `low → 1`, `medium → 3`, `high → 5`. This seeded value is the starting point; the trainer may override it immediately in the Add Technique modal before confirming.
+3. IF a technique's global `priority` value is not one of `low`, `medium`, or `high`, THEN THE system SHALL default the seeded `FightListTechnique.priority` to 3 (Medium).
+4. WHEN a technique is added via the Add Technique modal, THE priority dropdown SHALL be pre-selected to the technique's Default_Priority value, allowing the user to override it before confirming the addition.
+5. WHEN the user changes the priority dropdown during the add-technique flow and confirms the addition, THE system SHALL store the user-selected value as the `FightListTechnique.priority` for that entry in this FightList only.
+6. WHEN a technique entry is displayed in the FightList edit view, THE priority dropdown SHALL reflect the current `FightListTechnique.priority` value stored on that specific `FightListTechnique` record (not the global Technique priority).
+7. WHEN the user changes the priority dropdown for a technique in the FightList edit view and saves, THE system SHALL update `FightListTechnique.priority` on that record only, without modifying the technique's global `priority` field or the priority of the same technique in any other FightList.
+8. WHEN a technique is removed from a FightList, THE system SHALL delete the entire `FightListTechnique` record for that entry — including its `priority` value — from the FightList's `techniques` array. The technique's global `priority` field SHALL remain unchanged.
+9. WHEN a session is active, THE selection strategies SHALL use `FightListTechnique.priority` (the Per_FightList_Priority) as the authoritative priority value, never the technique's global `priority` field.
 
 ---
 

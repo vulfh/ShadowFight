@@ -19,7 +19,9 @@ const TECHNIQUE_CATEGORIES = [
   'Knife',
   'Slip',
   'Defence',
-  'Knee-Protection'
+  'Knee-Protection',
+  'Take Down',
+  'Elbow Strike'
 ] as const;
 
 export class TechniqueAddModal {

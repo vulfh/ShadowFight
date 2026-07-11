@@ -62,7 +62,9 @@ describe('UIManager - Instruction Audio UI Integration', () => {
           [TECHNIQUE_CATEGORIES.KNIFE]: 0,
           [TECHNIQUE_CATEGORIES.SLIP]: 0,
           [TECHNIQUE_CATEGORIES.DEFENCE]: 0,
-          [TECHNIQUE_CATEGORIES.KNEE_PROTECTION]: 0
+          [TECHNIQUE_CATEGORIES.KNEE_PROTECTION]: 0,
+          [TECHNIQUE_CATEGORIES.TAKE_DOWN]: 0,
+          [TECHNIQUE_CATEGORIES.ELBOW_STRIKE]: 0
         },
         sessionDuration: 0
       },

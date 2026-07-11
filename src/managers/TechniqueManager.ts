@@ -35,7 +35,19 @@ export class TechniqueManager {
           // { name: 'Eye Strike', file: 'smol-beitat-magal-gvoa.wav', category: 'Strikes', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           // { name: 'Knife Hand Strike', file: 'smol-beitat-magal-gvoa.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
 
+
+
+          //Elbows
+
+          { name: 'Left Elbow Strike Against Group Of People', modes: [MODES.PERFORMING], file: 'smol-makat-marpek-neged-kvutsa.wav', category: 'Elbow Strike', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Elbow Strike Against Group Of People', modes: [MODES.PERFORMING], file: 'yamin-makat-marpek-neged-kvutsa.wav', category: 'Elbow Strike', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Bocking Way By Group Of People', modes: [MODES.RESPONDING], file: 'hasimat-dereh-al-yadei-kvutsat-anashim.wav', category: 'Elbow Strike', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+
           // Kicks
+          { name: 'Right Jumping Roundhouse Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-be-nitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Jumping Roundhouse Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-nitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+
           { name: 'Right Side Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-tatsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Side Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-latsad.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Knee Front Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-bereh-milafanim.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
@@ -78,6 +90,10 @@ export class TechniqueManager {
           { name: 'Right Block Round House Kick To Ribs', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-beitat-magal-le-tslaot.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
 
 
+          { name: 'Left Front Kick And Round House Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-u-beitat-magal-beota-regel.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Front Kick And Round House Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-u-beitat-magal-beota-regel.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
+
           { name: 'Left Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Turn Back Round Slap Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-stira-hitsonit-besivuv.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
 
@@ -99,6 +115,9 @@ export class TechniqueManager {
 
           { name: 'Right Snooker Backward Kick', modes: [MODES.PERFORMING], file: 'yamin-beitat-snukeret-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },
           { name: 'Left Snooker Backward Kick', modes: [MODES.PERFORMING], file: 'smol-beitat-snukeret-leahor.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'LEFT' },
+
+          { name: 'Right Front Kick Left Round House Jump Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-u-beitat-nagal-benitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Front Kick Right Round House Jump Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-u-beitat-nagal-benitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
 
           // { name: 'Heel Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'SHIN', side: 'RIGHT' },
@@ -131,7 +150,9 @@ export class TechniqueManager {
       // Hand-Grip
       { name: 'Left Hand Grip', modes:[MODES.RESPONDING], file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       { name: 'Right Hand Grip', modes:[MODES.RESPONDING], file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-      { name: 'Laying Both Hands Grip', modes:[MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+      { name: 'Laying Both Hands Grip', modes: [MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+          { name: 'Left Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'smol-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+          { name: 'Right Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'yamin-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
 
      //Knee-Protection
@@ -139,16 +160,18 @@ export class TechniqueManager {
           { name: 'Right Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'yamin-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
       // Knees
       // { name: 'Vertical Knee Strike', file: 'vertical_knee_strike.wav', category: 'Knees', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },
-      
+
       // // Defenses/Grabs
       // { name: 'Defense Against Front Choke', file: 'smol-beitat-magal-gvoa.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
       // { name: 'Defense Against Side Headlock', file: 'smol-beitat-magal-gvoa.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
       // { name: 'Defense Against Bear Hug', file: 'smol-beitat-magal-gvoa.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
       // { name: 'Escape From Mount', file: 'smol-beitat-magal-gvoa.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
-      
+
       // // Weapons
       // { name: 'Defense Against Knife Stab', file: 'smol-beitat-magal-gvoa.wav', category: 'Weapons', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-      // { name: 'Defense Against Gun Front', file: 'smol-beitat-magal-gvoa.wav', category: 'Weapons', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' }
+          // { name: 'Defense Against Gun Front', file: 'smol-beitat-magal-gvoa.wav', category: 'Weapons', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' }
+          { name: 'Fall Prevention Grab Calves In Front To Take Down', modes: [MODES.PERFORMING], file: 'mniat-nefila-ne-havikat-shokaim-melefanim-le-apala.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'HIP', side: 'RIGHT' },
+          { name: 'Grab Calves In Front To Take Down', modes: [MODES.RESPONDING ],file: 'havikat-shokaim-me-lefanim-le-apala.wav', category: 'Take Down', priority: 'high', selected: true, weight: 1, targetLevel: 'HIP', side: 'RIGHT' },
     ]
   }
 

@@ -48,6 +48,24 @@ The feature extends the existing strategy pattern in `TechniqueSelectionStrategy
 
 ---
 
+### Requirement 10: FightList Priority Healing on Session Start
+
+**User Story:** As a trainer, I want the app to automatically repair missing or invalid technique priorities in a FightList when I start a session, so that sessions work correctly even if FightList data was created before the per-FightList priority field existed or was corrupted.
+
+#### Acceptance Criteria
+
+1. WHEN a FightList session is about to start, THE SessionManager (or the FightList loading path called by it) SHALL inspect every `FightListTechnique` entry in the FightList and check whether its `priority` field is a valid integer in the range 1–5 (inclusive).
+2. IF any `FightListTechnique.priority` value is missing (`undefined` or `null`), zero, outside the range 1–5, or not a finite number, THEN THE system SHALL look up the corresponding global `Technique` object by matching `FightListTechnique.techniqueId` against `Technique.name`.
+3. WHEN a matching global `Technique` is found during healing, THE system SHALL derive the replacement priority using the standard mapping: `low → 1`, `medium → 3`, `high → 5`; any unrecognised `Technique.priority` value SHALL default to 3.
+4. WHEN no matching global `Technique` is found during healing (e.g., the technique has been removed from the config), THE system SHALL default the replacement priority to 3.
+5. AFTER deriving the replacement priority, THE system SHALL write it back to `FightListTechnique.priority` and persist the updated FightList to storage before the session selection logic runs.
+6. THE priority healing SHALL be applied only to `FightListTechnique` entries whose `priority` is invalid; entries with a valid priority value (1–5) SHALL be left unchanged.
+7. THE healing operation SHALL NOT modify the global `Technique.priority` field of any technique.
+8. IF all `FightListTechnique` entries already have valid priorities, THE system SHALL proceed directly to session start without persisting any changes.
+9. THE healing operation SHALL be idempotent: running it multiple times on the same FightList SHALL produce the same result and SHALL NOT cause duplicate saves when no invalid entries are present.
+
+---
+
 ### Requirement 1: Play Mode Selector UI
 
 **User Story:** As a trainer, I want to choose how techniques are selected during a session, so that I can tailor the training intensity and variety to my current goals.

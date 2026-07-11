@@ -152,7 +152,146 @@ Write nine test cases inside `describe('per-FightList priority', () => { ... })`
 
 ---
 
-## Phase 1 — Constants and Types
+### Task 0-F · Add `healFightListPriorities` to `FightListManager` and call it on session start
+**Files:** `src/managers/FightListManager.ts`, `src/managers/SessionManager.ts`
+
+**Context:** FightList data created before per-FightList priority existed (or migrated data) may
+have `FightListTechnique.priority` values that are `undefined`, `null`, `0`, `NaN`, or outside
+the valid 1–5 range. This task adds a healing pass that runs once per session start, patches any
+invalid entries, and persists the fix — only if something actually changed.
+
+---
+
+#### Step 1 — Expose `mapPriorityToNumber` as a package-private (non-private) method
+**File:** `src/managers/FightListManager.ts`
+
+Change the visibility of `mapPriorityToNumber` from `private` to `/** @internal */` (or simply
+remove the `private` keyword) so it can be tested in isolation and reused by the new method.
+
+```ts
+// Before
+private mapPriorityToNumber(priority: string): number { ... }
+
+// After
+mapPriorityToNumber(priority: string): number { ... }
+```
+
+> If the project's linting rules forbid public non-API methods, keep it `private` and call it
+> internally from `healFightListPriorities`. The test coverage target is `healFightListPriorities`
+> itself, not `mapPriorityToNumber` directly.
+
+---
+
+#### Step 2 — Add `healFightListPriorities()` to `FightListManager`
+**File:** `src/managers/FightListManager.ts`
+
+Add the method after `removeTechniqueFromFightList` (or alongside it in the mutation section):
+
+```ts
+/**
+ * Ensures every FightListTechnique in the given FightList has a valid priority (1–5).
+ * Heals any entry whose priority is missing, zero, NaN, or out-of-range by deriving
+ * the replacement from the matching global Technique, falling back to 3 (Medium).
+ * Persists the FightList to storage only if at least one entry was patched.
+ *
+ * @param fightList     - The FightList to inspect and potentially repair.
+ * @param allTechniques - The full technique catalog, used to resolve global priority strings.
+ */
+healFightListPriorities(fightList: FightList, allTechniques: Technique[]): void {
+  let dirty = false
+
+  for (const entry of fightList.techniques) {
+    const isValid =
+      typeof entry.priority === 'number' &&
+      Number.isFinite(entry.priority) &&
+      entry.priority >= 1 &&
+      entry.priority <= 5
+
+    if (!isValid) {
+      const globalTech = allTechniques.find(t => t.name === entry.techniqueId)
+      entry.priority = globalTech
+        ? this.mapPriorityToNumber(globalTech.priority)
+        : 3  // fallback: technique no longer in catalog
+      dirty = true
+    }
+  }
+
+  if (dirty) {
+    this.storageService.saveFightList(fightList)
+  }
+}
+```
+
+**Validity rule:** a priority is valid if and only if it is a finite number **and** `1 ≤ value ≤ 5`.
+Values such as `undefined`, `null`, `0`, `NaN`, `6`, and `-1` are all invalid.
+
+---
+
+#### Step 3 — Call `healFightListPriorities` in `SessionManager.startSessionWithFightList()`
+**File:** `src/managers/SessionManager.ts`
+
+Add the healing call **after** the FightList is resolved but **before** the strategy is activated
+(i.e., before `this.setSelectionStrategy(strategyType)`):
+
+```ts
+// Heal any FightListTechnique entries with missing or out-of-range priorities
+const allTechniques = this.techniqueManager.getTechniques()  // existing accessor
+this.fightListManager.healFightListPriorities(fightList, allTechniques)
+```
+
+> `this.fightListManager` and `this.techniqueManager` must be accessible from `SessionManager`.
+> If `SessionManager` does not currently hold a reference to either, inject them via the
+> constructor (consistent with the existing dependency injection pattern in the codebase).
+
+---
+
+### Done Condition for Task 0-F
+
+- `healFightListPriorities` is callable on `FightListManager`.
+- Called from `startSessionWithFightList` before strategy activation.
+- `tsc --noEmit` produces zero errors.
+- Unit tests (Task 0-F tests — see below) all pass.
+
+---
+
+### Task 0-F tests · Write healing unit tests
+**File:** `src/tests/FightListManager.test.ts` *(append to the `per-FightList priority` describe block or add a sibling `describe('healFightListPriorities', …)` block)*
+
+Eight test cases:
+
+1. **`undefined` priority is healed from global `'high'`**
+   - Create a FightListTechnique with `priority: undefined as any`.
+   - Call `healFightListPriorities(fightList, [{ name: ..., priority: 'high', ... }])`.
+   - Assert entry `priority === 5`; assert `saveFightList` called once.
+
+2. **`null` priority is healed, defaults to 3 when global is `'medium'`**
+   - `priority: null as any`, global `'medium'` → assert `priority === 3`.
+
+3. **`0` is treated as invalid and healed**
+   - `priority: 0`, global `'low'` → assert `priority === 1`.
+
+4. **`6` (out of range) is healed**
+   - `priority: 6`, global `'high'` → assert `priority === 5`.
+
+5. **`NaN` is healed**
+   - `priority: NaN`, global `'medium'` → assert `priority === 3`.
+
+6. **Technique not found in catalog defaults to 3**
+   - Entry `techniqueId: 'ghost-tech'`, `priority: undefined as any`; pass empty `allTechniques`.
+   - Assert `priority === 3`.
+
+7. **All valid entries — no storage write**
+   - FightList with two entries both having `priority: 3`.
+   - Call `healFightListPriorities`; assert `saveFightList` was NOT called.
+
+8. **Idempotency — calling twice does not write twice**
+   - FightList with one invalid entry.
+   - Call `healFightListPriorities` twice.
+   - Assert `saveFightList` was called exactly once (second call is a no-op, all valid after first).
+
+**Done:** `npm run test -- FightListManager` passes all eight new healing tests with no regressions.
+
+---
 
 ### Task 1-A · Extend `STRATEGY_TYPES` with three new keys
 **File:** `src/constants/strategies.ts`

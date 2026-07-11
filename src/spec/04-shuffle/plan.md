@@ -112,6 +112,38 @@ Write unit tests in `FightListManager.test.ts` (new `describe` block) covering:
   (including `priority`) from that FightList's `techniques` array.
 - After removal, the global `Technique.priority` is still intact.
 
+### 0-F: Priority Healing on Session Start (Req 10)
+
+Before a session begins, the system must guarantee every `FightListTechnique` in the active
+FightList has a valid numeric priority in 1–5. This handles FightList data created before the
+per-FightList priority field existed (e.g., migrated data) or any entry where `priority` is
+`undefined`, `null`, `0`, `NaN`, or out of range.
+
+**Implementation location:** Add a `healFightListPriorities` method to `FightListManager`.
+Call it from `SessionManager.startSessionWithFightList()` before activating the strategy, passing
+the active FightList and the full technique catalog (needed to look up global priority strings).
+
+**Algorithm:**
+```
+healFightListPriorities(fightList, allTechniques):
+  dirty = false
+  for each entry in fightList.techniques:
+    if entry.priority is not a valid integer in [1, 5]:
+      globalTechnique = allTechniques.find(t => t.name === entry.techniqueId)
+      entry.priority = globalTechnique
+        ? mapPriorityToNumber(globalTechnique.priority)  // low→1, medium→3, high→5
+        : 3                                               // fallback when technique not found
+      dirty = true
+  if dirty:
+    storageService.saveFightList(fightList)   // persist once, only if anything changed
+```
+
+**Key properties:**
+- Only entries with invalid priorities are patched (Req 10.6).
+- Global `Technique.priority` is never written (Req 10.7).
+- No storage write occurs if all entries are already valid (Req 10.8).
+- The method is idempotent: re-running on an already-healed FightList is a no-op (Req 10.9).
+
 **Phase 0 exit condition:** All Phase 0 tests pass; no regressions in `FightListManager.test.ts`.
 
 ---

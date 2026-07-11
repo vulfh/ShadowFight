@@ -176,6 +176,12 @@ export class TechniqueAddModal {
     this.renderTechniqueList();
   }
 
+  private globalPriorityToNumber(p: string): number {
+    if (p === 'low')  return 1
+    if (p === 'high') return 5
+    return 3  // 'medium' and any unrecognised value
+  }
+
   private renderTechniqueList(): void {
     this.techniqueList.innerHTML = '';
 
@@ -216,6 +222,9 @@ export class TechniqueAddModal {
       if (!isExisting) {
         const addButton = item.querySelector('.technique-item__add');
         const prioritySelect = item.querySelector('.priority-select') as HTMLSelectElement;
+
+        // Seed the dropdown from the technique's global priority before the listener reads it
+        prioritySelect.value = String(this.globalPriorityToNumber(technique.priority))
 
         addButton?.addEventListener('click', () => {
           const priority = parseInt(prioritySelect.value);

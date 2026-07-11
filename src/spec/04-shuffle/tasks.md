@@ -70,7 +70,7 @@ more explicit about the intended read order.
 `'medium'` shows `3`; `'low'` shows `1`; unknown shows `3`. `Technique.priority` is unchanged.
 
 
-### Task 0-C · Verify edit-view priority dropdown in `FightListUIManager`
+### ✅ Task 0-C · Verify edit-view priority dropdown in `FightListUIManager`
 **File:** `src/managers/FightListUIManager.ts`
 
 Three read-only checks:
@@ -90,7 +90,7 @@ Three read-only checks:
 
 ---
 
-### Task 0-D · Verify `removeTechniqueFromFightList` deletes the full record
+### ✅ Task 0-D · Verify `removeTechniqueFromFightList` deletes the full record
 **File:** `src/managers/FightListManager.ts`
 
 Read `removeTechniqueFromFightList` (Line 401). Confirm it:
@@ -106,7 +106,7 @@ Read `removeTechniqueFromFightList` (Line 401). Confirm it:
 
 ---
 
-### Task 0-E · Write priority seeding, isolation, and removal unit tests
+### ✅ Task 0-E · Write priority seeding, isolation, and removal unit tests
 **File:** `src/tests/FightListManager.test.ts` *(add a new `describe` block at the end)*
 
 Write nine test cases inside `describe('per-FightList priority', () => { ... })`:

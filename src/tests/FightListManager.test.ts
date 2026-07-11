@@ -339,3 +339,151 @@ describe('FightListManager', () => {
     })
   })
 })
+
+describe('per-FightList priority', () => {
+  // Shared helpers
+  const makeFightList = (id: string): FightList => ({
+    id,
+    name: `List ${id}`,
+    mode: MODES.RESPONDING,
+    techniques: [],
+    createdAt: new Date().toISOString(),
+    lastModified: new Date().toISOString()
+  })
+
+  const makeTechnique = (name: string, priority: 'high' | 'medium' | 'low'): Technique => ({
+    name,
+    file: `${name}.wav`,
+    modes: [MODES.RESPONDING, MODES.PERFORMING],
+    category: 'Punches',
+    priority,
+    selected: true,
+    weight: 1,
+    targetLevel: 'CHEST',
+    side: 'RIGHT'
+  })
+
+  // Maps the global PriorityLevel string to the numeric seed — mirrors globalPriorityToNumber
+  const toNumber = (p: 'high' | 'medium' | 'low' | string): number => {
+    if (p === 'low')  return 1
+    if (p === 'high') return 5
+    return 3
+  }
+
+  beforeEach(() => {
+    vi.mocked(mockStorageService.saveFightList).mockReturnValue(true)
+  })
+
+  it("seeds priority 5 when global priority is 'high'", () => {
+    const list = makeFightList('prio-high')
+    fightListManager['fightLists'] = [list]
+    const tech = makeTechnique('tech-high', 'high')
+
+    fightListManager.addTechniqueToFightList(list.id, tech, toNumber(tech.priority))
+
+    expect(list.techniques[0].priority).toBe(5)
+  })
+
+  it("seeds priority 3 when global priority is 'medium'", () => {
+    const list = makeFightList('prio-medium')
+    fightListManager['fightLists'] = [list]
+    const tech = makeTechnique('tech-medium', 'medium')
+
+    fightListManager.addTechniqueToFightList(list.id, tech, toNumber(tech.priority))
+
+    expect(list.techniques[0].priority).toBe(3)
+  })
+
+  it("seeds priority 1 when global priority is 'low'", () => {
+    const list = makeFightList('prio-low')
+    fightListManager['fightLists'] = [list]
+    const tech = makeTechnique('tech-low', 'low')
+
+    fightListManager.addTechniqueToFightList(list.id, tech, toNumber(tech.priority))
+
+    expect(list.techniques[0].priority).toBe(1)
+  })
+
+  it('seeds priority 3 for any unrecognised global priority string', () => {
+    const list = makeFightList('prio-unknown')
+    fightListManager['fightLists'] = [list]
+    const tech = { ...makeTechnique('tech-unknown', 'medium'), priority: 'ultra' as any }
+
+    fightListManager.addTechniqueToFightList(list.id, tech, toNumber('ultra'))
+
+    expect(list.techniques[0].priority).toBe(3)
+  })
+
+  it('stores an explicit user-override priority and leaves global Technique.priority unchanged', () => {
+    const list = makeFightList('prio-override')
+    fightListManager['fightLists'] = [list]
+    const tech = makeTechnique('tech-override', 'medium')
+    const originalGlobalPriority = tech.priority
+
+    fightListManager.addTechniqueToFightList(list.id, tech, 4)
+
+    expect(list.techniques[0].priority).toBe(4)
+    // Global Technique.priority must not have been mutated
+    expect(tech.priority).toBe(originalGlobalPriority)
+  })
+
+  it('updating priority in one FightList does not affect the same technique in another FightList', () => {
+    const listA = makeFightList('list-a')
+    const listB = makeFightList('list-b')
+    fightListManager['fightLists'] = [listA, listB]
+    const tech = makeTechnique('shared-tech', 'medium')
+
+    // Add the same technique to both lists, both seeded at 3
+    fightListManager.addTechniqueToFightList(listA.id, tech, 3)
+    fightListManager.addTechniqueToFightList(listB.id, tech, 3)
+
+    // Simulate an edit-view update on listA: set its entry to priority 5
+    const updatedTechniquesA = listA.techniques.map(t => ({ ...t, priority: 5 }))
+    fightListManager.updateFightList(listA.id, { techniques: updatedTechniquesA })
+
+    expect(listA.techniques[0].priority).toBe(5)
+    expect(listB.techniques[0].priority).toBe(3)
+  })
+
+  it('updating a FightList technique priority does not mutate the global Technique object', () => {
+    const list = makeFightList('list-isolation')
+    fightListManager['fightLists'] = [list]
+    const tech = makeTechnique('isolation-tech', 'medium')
+    const originalGlobalPriority = tech.priority
+
+    fightListManager.addTechniqueToFightList(list.id, tech, 3)
+    const updatedTechniques = list.techniques.map(t => ({ ...t, priority: 5 }))
+    fightListManager.updateFightList(list.id, { techniques: updatedTechniques })
+
+    // The global Technique object must be untouched
+    expect(tech.priority).toBe(originalGlobalPriority)
+  })
+
+  it('removing a technique deletes the entire FightListTechnique record', () => {
+    const list = makeFightList('list-remove')
+    fightListManager['fightLists'] = [list]
+    const tech = makeTechnique('remove-tech', 'high')
+
+    fightListManager.addTechniqueToFightList(list.id, tech, 5)
+    const entry = list.techniques[0]
+    const lengthBefore = list.techniques.length
+
+    fightListManager.removeTechniqueFromFightList(list.id, entry.id)
+
+    expect(list.techniques).toHaveLength(lengthBefore - 1)
+    expect(list.techniques.find(t => t.techniqueId === tech.name)).toBeUndefined()
+  })
+
+  it('removing a technique does not affect the global Technique.priority', () => {
+    const list = makeFightList('list-remove-global')
+    fightListManager['fightLists'] = [list]
+    const tech = makeTechnique('remove-global-tech', 'high')
+    const originalGlobalPriority = tech.priority
+
+    fightListManager.addTechniqueToFightList(list.id, tech, 5)
+    const entry = list.techniques[0]
+    fightListManager.removeTechniqueFromFightList(list.id, entry.id)
+
+    expect(tech.priority).toBe(originalGlobalPriority)
+  })
+})

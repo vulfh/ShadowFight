@@ -2,6 +2,7 @@ import { Technique, SessionConfig, SessionStatus, SessionStats, FightList } from
 import { ITechniqueSelectionStrategy, TechniqueSelectionStrategyFactory } from '../utils/TechniqueSelectionStrategy'
 import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../constants'
 import { AudioManager } from './AudioManager'
+import { FightListManager } from './FightListManager'
 
 export class SessionManager {
   private selectionStrategy!: ITechniqueSelectionStrategy
@@ -42,6 +43,7 @@ export class SessionManager {
   private _waitingForInstructionCompletion: boolean = false
   private _instructionAudioPlayedThisSession: boolean = false
   private audioManager: AudioManager | null = null
+  private fightListManager: FightListManager | null = null
   
   public onSessionComplete?: () => void
   public onInstructionAudioStarted?: () => void
@@ -58,6 +60,13 @@ export class SessionManager {
    */
   setAudioManager(audioManager: AudioManager): void {
     this.audioManager = audioManager
+  }
+
+  /**
+   * Set the fight list manager instance for priority healing on session start
+   */
+  setFightListManager(fightListManager: FightListManager): void {
+    this.fightListManager = fightListManager
   }
 
   async startSession(config: SessionConfig): Promise<void> {
@@ -95,6 +104,11 @@ export class SessionManager {
 
     if (!fightList.techniques.some(t => t.selected)) {
       throw new Error(`Please select at least one technique in ${fightList.name}`)
+    }
+
+    // Heal any FightListTechnique entries with missing or out-of-range priorities
+    if (this.fightListManager) {
+      this.fightListManager.healFightListPriorities(fightList, config.techniques)
     }
 
     // Get selected techniques from fight list (only these will be used in the session)

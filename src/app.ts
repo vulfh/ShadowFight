@@ -63,6 +63,8 @@ export class KravMagaTrainerApp {
 
       // Set up audio manager integration with session manager
       this.sessionManager.setAudioManager(this.audioManager)
+      // Wire fight list manager so session start can heal stale priorities
+      this.sessionManager.setFightListManager(this.fightListManager)
 
       // Initialize Fight List managers and hydrate UI
       await this.fightListManager.init()

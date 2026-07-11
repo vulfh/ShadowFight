@@ -341,6 +341,11 @@ describe('FightListManager', () => {
 })
 
 describe('per-FightList priority', () => {
+  // Own manager + storage — this describe is a sibling of 'FightListManager' and has no
+  // access to that block's variables, so we declare fresh ones here.
+  let fightListManager: FightListManager
+  let mockStorageService: StorageService
+
   // Shared helpers
   const makeFightList = (id: string): FightList => ({
     id,
@@ -371,7 +376,23 @@ describe('per-FightList priority', () => {
   }
 
   beforeEach(() => {
-    vi.mocked(mockStorageService.saveFightList).mockReturnValue(true)
+    vi.clearAllMocks()
+
+    mockStorageService = {
+      getAllFightLists: vi.fn().mockReturnValue([]),
+      saveFightList: vi.fn().mockReturnValue(true),
+      deleteFightList: vi.fn(),
+      getCurrentFightList: vi.fn().mockReturnValue(null),
+      setCurrentFightList: vi.fn(),
+      validateFightList: vi.fn().mockReturnValue({ isValid: true, errors: [], warnings: [] }),
+      saveFightListsBatch: vi.fn().mockReturnValue(0)
+    } as unknown as StorageService
+
+    vi.mocked(StorageService).mockImplementation(() => mockStorageService)
+
+    fightListManager = new FightListManager()
+    fightListManager['isInitialized'] = true
+    fightListManager['storageService'] = mockStorageService
   })
 
   it("seeds priority 5 when global priority is 'high'", () => {
@@ -441,8 +462,12 @@ describe('per-FightList priority', () => {
     const updatedTechniquesA = listA.techniques.map(t => ({ ...t, priority: 5 }))
     fightListManager.updateFightList(listA.id, { techniques: updatedTechniquesA })
 
-    expect(listA.techniques[0].priority).toBe(5)
-    expect(listB.techniques[0].priority).toBe(3)
+    // Re-fetch both lists — updateFightList replaces the reference in the internal array
+    const updatedListA = fightListManager.getFightList(listA.id)!
+    const updatedListB = fightListManager.getFightList(listB.id)!
+
+    expect(updatedListA.techniques[0].priority).toBe(5)
+    expect(updatedListB.techniques[0].priority).toBe(3)
   })
 
   it('updating a FightList technique priority does not mutate the global Technique object', () => {
@@ -485,5 +510,137 @@ describe('per-FightList priority', () => {
     fightListManager.removeTechniqueFromFightList(list.id, entry.id)
 
     expect(tech.priority).toBe(originalGlobalPriority)
+  })
+})
+
+describe('healFightListPriorities', () => {
+  let manager: FightListManager
+  let mockStorage: StorageService
+
+  const makeEntry = (techniqueId: string, priority: any) => ({
+    id: `entry-${techniqueId}`,
+    techniqueId,
+    priority,
+    selected: true
+  })
+
+  const makeGlobalTech = (name: string, priority: 'high' | 'medium' | 'low'): Technique => ({
+    name,
+    file: `${name}.wav`,
+    modes: [MODES.RESPONDING, MODES.PERFORMING],
+    category: 'Punches',
+    priority,
+    selected: true,
+    weight: 1,
+    targetLevel: 'CHEST',
+    side: 'RIGHT'
+  })
+
+  const makeFightList = (techniques: ReturnType<typeof makeEntry>[]): FightList => ({
+    id: 'heal-list',
+    name: 'Heal List',
+    mode: MODES.RESPONDING,
+    techniques: techniques as any,
+    createdAt: new Date().toISOString(),
+    lastModified: new Date().toISOString()
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockStorage = {
+      getAllFightLists: vi.fn().mockReturnValue([]),
+      saveFightList: vi.fn().mockReturnValue(true),
+      deleteFightList: vi.fn(),
+      getCurrentFightList: vi.fn().mockReturnValue(null),
+      setCurrentFightList: vi.fn(),
+      validateFightList: vi.fn().mockReturnValue({ isValid: true, errors: [], warnings: [] }),
+      saveFightListsBatch: vi.fn().mockReturnValue(0)
+    } as unknown as StorageService
+
+    vi.mocked(StorageService).mockImplementation(() => mockStorage)
+    manager = new FightListManager()
+    manager['isInitialized'] = true
+    manager['storageService'] = mockStorage
+  })
+
+  it('heals undefined priority from global high → 5, and writes storage', () => {
+    const fightList = makeFightList([makeEntry('tech-a', undefined as any)])
+    const allTechniques = [makeGlobalTech('tech-a', 'high')]
+
+    manager.healFightListPriorities(fightList, allTechniques)
+
+    expect(fightList.techniques[0].priority).toBe(5)
+    expect(mockStorage.saveFightList).toHaveBeenCalledTimes(1)
+  })
+
+  it('heals null priority, defaults to 3 when global is medium', () => {
+    const fightList = makeFightList([makeEntry('tech-b', null as any)])
+    const allTechniques = [makeGlobalTech('tech-b', 'medium')]
+
+    manager.healFightListPriorities(fightList, allTechniques)
+
+    expect(fightList.techniques[0].priority).toBe(3)
+    expect(mockStorage.saveFightList).toHaveBeenCalledTimes(1)
+  })
+
+  it('heals priority 0 (invalid), resolved to 1 for global low', () => {
+    const fightList = makeFightList([makeEntry('tech-c', 0)])
+    const allTechniques = [makeGlobalTech('tech-c', 'low')]
+
+    manager.healFightListPriorities(fightList, allTechniques)
+
+    expect(fightList.techniques[0].priority).toBe(1)
+    expect(mockStorage.saveFightList).toHaveBeenCalledTimes(1)
+  })
+
+  it('heals priority 6 (out of range), resolved to 5 for global high', () => {
+    const fightList = makeFightList([makeEntry('tech-d', 6)])
+    const allTechniques = [makeGlobalTech('tech-d', 'high')]
+
+    manager.healFightListPriorities(fightList, allTechniques)
+
+    expect(fightList.techniques[0].priority).toBe(5)
+    expect(mockStorage.saveFightList).toHaveBeenCalledTimes(1)
+  })
+
+  it('heals NaN priority, resolved to 3 for global medium', () => {
+    const fightList = makeFightList([makeEntry('tech-e', NaN)])
+    const allTechniques = [makeGlobalTech('tech-e', 'medium')]
+
+    manager.healFightListPriorities(fightList, allTechniques)
+
+    expect(fightList.techniques[0].priority).toBe(3)
+    expect(mockStorage.saveFightList).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to priority 3 when technique is not found in catalog', () => {
+    const fightList = makeFightList([makeEntry('ghost-tech', undefined as any)])
+
+    manager.healFightListPriorities(fightList, [])
+
+    expect(fightList.techniques[0].priority).toBe(3)
+    expect(mockStorage.saveFightList).toHaveBeenCalledTimes(1)
+  })
+
+  it('does NOT call saveFightList when all priorities are already valid', () => {
+    const fightList = makeFightList([
+      makeEntry('tech-f', 3),
+      makeEntry('tech-g', 5)
+    ])
+    const allTechniques = [makeGlobalTech('tech-f', 'medium'), makeGlobalTech('tech-g', 'high')]
+
+    manager.healFightListPriorities(fightList, allTechniques)
+
+    expect(mockStorage.saveFightList).not.toHaveBeenCalled()
+  })
+
+  it('is idempotent — calling twice writes storage exactly once', () => {
+    const fightList = makeFightList([makeEntry('tech-h', undefined as any)])
+    const allTechniques = [makeGlobalTech('tech-h', 'medium')]
+
+    manager.healFightListPriorities(fightList, allTechniques)
+    manager.healFightListPriorities(fightList, allTechniques) // second call: entry is now valid
+
+    expect(mockStorage.saveFightList).toHaveBeenCalledTimes(1)
   })
 })

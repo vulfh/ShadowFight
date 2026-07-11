@@ -545,16 +545,50 @@ export class FightListManager {
   }
 
   /**
-   * Map priority level string to number
-   * @param priority - Priority level string
-   * @returns Priority number (1-5)
+   * Map priority level string to number.
+   * Exposed as package-internal (non-private) for use by healFightListPriorities and tests.
+   * @param priority - Priority level string ('low' | 'medium' | 'high')
+   * @returns Priority number (1–5)
    */
-  private mapPriorityToNumber(priority: string): number {
+  mapPriorityToNumber(priority: string): number {
     switch (priority.toLowerCase()) {
       case 'low': return 1
       case 'medium': return 3
       case 'high': return 5
       default: return 3
+    }
+  }
+
+  /**
+   * Ensures every FightListTechnique in the given FightList has a valid priority (1–5).
+   * Heals any entry whose priority is missing, zero, NaN, or out-of-range by deriving
+   * the replacement from the matching global Technique, falling back to 3 (Medium).
+   * Persists the FightList to storage only if at least one entry was patched.
+   *
+   * @param fightList     - The FightList to inspect and potentially repair.
+   * @param allTechniques - The full technique catalog, used to resolve global priority strings.
+   */
+  healFightListPriorities(fightList: FightList, allTechniques: Technique[]): void {
+    let dirty = false
+
+    for (const entry of fightList.techniques) {
+      const isValid =
+        typeof entry.priority === 'number' &&
+        Number.isFinite(entry.priority) &&
+        entry.priority >= 1 &&
+        entry.priority <= 5
+
+      if (!isValid) {
+        const globalTech = allTechniques.find(t => t.name === entry.techniqueId)
+        entry.priority = globalTech
+          ? this.mapPriorityToNumber(globalTech.priority)
+          : 3 // fallback: technique no longer in catalog
+        dirty = true
+      }
+    }
+
+    if (dirty) {
+      this.storageService.saveFightList(fightList)
     }
   }
 

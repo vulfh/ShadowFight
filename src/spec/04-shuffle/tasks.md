@@ -152,7 +152,7 @@ Write nine test cases inside `describe('per-FightList priority', () => { ... })`
 
 ---
 
-### Task 0-F · Add `healFightListPriorities` to `FightListManager` and call it on session start
+### ✅ Task 0-F · Add `healFightListPriorities` to `FightListManager` and call it on session start
 **Files:** `src/managers/FightListManager.ts`, `src/managers/SessionManager.ts`
 
 **Context:** FightList data created before per-FightList priority existed (or migrated data) may
@@ -254,7 +254,7 @@ this.fightListManager.healFightListPriorities(fightList, allTechniques)
 
 ---
 
-### Task 0-F tests · Write healing unit tests
+### ✅ Task 0-F tests · Write healing unit tests
 **File:** `src/tests/FightListManager.test.ts` *(append to the `per-FightList priority` describe block or add a sibling `describe('healFightListPriorities', …)` block)*
 
 Eight test cases:

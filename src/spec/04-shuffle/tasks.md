@@ -406,7 +406,7 @@ The `?` makes it optional so existing strategy classes (`RoundRobinTechniqueSele
 
 ---
 
-### Task 2-B · Add no-op `reset()` to `RandomTechniqueSelectionStrategy`
+### ✅ Task 2-B · Add no-op `reset()` to `RandomTechniqueSelectionStrategy`
 **File:** `src/utils/TechniqueSelectionStrategy.ts`
 
 Inside `RandomTechniqueSelectionStrategy`, add after `getName()`:

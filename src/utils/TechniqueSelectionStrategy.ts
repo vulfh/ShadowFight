@@ -34,6 +34,10 @@ export class RandomTechniqueSelectionStrategy implements ITechniqueSelectionStra
   getName(): string {
     return 'Random Selection'
   }
+
+  reset(): void {
+    // Stateless — no-op for interface compliance
+  }
 }
 
 // Round-robin selection strategy implementation

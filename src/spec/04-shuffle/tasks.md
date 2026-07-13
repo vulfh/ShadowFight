@@ -293,7 +293,7 @@ Eight test cases:
 
 ---
 
-### Task 1-A · Extend `STRATEGY_TYPES` with three new keys
+### ✅ Task 1-A · Extend `STRATEGY_TYPES` with three new keys
 **File:** `src/constants/strategies.ts`
 
 **Exact change** — replace the existing object (Lines 2–6) with:

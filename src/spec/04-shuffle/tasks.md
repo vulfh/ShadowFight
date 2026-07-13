@@ -317,7 +317,7 @@ Rules:
 
 ---
 
-### Task 1-B · Add `PLAY_MODE` key to `STORAGE_KEYS`
+### ✅ Task 1-B · Add `PLAY_MODE` key to `STORAGE_KEYS`
 **File:** `src/constants/storage.ts`
 
 Append the following entry inside the `STORAGE_KEYS` object, after `PLAY_NOTES_ENABLED` and before the closing `} as const`:

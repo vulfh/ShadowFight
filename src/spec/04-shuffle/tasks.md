@@ -388,7 +388,7 @@ export const PLAY_MODE_TO_STRATEGY: Record<
 
 ## Phase 2 — New Selection Strategies
 
-### Task 2-A · Add optional `reset()` to `ITechniqueSelectionStrategy`
+### ✅ Task 2-A · Add optional `reset()` to `ITechniqueSelectionStrategy`
 **File:** `src/utils/TechniqueSelectionStrategy.ts`
 
 **Exact change** — in the `ITechniqueSelectionStrategy` interface (Line 6), add one line:

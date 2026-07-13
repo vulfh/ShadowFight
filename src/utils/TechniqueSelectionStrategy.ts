@@ -5,6 +5,7 @@ import { STRATEGY_TYPES, PRIORITY_LEVELS, ERROR_MESSAGES } from '../constants'
 export interface ITechniqueSelectionStrategy {
   selectTechnique(techniques: Technique[]): Technique
   getName(): string
+  reset?(): void
 }
 
 // Random selection strategy implementation

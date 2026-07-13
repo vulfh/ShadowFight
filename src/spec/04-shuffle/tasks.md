@@ -333,7 +333,7 @@ Append the following entry inside the `STORAGE_KEYS` object, after `PLAY_NOTES_E
 **Done:** `STORAGE_KEYS.PLAY_MODE` resolves to `'kravMagaPlayMode'` in TypeScript; `tsc --noEmit` clean.
 
 
-### Task 1-C · Create `src/types/playMode.ts`
+### ✅ Task 1-C · Create `src/types/playMode.ts`
 **File:** `src/types/playMode.ts` *(new file)*
 
 Full file content:
@@ -360,7 +360,7 @@ export const DEFAULT_PLAY_MODE: PlayMode = 'Random'
 
 ---
 
-### Task 1-D · Add `PLAY_MODE_TO_STRATEGY` lookup map
+### ✅ Task 1-D · Add `PLAY_MODE_TO_STRATEGY` lookup map
 **File:** `src/types/playMode.ts` *(append to the file created in Task 1-C)*
 
 Append after `DEFAULT_PLAY_MODE`:

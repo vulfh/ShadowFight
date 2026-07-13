@@ -465,7 +465,7 @@ export class UnifiedRandomTechniqueSelectionStrategy implements ITechniqueSelect
 **Done:** Class added; `tsc --noEmit` clean.
 
 
-### Task 2-D · Implement `OrderedTechniqueSelectionStrategy`
+### ✅ Task 2-D · Implement `OrderedTechniqueSelectionStrategy`
 **File:** `src/utils/TechniqueSelectionStrategy.ts` *(add after `UnifiedRandomTechniqueSelectionStrategy`)*
 
 ```ts

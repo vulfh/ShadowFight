@@ -75,6 +75,29 @@ export class UnifiedRandomTechniqueSelectionStrategy implements ITechniqueSelect
   }
 }
 
+// Ordered selection strategy — cycles through techniques in array order, wrapping around
+export class OrderedTechniqueSelectionStrategy implements ITechniqueSelectionStrategy {
+  private index: number = 0
+
+  selectTechnique(techniques: Technique[]): Technique {
+    if (techniques.length === 0) {
+      throw new Error(ERROR_MESSAGES.NO_TECHNIQUES_AVAILABLE)
+    }
+
+    const technique = techniques[this.index % techniques.length]
+    this.index = (this.index + 1) % techniques.length
+    return technique
+  }
+
+  getName(): string {
+    return 'Ordered Selection'
+  }
+
+  reset(): void {
+    this.index = 0
+  }
+}
+
 // Round-robin selection strategy implementation
 export class RoundRobinTechniqueSelectionStrategy implements ITechniqueSelectionStrategy {
   private currentIndex: number = 0

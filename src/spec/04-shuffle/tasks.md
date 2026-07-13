@@ -420,7 +420,7 @@ reset(): void {
 
 ---
 
-### Task 2-C · Implement `UnifiedRandomTechniqueSelectionStrategy`
+### ✅ Task 2-C · Implement `UnifiedRandomTechniqueSelectionStrategy`
 **File:** `src/utils/TechniqueSelectionStrategy.ts` *(add new class after `RandomTechniqueSelectionStrategy`)*
 
 ```ts

@@ -40,6 +40,41 @@ export class RandomTechniqueSelectionStrategy implements ITechniqueSelectionStra
   }
 }
 
+// Unified random selection strategy — shuffles all techniques before repeating any
+export class UnifiedRandomTechniqueSelectionStrategy implements ITechniqueSelectionStrategy {
+  private remaining: Set<string> = new Set()
+
+  selectTechnique(techniques: Technique[]): Technique {
+    if (techniques.length === 0) {
+      throw new Error(ERROR_MESSAGES.NO_TECHNIQUES_AVAILABLE)
+    }
+
+    // Start a fresh round when all techniques have been picked
+    if (this.remaining.size === 0) {
+      techniques.forEach(t => this.remaining.add(t.name))
+    }
+
+    const eligible = techniques.filter(t => this.remaining.has(t.name))
+    const picked = eligible[Math.floor(Math.random() * eligible.length)]
+    this.remaining.delete(picked.name)
+
+    // Pre-seed next round immediately so the set is never empty on the next call
+    if (this.remaining.size === 0) {
+      techniques.forEach(t => this.remaining.add(t.name))
+    }
+
+    return picked
+  }
+
+  getName(): string {
+    return 'Unified Random Selection'
+  }
+
+  reset(): void {
+    this.remaining = new Set()
+  }
+}
+
 // Round-robin selection strategy implementation
 export class RoundRobinTechniqueSelectionStrategy implements ITechniqueSelectionStrategy {
   private currentIndex: number = 0

@@ -508,7 +508,7 @@ export class OrderedTechniqueSelectionStrategy implements ITechniqueSelectionStr
 
 ---
 
-### Task 2-E · Implement `PrioritizedTechniqueSelectionStrategy`
+### ✅ Task 2-E · Implement `PrioritizedTechniqueSelectionStrategy`
 **File:** `src/utils/TechniqueSelectionStrategy.ts` *(add after `OrderedTechniqueSelectionStrategy`)*
 
 ```ts

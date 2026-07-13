@@ -98,6 +98,67 @@ export class OrderedTechniqueSelectionStrategy implements ITechniqueSelectionStr
   }
 }
 
+// Prioritized selection strategy — weighted draw with anti-starvation protection
+export class PrioritizedTechniqueSelectionStrategy implements ITechniqueSelectionStrategy {
+  /** Tracks how many consecutive rounds each technique was NOT picked. */
+  private counters: Map<string, number> = new Map()
+
+  private static readonly STARVATION_THRESHOLD = 5
+
+  selectTechnique(techniques: Technique[]): Technique {
+    if (techniques.length === 0) {
+      throw new Error(ERROR_MESSAGES.NO_TECHNIQUES_AVAILABLE)
+    }
+
+    // Ensure every technique has a counter entry
+    for (const t of techniques) {
+      if (!this.counters.has(t.name)) this.counters.set(t.name, 0)
+    }
+
+    // Anti-starvation: force-select the lowest-weight starving technique (ties → earliest index)
+    const starving = techniques.filter(
+      t => (this.counters.get(t.name) ?? 0) >= PrioritizedTechniqueSelectionStrategy.STARVATION_THRESHOLD
+    )
+    if (starving.length > 0) {
+      const forced = starving.reduce((min, t) => (t.weight < min.weight ? t : min))
+      this.incrementCountersExcept(techniques, forced.name)
+      this.counters.set(forced.name, 0)
+      return forced
+    }
+
+    // Normal weighted random draw
+    const totalWeight = techniques.reduce((sum, t) => sum + t.weight, 0)
+    let r = Math.random() * totalWeight
+    let selected: Technique | undefined
+    for (const t of techniques) {
+      r -= t.weight
+      if (r <= 0) { selected = t; break }
+    }
+    // Floating-point fallback
+    selected = selected ?? techniques[techniques.length - 1]
+
+    this.incrementCountersExcept(techniques, selected.name)
+    this.counters.set(selected.name, 0)
+    return selected
+  }
+
+  private incrementCountersExcept(techniques: Technique[], excludeName: string): void {
+    for (const t of techniques) {
+      if (t.name !== excludeName) {
+        this.counters.set(t.name, (this.counters.get(t.name) ?? 0) + 1)
+      }
+    }
+  }
+
+  getName(): string {
+    return 'Prioritized Selection'
+  }
+
+  reset(): void {
+    this.counters.clear()
+  }
+}
+
 // Round-robin selection strategy implementation
 export class RoundRobinTechniqueSelectionStrategy implements ITechniqueSelectionStrategy {
   private currentIndex: number = 0
@@ -159,6 +220,12 @@ export class TechniqueSelectionStrategyFactory {
         return new RoundRobinTechniqueSelectionStrategy()
       case STRATEGY_TYPES.PRIORITY_BASED:
         return new PriorityBasedTechniqueSelectionStrategy()
+      case STRATEGY_TYPES.UNIFIED_RANDOM:
+        return new UnifiedRandomTechniqueSelectionStrategy()
+      case STRATEGY_TYPES.ORDERED:
+        return new OrderedTechniqueSelectionStrategy()
+      case STRATEGY_TYPES.PRIORITIZED:
+        return new PrioritizedTechniqueSelectionStrategy()
       default:
         return new RandomTechniqueSelectionStrategy()
     }
@@ -168,7 +235,10 @@ export class TechniqueSelectionStrategyFactory {
     return [
       { type: STRATEGY_TYPES.RANDOM, name: 'Random Selection' },
       { type: STRATEGY_TYPES.ROUND_ROBIN, name: 'Round Robin Selection' },
-      { type: STRATEGY_TYPES.PRIORITY_BASED, name: 'Priority-Based Selection' }
+      { type: STRATEGY_TYPES.PRIORITY_BASED, name: 'Priority-Based Selection' },
+      { type: STRATEGY_TYPES.UNIFIED_RANDOM, name: 'Unified Random Selection' },
+      { type: STRATEGY_TYPES.ORDERED, name: 'Ordered Selection' },
+      { type: STRATEGY_TYPES.PRIORITIZED, name: 'Prioritized Selection' }
     ]
   }
 }

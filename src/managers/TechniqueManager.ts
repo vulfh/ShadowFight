@@ -125,8 +125,13 @@ export class TechniqueManager {
           // { name: 'Spinning Outside Slap Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'low', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
           //Kinfe
-          { name: 'Right Hand Knife Top Front Attack', modes:[MODES.RESPONDING], file: 'yamin-tkifat-sakin-elit.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
-          { name: 'Left Hand Knife Top Front Attack', modes:[MODES.RESPONDING], file: 'smol-tkifat-sakin-elit.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Hand Knife Top Front Attack', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-lefanim-tkifat-sakin-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Hand Knife Top Front Attack', modes: [MODES.RESPONDING], file: 'smol-tokef-me-lefanim-tkifat-sakin-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+
+          { name: 'Right Hand Knife Bottom Front Attack', modes: [MODES.RESPONDING], file: 'yamin-tokef-lefanim-tkifat-sakin-me-lamata.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
+          { name: 'Left Hand Knife Bottom Front Attack', modes: [MODES.RESPONDING], file: 'smol-tokef-lefanim-tkifat-sakin-me-lamata.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
+
+
           { name: 'Left Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkirat-gav-mi-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkirat-gav-mi-lemamala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
 

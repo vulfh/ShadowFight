@@ -710,7 +710,7 @@ For each call site:
 
 ---
 
-### Task 3-D · Write `SessionManager.playMode.test.ts`
+### ✅ Task 3-D · Write `SessionManager.playMode.test.ts`
 **File:** `src/tests/SessionManager.playMode.test.ts` *(new file)*
 
 Five test cases:

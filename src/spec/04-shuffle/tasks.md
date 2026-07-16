@@ -570,7 +570,7 @@ export class PrioritizedTechniqueSelectionStrategy implements ITechniqueSelectio
 **Done:** Class added; `tsc --noEmit` clean.
 
 
-### Task 2-F · Extend `TechniqueSelectionStrategyFactory`
+### ✅ Task 2-F · Extend `TechniqueSelectionStrategyFactory`
 **File:** `src/utils/TechniqueSelectionStrategy.ts`
 
 In `TechniqueSelectionStrategyFactory.createStrategy()`, add three new `case` branches before the `default`:

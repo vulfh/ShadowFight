@@ -641,7 +641,7 @@ function makeTechnique(name: string, weight: number): Technique {
 ## Phase 3 — SessionManager Wiring
 
 
-### Task 3-A · Call `strategy.reset()` in `stopSession()`
+### ✅ Task 3-A · Call `strategy.reset()` in `stopSession()`
 **File:** `src/managers/SessionManager.ts`
 
 **Exact location:** `stopSession()` method (Line 309). At the **end** of the method body, after all existing cleanup, add:

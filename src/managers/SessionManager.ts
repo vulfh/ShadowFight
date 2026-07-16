@@ -340,6 +340,11 @@ export class SessionManager {
     this.resetInstructionAudioStateForNewSession()
     
     this.clearSessionState()
+
+    // Reset strategy state (e.g. round counters for Ordered / Unified Random / Prioritized)
+    if (typeof this.selectionStrategy.reset === 'function') {
+      this.selectionStrategy.reset()
+    }
   }
 
   private startSessionTimer(): void {

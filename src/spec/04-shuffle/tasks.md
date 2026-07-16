@@ -594,7 +594,7 @@ Also update `getAvailableStrategies()` to include the three new entries:
 
 ---
 
-### Task 2-G · Write unit tests — `TechniqueSelectionStrategy.test.ts`
+### ✅ Task 2-G · Write unit tests — `TechniqueSelectionStrategy.test.ts`
 **File:** `src/tests/TechniqueSelectionStrategy.test.ts` *(new file)*
 
 Create one `describe` block per strategy. All tests use a shared helper:

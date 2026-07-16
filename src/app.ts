@@ -22,7 +22,8 @@ import {
   WARNING_MESSAGES,
   STRATEGY_TYPES
 } from './constants'
-import { DEFAULT_PLAY_MODE } from './types/playMode'
+import { PlayMode } from './types/playMode'
+import { PlayModeSelectorService } from './services/PlayModeSelectorService'
 
 export class KravMagaTrainerApp {
   private techniqueManager: TechniqueManager
@@ -424,8 +425,12 @@ export class KravMagaTrainerApp {
           return
         }
 
-        // Start session with fight list
-        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList, DEFAULT_PLAY_MODE)
+        // Start session with fight list — read play mode from selector or fall back to persisted value
+        const playModeSvc = new PlayModeSelectorService()
+        const playMode = (
+          document.querySelector(`#play-mode-select-${currentFightList.id}`) as HTMLSelectElement | null
+        )?.value as PlayMode ?? playModeSvc.read()
+        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList, playMode)
       } else {
         // No current fight list - show fallback prompt
         const modal = new ConfirmModal({

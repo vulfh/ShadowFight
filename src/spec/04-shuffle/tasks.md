@@ -689,7 +689,7 @@ The strategy is locked in at session start. Subsequent dropdown changes in the U
 
 ---
 
-### Task 3-C · Update all callers of `startSessionWithFightList()`
+### ✅ Task 3-C · Update all callers of `startSessionWithFightList()`
 **Files:** `src/managers/FightListUIManager.ts` and `src/app.ts` *(search for all call sites)*
 
 For each call site:

@@ -657,7 +657,7 @@ if (typeof this.selectionStrategy.reset === 'function') {
 
 ---
 
-### Task 3-B · Add `playMode` parameter to `startSessionWithFightList()`
+### ✅ Task 3-B · Add `playMode` parameter to `startSessionWithFightList()`
 **File:** `src/managers/SessionManager.ts`
 
 **Step 1 — Add imports at the top of the file:**

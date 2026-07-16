@@ -1,6 +1,7 @@
 import { Technique, SessionConfig, SessionStatus, SessionStats, FightList } from '../types'
 import { ITechniqueSelectionStrategy, TechniqueSelectionStrategyFactory } from '../utils/TechniqueSelectionStrategy'
 import { STRATEGY_TYPES, TECHNIQUE_CATEGORIES, STORAGE_KEYS, SESSION_LIMITS, ERROR_MESSAGES } from '../constants'
+import { PlayMode, PLAY_MODE_TO_STRATEGY } from '../types/playMode'
 import { AudioManager } from './AudioManager'
 import { FightListManager } from './FightListManager'
 
@@ -16,6 +17,7 @@ export class SessionManager {
   private techniquesUsed: number = 0
   private currentFightList: FightList | null = null
   private currentSessionConfig: SessionConfig | null = null // Store the current session config
+  private currentPlayMode: PlayMode = 'Random' // Store play mode for session restart
   private sessionStats: SessionStats = {
     totalTechniques: 0,
     techniquesByCategory: {
@@ -97,7 +99,7 @@ export class SessionManager {
     // Else: app's technique announcement loop will call selectAndSetNextTechnique()
   }
 
-  async startSessionWithFightList(config: SessionConfig, fightList: FightList): Promise<void> {
+  async startSessionWithFightList(config: SessionConfig, fightList: FightList, playMode: PlayMode): Promise<void> {
     if (this._isActive) {
       throw new Error(ERROR_MESSAGES.SESSION_ALREADY_ACTIVE)
     }
@@ -105,6 +107,12 @@ export class SessionManager {
     if (!fightList.techniques.some(t => t.selected)) {
       throw new Error(`Please select at least one technique in ${fightList.name}`)
     }
+
+    const strategyType = PLAY_MODE_TO_STRATEGY[playMode]
+    if (!strategyType) {
+      throw new Error('A Play Mode must be selected before starting a session.')
+    }
+    this.setSelectionStrategy(strategyType)
 
     // Heal any FightListTechnique entries with missing or out-of-range priorities
     if (this.fightListManager) {
@@ -126,6 +134,7 @@ export class SessionManager {
       .filter((t): t is Technique => t !== null)
 
     this.currentFightList = fightList
+    this.currentPlayMode = playMode
     const fightListConfig = { ...config, techniques: selectedTechniques }
     await this.startSession(fightListConfig)
   }
@@ -482,7 +491,7 @@ export class SessionManager {
 
     // Start new session with same fight list
     if (currentFightList) {
-      await this.startSessionWithFightList(config, currentFightList)
+      await this.startSessionWithFightList(config, currentFightList, this.currentPlayMode)
     } else {
       await this.startSession(config)
     }

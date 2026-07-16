@@ -22,6 +22,7 @@ import {
   WARNING_MESSAGES,
   STRATEGY_TYPES
 } from './constants'
+import { DEFAULT_PLAY_MODE } from './types/playMode'
 
 export class KravMagaTrainerApp {
   private techniqueManager: TechniqueManager
@@ -424,7 +425,7 @@ export class KravMagaTrainerApp {
         }
 
         // Start session with fight list
-        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList)
+        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList, DEFAULT_PLAY_MODE)
       } else {
         // No current fight list - show fallback prompt
         const modal = new ConfirmModal({

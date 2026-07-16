@@ -102,7 +102,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
 
   describe('Session Start with Instruction Audio', () => {
     it('should play instruction audio when starting session with fight list', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledWith(
         MODES.PERFORMING,
@@ -134,7 +134,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
         mode: MODES.RESPONDING
       }
 
-      await sessionManager.startSessionWithFightList(mockSessionConfig, respondingFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, respondingFightList, 'Random')
       
       expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledWith(
         MODES.RESPONDING,
@@ -148,7 +148,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
         mode: undefined
       }
 
-      await sessionManager.startSessionWithFightList(mockSessionConfig, fightListWithoutMode)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, fightListWithoutMode, 'Random')
       
       expect(mockAudioManager.playInstructionAudio).not.toHaveBeenCalled()
       
@@ -160,7 +160,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
       const sessionManagerWithoutAudio = new SessionManager()
       await sessionManagerWithoutAudio.init()
       
-      await sessionManagerWithoutAudio.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManagerWithoutAudio.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       expect(mockAudioManager.playInstructionAudio).not.toHaveBeenCalled()
     })
@@ -182,7 +182,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
         firstTechniqueReadyCalled = true
       }
 
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       // Wait for instruction audio to complete
       await new Promise(resolve => setTimeout(resolve, 150))
@@ -198,7 +198,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should provide correct instruction audio state methods', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       expect(sessionManager.isPlayingInstructionAudio()).toBe(true)
       expect(sessionManager.isWaitingForInstructionCompletion()).toBe(true)
@@ -214,14 +214,14 @@ describe('SessionManager - Instruction Audio Integration', () => {
 
     it('should reset instruction audio state on new session', async () => {
       // Start first session
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       await new Promise(resolve => setTimeout(resolve, 150))
       
       // Stop session
       sessionManager.stopSession()
       
       // Start new session
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       const status = sessionManager.getSessionStatus()
       expect(status.isPlayingInstructionAudio).toBe(true)
@@ -241,7 +241,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
         instructionCompletedCalled = true
       }
 
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       // Wait for error handling
       await new Promise(resolve => setTimeout(resolve, 50))
@@ -259,7 +259,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
         new Error('Audio file not found')
       )
 
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       const status = sessionManager.getSessionStatus()
       expect(status.isActive).toBe(true)
@@ -268,7 +268,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
 
   describe('Session Persistence', () => {
     it('should save instruction audio completion state', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       await new Promise(resolve => setTimeout(resolve, 150))
       
       // Check that session state includes instruction audio completion
@@ -308,7 +308,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
 
   describe('Technique Cycle Integration', () => {
     it('should allow starting technique cycle after instruction audio completes', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       await new Promise(resolve => setTimeout(resolve, 150))
       
       // Should be able to start technique cycle
@@ -320,7 +320,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should not start technique cycle if instruction audio has not completed', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       // Try to start technique cycle before instruction audio completes
       sessionManager.startTechniqueAfterInstruction()
@@ -341,7 +341,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
 
   describe('Fight List Mode Integration', () => {
     it('should play instruction audio only once per session', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       // Wait for instruction audio to complete
       await new Promise(resolve => setTimeout(resolve, 150))
@@ -360,7 +360,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should skip instruction audio on session resume', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       await new Promise(resolve => setTimeout(resolve, 150))
       
       // Instruction audio should be completed by now
@@ -377,7 +377,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should handle instruction audio in session restart scenarios', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       await new Promise(resolve => setTimeout(resolve, 150))
       
       expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(1)
@@ -390,7 +390,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should handle pause during instruction audio playback', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       // Pause while instruction audio is playing
       sessionManager.pauseSession()
@@ -412,7 +412,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
         }
       )
 
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       // Verify instruction audio is playing but not completed
       expect(sessionManager.isPlayingInstructionAudio()).toBe(true)
@@ -434,7 +434,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should maintain compatibility with existing session features', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       const status = sessionManager.getSessionStatus()
       expect(status.isActive).toBe(true)
@@ -462,7 +462,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
         mode: undefined
       }
 
-      await sessionManager.startSessionWithFightList(mockSessionConfig, fightListWithInvalidMode)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, fightListWithInvalidMode, 'Random')
       
       expect(mockAudioManager.playInstructionAudio).not.toHaveBeenCalled()
       
@@ -473,7 +473,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
 
   describe('Session Status Updates', () => {
     it('should include instruction audio state in session status', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       const status = sessionManager.getSessionStatus()
       expect(status).toHaveProperty('isPlayingInstructionAudio')
@@ -488,7 +488,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should update instruction audio state correctly over time', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       // Initial state
       let status = sessionManager.getSessionStatus()
@@ -507,7 +507,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
     })
 
     it('should provide helper methods for instruction audio state', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       
       expect(sessionManager.hasInstructionAudioBeenPlayedThisSession()).toBe(true)
       
@@ -521,7 +521,7 @@ describe('SessionManager - Instruction Audio Integration', () => {
 
   describe('Session Restart Functionality', () => {
     it('should restart session and play instruction audio again', async () => {
-      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList)
+      await sessionManager.startSessionWithFightList(mockSessionConfig, mockFightList, 'Random')
       await new Promise(resolve => setTimeout(resolve, 150))
       
       expect(mockAudioManager.playInstructionAudio).toHaveBeenCalledTimes(1)

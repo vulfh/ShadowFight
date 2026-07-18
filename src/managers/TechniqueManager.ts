@@ -45,6 +45,10 @@ export class TechniqueManager {
 
 
           // Kicks
+
+          { name: 'Right Jumping Double Roundhouse Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-kfula-be-nitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Jumping Double Roundhouse Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-kfula-be-nitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+
           { name: 'Right Jumping Roundhouse Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-be-nitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Jumping Roundhouse Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-nitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
@@ -68,8 +72,13 @@ export class TechniqueManager {
           { name: 'Right Internal Defence Against Round Kick - Side Kick', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-magal-1.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
 
 
+          { name: 'Left Internal Defence Against Front Kick To Chin', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-beita-le-santer.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Front Kick To Chin', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-beita-le-santer.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
+
+
           { name: 'Left Internal Defence Against Round Kick - Back Kick', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-magal-2.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
-          { name: 'Right Internal Defence Against Round Kick - Back Kick', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-magal-2.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Round Kick - Back Kick', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-magal-2.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
           { name: 'Left Internal Defence Against Side Kick', modes: [MODES.PERFORMING], file: 'smol-agan-pnimit-neged-beita-le-tsad.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Internal Defence Against Side Kick - Back Kick', modes: [MODES.PERFORMING], file: 'yamin-agan-pnimit-neged-beita-le-tsad.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
@@ -160,8 +169,8 @@ export class TechniqueManager {
           { name: 'Right Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'yamin-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
 
-     //Knee-Protection
-          { name: 'Left Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
+     //Knee-Defence
+          { name: 'Left Defend Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'yamin-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
       // Knees
       // { name: 'Vertical Knee Strike', file: 'vertical_knee_strike.wav', category: 'Knees', priority: 'medium', selected: true, weight: 1, targetLevel: 'GROIN', side: 'RIGHT' },

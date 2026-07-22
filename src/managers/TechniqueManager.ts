@@ -137,6 +137,12 @@ export class TechniqueManager {
           { name: 'Right Hand Knife Top Front Attack', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-lefanim-tkifat-sakin-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Hand Knife Top Front Attack', modes: [MODES.RESPONDING], file: 'smol-tokef-me-lefanim-tkifat-sakin-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
+          { name: 'Right Hand Knife Ribs Side Attack', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-lefanim-tkifat-sakin-le-tslaot.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+          { name: 'Left Hand Knife Ribs Side Attack', modes: [MODES.RESPONDING], file: 'smol-tokef-me-lefanim-tkifat-sakin-le-tslaot.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+
+          { name: 'Right Hand Knife Stomach Side Attack', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-lefanim-tkifat-sakin-le-beten.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
+          { name: 'Left Hand Knife Stomach Side Attack', modes: [MODES.RESPONDING], file: 'smol-tokef-me-lefanim-tkifat-sakin-le-beten.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
+
           { name: 'Right Hand Knife Bottom Front Attack', modes: [MODES.RESPONDING], file: 'yamin-tokef-lefanim-tkifat-sakin-me-lamata.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
           { name: 'Left Hand Knife Bottom Front Attack', modes: [MODES.RESPONDING], file: 'smol-tokef-lefanim-tkifat-sakin-me-lamata.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
 

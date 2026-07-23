@@ -148,7 +148,12 @@ export class TechniqueManager {
 
 
           { name: 'Left Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkirat-gav-mi-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
-          { name: 'Right Hand Knife Top Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkirat-gav-mi-lemamala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
+          { name: 'Right Hand Knife Top Back Attack', modes: [MODES.RESPONDING], file: 'yamin-dkirat-gav-mi-lemamala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
+
+
+          { name: 'Left Attacker Attacks From Side Upfront', modes: [MODES.RESPONDING], file: 'smol-tokef-me-ha-tsad-tkifat-sakin-melafanim-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Left Attacker Attacks From Side Infront', modes: [MODES.RESPONDING], file: 'smol-tokef-me-ha-tsad-tkifat-sakin-melefanim-me-kadima.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Left Attacker Attacks From Side Bottom', modes: [MODES.RESPONDING], file: 'smol-tokef-me-ha-tsad-tkifat-sakin-melefanim-me-lemata.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
 
           { name: 'Right Hand Knife Threat To Left Neck Next to Wall', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
           { name: 'Left Hand Knife Threat To Right Neck Next To Wall', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },

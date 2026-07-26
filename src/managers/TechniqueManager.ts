@@ -154,6 +154,9 @@ export class TechniqueManager {
           { name: 'Left Attacker Attacks From Side Upfront', modes: [MODES.RESPONDING], file: 'smol-tokef-me-ha-tsad-tkifat-sakin-melafanim-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Attacker Attacks From Side Upfront', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-ha-tsad-tkifat-sakin-melafanim-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
 
+          { name: 'Left Attacker  Attacks From Back Side Up ', modes: [MODES.RESPONDING], file: 'smol-tokef-me-ha-tsad-tkifat-sakin-meahor-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Attacker  Attacks From Back Side Up ', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-ha-tsad-tkifat-sakin-meahor-me-lemala.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
           { name: 'Left Attacker Attacks From Side Infront', modes: [MODES.RESPONDING], file: 'smol-tokef-me-ha-tsad-tkifat-sakin-melefanim-me-kadima.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Attacker Attacks From Side Infront', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-ha-tsad-tkifat-sakin-melefanim-me-kadima.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 

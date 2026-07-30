@@ -741,7 +741,7 @@ Five test cases:
 ## Phase 4 — Play Mode Persistence Service
 
 
-### Task 4-A · Create `PlayModeSelectorService`
+### ✅ Task 4-A · Create `PlayModeSelectorService`
 **File:** `src/services/PlayModeSelectorService.ts` *(new file)*
 
 Full file content:
@@ -793,7 +793,7 @@ export class PlayModeSelectorService {
 
 ---
 
-### Task 4-B · Write `PlayModeSelectorService.test.ts`
+### ✅ Task 4-B · Write `PlayModeSelectorService.test.ts`
 **File:** `src/tests/PlayModeSelectorService.test.ts` *(new file)*
 
 Use `vi.stubGlobal` (or `jest.spyOn(window, 'localStorage', 'get')`) to control `localStorage` in each test. Five test cases:

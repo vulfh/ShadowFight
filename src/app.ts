@@ -429,7 +429,7 @@ export class KravMagaTrainerApp {
         const playModeSvc = new PlayModeSelectorService()
         const playMode = (
           document.querySelector(`#play-mode-select-${currentFightList.id}`) as HTMLSelectElement | null
-        )?.value as PlayMode ?? playModeSvc.read()
+        )?.value as PlayMode ?? playModeSvc.read(currentFightList.id)
         await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList, playMode)
         this.fightListUIManager.updatePlayModeSelectorState(currentFightList.id, false)
       } else {

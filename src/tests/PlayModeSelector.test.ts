@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { FightListUIManager } from '../managers/FightListUIManager'
 import { FightListManager } from '../managers/FightListManager'
 import { UIManager } from '../managers/UIManager'
@@ -155,7 +155,7 @@ describe('PlayModeSelector', () => {
     select.value = 'Ordered'
     select.dispatchEvent(new Event('change'))
 
-    expect(setItemSpy).toHaveBeenCalledWith('kravMagaPlayMode', 'Ordered')
+    expect(setItemSpy).toHaveBeenCalledWith('kravMagaPlayMode_fl-1', 'Ordered')
   })
 
   // -------------------------------------------------------------------------

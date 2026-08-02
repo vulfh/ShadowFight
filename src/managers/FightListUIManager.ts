@@ -193,7 +193,7 @@ export class FightListUIManager {
    */
   private renderPlayModeSelector(fightListId: string): HTMLElement {
     const service = new PlayModeSelectorService()
-    const current = service.read()
+    const current = service.read(fightListId)
     const isLocked = (this.sessionManager?.isActive ?? false) ||
                      (this.sessionManager?.isPaused ?? false)
 
@@ -204,11 +204,11 @@ export class FightListUIManager {
     wrapper.innerHTML = `
       <label class="play-mode-selector__label"
              for="play-mode-select-${fightListId}">
-        Play Mode
+        Shuffle Mode
       </label>
       <select id="play-mode-select-${fightListId}"
               class="form-select form-select-sm play-mode-selector__select"
-              aria-label="Play Mode"
+              aria-label="Shuffle Mode"
               ${isLocked ? 'disabled' : ''}>
         ${PLAY_MODES.map(m =>
           `<option value="${m}"${m === current ? ' selected' : ''}>${m}</option>`
@@ -219,7 +219,7 @@ export class FightListUIManager {
     const select = wrapper.querySelector('select') as HTMLSelectElement
     // Persist before any visual change (Req 2.1)
     select.addEventListener('change', () => {
-      service.write(select.value as PlayMode)
+      service.write(fightListId, select.value as PlayMode)
     })
 
     return wrapper

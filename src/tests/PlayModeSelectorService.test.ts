@@ -2,9 +2,12 @@ import { describe, it, expect, beforeEach, vi, afterEach, MockInstance } from 'v
 import { PlayModeSelectorService } from '../services/PlayModeSelectorService'
 import { STORAGE_KEYS } from '../constants/storage'
 
+const FL_ID = 'fl-test'
+const SCOPED_KEY = `${STORAGE_KEYS.PLAY_MODE}_${FL_ID}`
+
 describe('PlayModeSelectorService', () => {
   let service: PlayModeSelectorService
-  let getItemSpy:  MockInstance<(key: string) => string | null>
+  let getItemSpy: MockInstance<(key: string) => string | null>
   let setItemSpy: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
@@ -20,7 +23,7 @@ describe('PlayModeSelectorService', () => {
   it('returns the stored value when it is a valid PlayMode', () => {
     getItemSpy.mockReturnValue('Ordered')
 
-    const result = service.read()
+    const result = service.read(FL_ID)
 
     expect(result).toBe('Ordered')
     expect(setItemSpy).not.toHaveBeenCalled()
@@ -29,19 +32,19 @@ describe('PlayModeSelectorService', () => {
   it("returns 'Random' and writes it when nothing is stored", () => {
     getItemSpy.mockReturnValue(null)
 
-    const result = service.read()
+    const result = service.read(FL_ID)
 
     expect(result).toBe('Random')
-    expect(setItemSpy).toHaveBeenCalledWith(STORAGE_KEYS.PLAY_MODE, 'Random')
+    expect(setItemSpy).toHaveBeenCalledWith(SCOPED_KEY, 'Random')
   })
 
   it("returns 'Random' and overwrites an invalid stored value", () => {
     getItemSpy.mockReturnValue('garbage')
 
-    const result = service.read()
+    const result = service.read(FL_ID)
 
     expect(result).toBe('Random')
-    expect(setItemSpy).toHaveBeenCalledWith(STORAGE_KEYS.PLAY_MODE, 'Random')
+    expect(setItemSpy).toHaveBeenCalledWith(SCOPED_KEY, 'Random')
   })
 
   it("returns 'Random' and does NOT call setItem when getItem throws", () => {
@@ -49,15 +52,23 @@ describe('PlayModeSelectorService', () => {
       throw new DOMException('Simulated SecurityError', 'SecurityError')
     })
 
-    const result = service.read()
+    const result = service.read(FL_ID)
 
     expect(result).toBe('Random')
     expect(setItemSpy).not.toHaveBeenCalled()
   })
 
-  it('write() persists the value under the correct storage key', () => {
-    service.write('Prioritized')
+  it('write() persists the value under the scoped storage key', () => {
+    service.write(FL_ID, 'Prioritized')
 
-    expect(setItemSpy).toHaveBeenCalledWith(STORAGE_KEYS.PLAY_MODE, 'Prioritized')
+    expect(setItemSpy).toHaveBeenCalledWith(SCOPED_KEY, 'Prioritized')
+  })
+
+  it('two different fight lists use independent keys', () => {
+    service.write('fl-1', 'Ordered')
+    service.write('fl-2', 'Prioritized')
+
+    expect(setItemSpy).toHaveBeenCalledWith(`${STORAGE_KEYS.PLAY_MODE}_fl-1`, 'Ordered')
+    expect(setItemSpy).toHaveBeenCalledWith(`${STORAGE_KEYS.PLAY_MODE}_fl-2`, 'Prioritized')
   })
 })

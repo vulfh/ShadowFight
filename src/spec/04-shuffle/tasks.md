@@ -982,7 +982,7 @@ Rules:
 
 ---
 
-### Task 5-E · Write integration tests — `PlayModeSelector.test.ts`
+### ✅ Task 5-E · Write integration tests — `PlayModeSelector.test.ts`
 **File:** `src/tests/PlayModeSelector.test.ts` *(new file)*
 
 Use JSDOM (already available via Vitest/Jest config). Seven test cases:

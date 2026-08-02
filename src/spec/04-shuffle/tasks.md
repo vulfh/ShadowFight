@@ -830,7 +830,7 @@ Use `vi.stubGlobal` (or `jest.spyOn(window, 'localStorage', 'get')`) to control 
 ## Phase 5 — Play Mode Selector UI
 
 
-### Task 5-A · Add `renderPlayModeSelector()` to `FightListUIManager`
+### ✅ Task 5-A · Add `renderPlayModeSelector()` to `FightListUIManager`
 **File:** `src/managers/FightListUIManager.ts`
 
 **Step 1 — Add imports** at the top:

@@ -934,7 +934,7 @@ await this.sessionManager.startSessionWithFightList(config, fightList, playMode)
 **Done:** Clicking play passes the currently selected mode; TypeScript resolves without errors.
 
 
-### Task 5-D · Add CSS to `fightList.css`
+### ✅ Task 5-D · Add CSS to `fightList.css`
 **File:** `src/styles/fightList.css`
 
 Append the following block at the end of the file:

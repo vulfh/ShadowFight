@@ -1354,3 +1354,37 @@
   line-height: 1.4;
   border-radius: 0.2rem;
 }
+
+/* ============================================================
+   Play Mode Selector
+   BEM: .play-mode-selector / __label / __select
+   ============================================================ */
+
+.play-mode-selector {
+  gap: 0.5rem;
+}
+
+.play-mode-selector__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.play-mode-selector__select {
+  max-width: 160px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
+  color: inherit;
+}
+
+.play-mode-selector__select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb, 13, 110, 253), 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play-mode-selector__select {
+    transition: none;
+  }
+}

@@ -918,7 +918,7 @@ The exact variable name for the button container depends on the current code; ad
 
 ---
 
-### Task 5-C · Read play mode and pass to `startSessionWithFightList()`
+### ✅ Task 5-C · Read play mode and pass to `startSessionWithFightList()`
 **File:** `src/managers/FightListUIManager.ts`
 
 In the play-button click handler, replace the existing call to `startSessionWithFightList` with:

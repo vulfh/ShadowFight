@@ -900,7 +900,7 @@ private updatePlayModeSelectorState(fightListId: string, enabled: boolean): void
 
 ---
 
-### Task 5-B · Mount the selector in `createFightListElement()`
+### ✅ Task 5-B · Mount the selector in `createFightListElement()`
 **File:** `src/managers/FightListUIManager.ts`
 
 **Exact location:** Inside `createFightListElement()`, locate the DOM node that contains the play/pause/stop button group (search for the play button's creation or its container).

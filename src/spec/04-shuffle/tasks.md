@@ -1025,34 +1025,34 @@ Use JSDOM (already available via Vitest/Jest config). Seven test cases:
 ## Phase 6 — Integration Sweep and Final Tests
 
 
-### Task 6-A · End-to-end session flow test per mode
-**File:** `src/tests/PlayModeSelector.test.ts` *(append four `describe` blocks or a new file)*
+### ✅ Task 6-A · End-to-end session flow test per mode — COMPLETE
+**File:** `src/tests/SessionManager.playMode.strategy.test.ts` *(new file with four test cases)*
 
-For each of the four modes write an `it` block:
+For each of the four modes wrote an `it` block:
 
-**`'Random'`**
+**`'Random'`** ✅ IMPLEMENTED
 - Create a 3-technique array with different weights.
 - Start a session with `'Random'`.
 - Call `selectAndSetNextTechnique` 30 times; collect results.
 - Assert no structural error; all returned techniques belong to the input array.
 
-**`'Unified Random'`**
+**`'Unified Random'`** ✅ IMPLEMENTED
 - Create a 4-technique array.
 - Start a session with `'Unified Random'`.
 - Collect 4 picks; assert the set of names equals all 4 technique names (one full round, no repeats).
 - Collect 4 more picks; assert again the full set appears.
 
-**`'Ordered'`**
+**`'Ordered'`** ✅ IMPLEMENTED
 - Create a 3-technique array `[A, B, C]`.
 - Start a session with `'Ordered'`.
 - Call `selectAndSetNextTechnique` 6 times; assert results are `[A, B, C, A, B, C]`.
 
-**`'Prioritized'`**
+**`'Prioritized'`** ✅ IMPLEMENTED
 - Create a 2-technique array `[{weight:1}, {weight:4}]`.
 - Start a session with `'Prioritized'`.
 - Call 10 000 times; assert the weight-4 technique is picked between 70–90 % of the time.
 
-**Done:** All four `it` blocks pass; no regressions.
+**Done:** All four `it` blocks implemented and passing; no regressions detected.
 
 ---
 

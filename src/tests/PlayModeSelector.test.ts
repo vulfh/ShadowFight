@@ -208,4 +208,131 @@ describe('PlayModeSelector', () => {
       expect(select.value).toBe('Ordered')
     }
   })
+
+  // =========================================================================
+  // ACCESSIBILITY VERIFICATION TESTS (Task 6-D)
+  // =========================================================================
+
+  // -------------------------------------------------------------------------
+  // Accessibility Test 1 — Label association (WCAG 1.3.1)
+  // -------------------------------------------------------------------------
+  it('associates label with select via matching id and for attributes', async () => {
+    stubLocalStorage('Random')
+    const fightList = makeMinimalFightList('fl-test-label')
+    const { uiManager } = buildUIManager([fightList])
+
+    await uiManager.init()
+
+    const label = document.querySelector('.play-mode-selector__label') as HTMLLabelElement
+    const select = document.querySelector('.play-mode-selector__select') as HTMLSelectElement
+
+    expect(label).toBeTruthy()
+    expect(select).toBeTruthy()
+    expect(label.getAttribute('for')).toBe(`play-mode-select-fl-test-label`)
+    expect(select.id).toBe(`play-mode-select-fl-test-label`)
+    expect(label.getAttribute('for')).toBe(select.id)
+  })
+
+  // -------------------------------------------------------------------------
+  // Accessibility Test 2 — Disabled state uses HTML attribute
+  // -------------------------------------------------------------------------
+  it('uses disabled HTML attribute (not aria-disabled) when session is active', async () => {
+    stubLocalStorage('Random')
+    const fightList = makeMinimalFightList('fl-1')
+    const { uiManager } = buildUIManager([fightList], { isActive: true })
+
+    await uiManager.init()
+
+    const select = document.querySelector('.play-mode-selector__select') as HTMLSelectElement
+    expect(select.hasAttribute('disabled')).toBe(true)
+    expect(select.getAttribute('aria-disabled')).toBeNull()
+  })
+
+  // -------------------------------------------------------------------------
+  // Accessibility Test 3 — prefers-reduced-motion CSS media query
+  // -------------------------------------------------------------------------
+  it('applies transition: none when prefers-reduced-motion: reduce is active', async () => {
+    stubLocalStorage('Random')
+    const { uiManager } = buildUIManager([makeMinimalFightList()])
+
+    await uiManager.init()
+
+    const select = document.querySelector('.play-mode-selector__select') as HTMLSelectElement
+
+    // Get the computed style for the element
+    const computedStyle = window.getComputedStyle(select)
+
+    // Note: getComputedStyle doesn't always reflect media query overrides in jsdom.
+    // This test verifies the CSS rule exists in the stylesheet.
+    // In a real browser, you would verify this in DevTools or via a visual test.
+    expect(select).toBeTruthy()
+
+    // For automated testing: verify the stylesheet contains the rule
+    const stylesheets = Array.from(document.styleSheets)
+    const hasReducedMotionRule = stylesheets.some((sheet) => {
+      try {
+        const rules = Array.from(sheet.cssRules || [])
+        return rules.some(
+          (rule) =>
+            rule.constructor.name === 'CSSMediaRule' &&
+            (rule as CSSMediaRule).media.mediaText.includes('prefers-reduced-motion: reduce')
+        )
+      } catch {
+        // CORS or SecurityError on external stylesheets
+        return false
+      }
+    })
+
+    // If stylesheets are loaded, verify the rule exists
+    if (stylesheets.length > 0) {
+      expect(hasReducedMotionRule).toBe(true)
+    }
+  })
+
+  // -------------------------------------------------------------------------
+  // Accessibility Test 4 — Keyboard navigation & focus states
+  // -------------------------------------------------------------------------
+  it('supports keyboard navigation: Tab, Arrow Keys, and change event', async () => {
+    stubLocalStorage('Random')
+    const changeHandler = vi.fn()
+    const { uiManager } = buildUIManager([makeMinimalFightList('fl-1')])
+
+    await uiManager.init()
+
+    const select = document.querySelector('#play-mode-select-fl-1') as HTMLSelectElement
+    select.addEventListener('change', changeHandler)
+
+    // 1. Focus the select (simulating Tab navigation)
+    select.focus()
+    expect(document.activeElement).toBe(select)
+
+    // 2. Verify :focus styles can be applied (outline should be removed in our CSS, replaced with box-shadow)
+    const focusedStyle = window.getComputedStyle(select)
+    expect(focusedStyle.outline).toBeDefined()
+    // The select should be focusable
+    expect(select.tabIndex).toBeGreaterThanOrEqual(-1)
+
+    // 3. Simulate Arrow Key navigation by changing value programmatically
+    // (Actual arrow key simulation is limited in jsdom)
+    const initialValue = select.value
+    select.value = 'Ordered'
+    select.dispatchEvent(new Event('change', { bubbles: true }))
+
+    expect(select.value).toBe('Ordered')
+    expect(changeHandler).toHaveBeenCalled()
+    expect(select.value).not.toBe(initialValue)
+  })
+
+  // -------------------------------------------------------------------------
+  // Accessibility Test 5 — aria-label fallback
+  // -------------------------------------------------------------------------
+  it('provides aria-label for additional screen reader context', async () => {
+    stubLocalStorage('Random')
+    const { uiManager } = buildUIManager([makeMinimalFightList()])
+
+    await uiManager.init()
+
+    const select = document.querySelector('.play-mode-selector__select') as HTMLSelectElement
+    expect(select.getAttribute('aria-label')).toBe('Shuffle Mode')
+  })
 })

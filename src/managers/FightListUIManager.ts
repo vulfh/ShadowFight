@@ -12,11 +12,14 @@ import { MODES } from '../constants/modes'
 import { FightListManager } from './FightListManager'
 import { UIManager } from './UIManager'
 import { ConfigManager } from './ConfigManager'
+import { SessionManager } from './SessionManager'
 import { TechniqueAddModal } from '../components/TechniqueAddModal'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { VoiceNoteRecordModal } from '../components/VoiceNoteRecordModal'
 import { TechniqueManager } from './TechniqueManager'
 import { VoiceNoteService } from '../services/VoiceNoteService'
+import { PlayModeSelectorService } from '../services/PlayModeSelectorService'
+import { PlayMode, PLAY_MODES } from '../types/playMode'
 
 /**
  * Manages the UI components and interactions for fight lists
@@ -42,7 +45,8 @@ export class FightListUIManager {
     private readonly fightListManager: FightListManager,
     private readonly uiManager: UIManager,
     private readonly techniqueManager: TechniqueManager = new TechniqueManager(),
-    private readonly configManager: ConfigManager | null = null
+    private readonly configManager: ConfigManager | null = null,
+    private readonly sessionManager: SessionManager | null = null
   ) {
     this.voiceNoteService = new VoiceNoteService()
   }
@@ -184,6 +188,60 @@ export class FightListUIManager {
   }
 
   /**
+   * Render the Play Mode selector dropdown for a fight list card.
+   * The selector is disabled while a session is active or paused.
+   */
+  private renderPlayModeSelector(fightListId: string): HTMLElement {
+    const service = new PlayModeSelectorService()
+    const current = service.read(fightListId)
+    const isLocked = (this.sessionManager?.isActive ?? false) ||
+                     (this.sessionManager?.isPaused ?? false)
+
+    const wrapper = document.createElement('div')
+    wrapper.className = 'play-mode-selector d-flex align-items-center gap-2'
+    wrapper.dataset.fightListId = fightListId
+
+    wrapper.innerHTML = `
+      <label class="play-mode-selector__label"
+             for="play-mode-select-${fightListId}">
+        Shuffle Mode
+      </label>
+      <select id="play-mode-select-${fightListId}"
+              class="form-select form-select-sm play-mode-selector__select"
+              aria-label="Shuffle Mode"
+              ${isLocked ? 'disabled' : ''}>
+        ${PLAY_MODES.map(m =>
+          `<option value="${m}"${m === current ? ' selected' : ''}>${m}</option>`
+        ).join('')}
+      </select>
+    `
+
+    const select = wrapper.querySelector('select') as HTMLSelectElement
+    // Persist before any visual change (Req 2.1)
+    select.addEventListener('change', () => {
+      service.write(fightListId, select.value as PlayMode)
+    })
+
+    return wrapper
+  }
+
+  /**
+   * Enable or disable the Play Mode selector for a specific fight list.
+   * Called by session start/pause/stop handlers.
+   */
+  updatePlayModeSelectorState(fightListId: string, enabled: boolean): void {
+    const select = document.querySelector(
+      `#play-mode-select-${fightListId}`
+    ) as HTMLSelectElement | null
+    if (!select) return
+    if (enabled) {
+      select.removeAttribute('disabled')
+    } else {
+      select.setAttribute('disabled', '')
+    }
+  }
+
+  /**
    * Create a DOM element for a fight list
    */
   private createFightListElement(fightList: FightList, isCurrent: boolean): HTMLElement {
@@ -229,6 +287,14 @@ export class FightListUIManager {
     `
 
     this.attachFightListEventListeners(element, fightList)
+
+    // Mount Play Mode selector above the techniques section
+    const cardBody = element.querySelector(`#techniques-${fightList.id}`)
+    if (cardBody) {
+      const playModeSelector = this.renderPlayModeSelector(fightList.id)
+      cardBody.insertAdjacentElement('beforebegin', playModeSelector)
+    }
+
     return element
   }
 

@@ -22,6 +22,8 @@ import {
   WARNING_MESSAGES,
   STRATEGY_TYPES
 } from './constants'
+import { PlayMode } from './types/playMode'
+import { PlayModeSelectorService } from './services/PlayModeSelectorService'
 
 export class KravMagaTrainerApp {
   private techniqueManager: TechniqueManager
@@ -42,7 +44,7 @@ export class KravMagaTrainerApp {
     this.configManager = new ConfigManager()
     this.uiManager = new UIManager()
     this.fightListManager = new FightListManager()
-    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager, undefined, this.configManager)
+    this.fightListUIManager = new FightListUIManager(this.fightListManager, this.uiManager, undefined, this.configManager, this.sessionManager)
     this.migrationService = new MigrationService()
     this.voiceNoteService = new VoiceNoteService()
   }
@@ -423,8 +425,13 @@ export class KravMagaTrainerApp {
           return
         }
 
-        // Start session with fight list
-        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList)
+        // Start session with fight list — read play mode from selector or fall back to persisted value
+        const playModeSvc = new PlayModeSelectorService()
+        const playMode = (
+          document.querySelector(`#play-mode-select-${currentFightList.id}`) as HTMLSelectElement | null
+        )?.value as PlayMode ?? playModeSvc.read(currentFightList.id)
+        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList, playMode)
+        this.fightListUIManager.updatePlayModeSelectorState(currentFightList.id, false)
       } else {
         // No current fight list - show fallback prompt
         const modal = new ConfirmModal({
@@ -507,14 +514,22 @@ export class KravMagaTrainerApp {
         type: NOTIFICATION_TYPES.WARNING
       })
     }
+    // Keep selector locked during both paused and resumed states
+    const pausedFightList = this.fightListManager.getCurrentFightList()
+    if (pausedFightList) {
+      this.fightListUIManager.updatePlayModeSelectorState(pausedFightList.id, false)
+    }
     this.updateSessionUI()
   }
 
   private handleStopSession(): void {
+    const stoppedFightList = this.fightListManager.getCurrentFightList()
     this.sessionManager.stopSession()
     this.enableConfigurationControls()
     this.updateSessionUI()
-    
+    if (stoppedFightList) {
+      this.fightListUIManager.updatePlayModeSelectorState(stoppedFightList.id, true)
+    }
     // Clear current fight list from storage when session stops
     this.fightListManager.clearCurrentFightList();
     
@@ -526,9 +541,12 @@ export class KravMagaTrainerApp {
 
   private handleSessionComplete(): void {
     // Session completed naturally - behave exactly like Stop button was pressed
+    const completedFightList = this.fightListManager.getCurrentFightList()
     this.enableConfigurationControls()
     this.updateSessionUI()
-    
+    if (completedFightList) {
+      this.fightListUIManager.updatePlayModeSelectorState(completedFightList.id, true)
+    }
     // Clear current fight list from storage when session completes
     this.fightListManager.clearCurrentFightList();
     

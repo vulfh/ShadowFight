@@ -137,8 +137,6 @@ describe('SessionManager.playMode – Strategy execution E2E', () => {
 
   // ✅ Test 6-A-3: Ordered mode — cyclic progression [A, B, C, A, B, C]
   it('Ordered mode: selectAndSetNextTechnique cycles through 3-technique array in order', () => {
-    let index = 0
-
     const mockSessionManager = {
       isActive: true,
       isPaused: false,

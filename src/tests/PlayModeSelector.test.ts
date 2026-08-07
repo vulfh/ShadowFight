@@ -259,9 +259,6 @@ describe('PlayModeSelector', () => {
 
     const select = document.querySelector('.play-mode-selector__select') as HTMLSelectElement
 
-    // Get the computed style for the element
-    const computedStyle = window.getComputedStyle(select)
-
     // Note: getComputedStyle doesn't always reflect media query overrides in jsdom.
     // This test verifies the CSS rule exists in the stylesheet.
     // In a real browser, you would verify this in DevTools or via a visual test.

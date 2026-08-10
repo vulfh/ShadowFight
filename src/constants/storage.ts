@@ -52,7 +52,13 @@ export const STORAGE_KEYS = {
    * @type {string}
    * @constant
    */
-  PLAY_NOTES_ENABLED: 'kravMagaPlayNotesEnabled'
+  PLAY_NOTES_ENABLED: 'kravMagaPlayNotesEnabled',
+  /**
+   * Key for storing the selected Play Mode ('Random' | 'Unified Random' | 'Ordered' | 'Prioritized')
+   * @type {string}
+   * @constant
+   */
+  PLAY_MODE: 'kravMagaPlayMode'
 } as const;
 
 /**

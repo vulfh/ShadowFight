@@ -1,8 +1,11 @@
 // Strategy types
 export const STRATEGY_TYPES = {
-  RANDOM: 'random',
-  ROUND_ROBIN: 'roundRobin',
-  PRIORITY_BASED: 'priorityBased'
+  RANDOM:         'random',
+  ROUND_ROBIN:    'roundRobin',       // keep — backward compat
+  PRIORITY_BASED: 'priorityBased',   // keep — backward compat
+  UNIFIED_RANDOM: 'unifiedRandom',
+  ORDERED:        'ordered',
+  PRIORITIZED:    'prioritized'
 } as const
 
 // Technique categories

@@ -135,10 +135,11 @@ The tab is labelled **"Fight Test"** because that is what it represents to the u
 #### Acceptance Criteria
 
 1. WHEN the "Fight Test" tab is Active_Tab and the user presses Start, THE Session_Controller SHALL compute the Filter_Result and call `sessionManager.startSessionWithFightList(config, fightList, playMode)` using the Filter_Result as the technique list and the configured `shuffleMode` as the play mode.
-2. WHEN the "Fight Lists" tab is Active_Tab and the user presses Start, THE Session_Controller SHALL use the existing fight-list-based session start logic unchanged.
-3. WHEN the "Fight Test" tab is Active_Tab and the user presses Pause or Stop, THE Session_Controller SHALL pause or stop the currently running session — identical to the existing behaviour for Fight Lists.
-4. THE Start button SHALL be disabled (and an Inline_Validation_Error SHALL be shown adjacent to the Mode selector) if the user presses Start while the "Fight Test" tab is active and no Mode has been selected.
-5. IF the Filter_Result is empty when Start is pressed on the "Fight Test" tab, THEN THE Notification_Service SHALL display an error notification (type `'error'`) stating that no techniques match the current filters, and the session SHALL NOT start.
+2. THE Session_Controller SHALL pass `AdhocFightTest.mode` as the session mode so that the opening instruction audio is played at the start of the Fight Test session — identical to how a Fight List's `mode` triggers `instruction-for-performer.wav` (PERFORMING) or `instruction-for-responder.wav` (RESPONDING) via `INSTRUCTION_AUDIO_FILES[mode]`.
+3. WHEN the "Fight Lists" tab is Active_Tab and the user presses Start, THE Session_Controller SHALL use the existing fight-list-based session start logic unchanged.
+4. WHEN the "Fight Test" tab is Active_Tab and the user presses Pause or Stop, THE Session_Controller SHALL pause or stop the currently running session — identical to the existing behaviour for Fight Lists.
+5. THE Start button SHALL be disabled (and an Inline_Validation_Error SHALL be shown adjacent to the Mode selector) if the user presses Start while the "Fight Test" tab is active and no Mode has been selected.
+6. IF the Filter_Result is empty when Start is pressed on the "Fight Test" tab, THEN THE Notification_Service SHALL display an error notification (type `'error'`) stating that no techniques match the current filters, and the session SHALL NOT start.
 
 ---
 

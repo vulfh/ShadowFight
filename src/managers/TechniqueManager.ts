@@ -177,6 +177,12 @@ export class TechniqueManager {
           { name: 'Left Hand Knife Threat Blade To Throat', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
           { name: 'Right Hand Knife Threat To Right Neck', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
+          { name: 'Left Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-dkira-yashara-mehatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-dkira-yashara-mehatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+          { name: 'Left Defence Against Straight Attack From Side. Live Side', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-dkira-yashara-mehatsad-tsad-hay.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Defence Against Straight Attack From Side. Live Side', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-dkira-yashara-mehatsad-tsad-hay.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
           { name: 'Left Hand Knife Threat Blade To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-samin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
           { name: 'Right Hand Knife Threat Blade To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 

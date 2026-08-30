@@ -226,6 +226,10 @@ export class TechniqueManager {
           { name: 'Left Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'smol-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
           { name: 'Right Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'yamin-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
+          //Kick Defence
+
+          { name: 'Left External Defence Against Kick. Breakthrough', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-pritsa.wav', category: 'Defence', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right External Defence Against Kick. Breakthrough', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-pritsa.wav', category: 'Defence', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
      //Knee-Defence
           { name: 'Left Defend Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },

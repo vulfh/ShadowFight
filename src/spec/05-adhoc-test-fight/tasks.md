@@ -4,8 +4,8 @@
 
 ```
 Phase 1 (Tab Bar Infrastructure)
-  └─ 1.1 Types & Storage Key (2.1, 2.2)
-       └─ 1.2 FightTestService (2.3)
+  └─ ✅ 1.1 Types & Storage Key (2.1, 2.2)
+       └─ ✅ 1.2 FightTestService (2.3)
             └─ 1.3 AdhocFilterEngine (3.1)
                  └─ 1.4 FightTestFilterForm (4.1)
                       └─ 1.5 FightTestTabPane (4.2)
@@ -19,9 +19,9 @@ Phase 1 (Tab Bar Infrastructure)
 
 ## Phase 1 — Tab Bar Infrastructure
 
-### Task 1.1 — Add `FightTest` types and storage key
+### Task 1.1 — Add `FightTest` types and storage key — COMPLETED ✅
 
-- [ ] **1.1.1** In `src/types/index.ts`, add the `FightTest` interface:
+- [x] **1.1.1** In `src/types/index.ts`, add the `FightTest` interface:
   ```typescript
   export interface FightTest {
     id: string
@@ -33,31 +33,31 @@ Phase 1 (Tab Bar Infrastructure)
     shuffleMode: PlayMode
   }
   ```
-- [ ] **1.1.2** In `src/types/index.ts`, add the `FightTestFilterValues` type:
+- [x] **1.1.2** In `src/types/index.ts`, add the `FightTestFilterValues` type:
   ```typescript
   export type FightTestFilterValues = Omit<FightTest, 'id' | 'name'>
   ```
-- [ ] **1.1.3** In `src/constants/storage.ts`, add the `FIGHT_TEST` storage key:
+- [x] **1.1.3** In `src/constants/storage.ts`, add the `FIGHT_TEST` storage key:
   ```typescript
   FIGHT_TEST: 'kravMagaFightTest'
   ```
-- [ ] **1.1.4** Verify TypeScript compiles with no errors after the additions.
+- [x] **1.1.4** Verify TypeScript compiles with no errors after the additions.
 
 **Acceptance criteria:** Req 5.1, 5.3
 
 ---
 
-### Task 1.2 — Create `FightTestService`
+### Task 1.2 — Create `FightTestService` — COMPLETED ✅
 
-- [ ] **1.2.1** Create `src/services/FightTestService.ts`.
-- [ ] **1.2.2** Implement static constants:
+- [x] **1.2.1** Create `src/services/FightTestService.ts`.
+- [x] **1.2.2** Implement static constants:
   - `ADHOC_ID = 'adhoc'`
   - `ADHOC_NAME = 'Adhoc'`
   - `DEFAULT: Readonly<FightTest>` with all fields at their default values (`mode: null`, arrays empty, `side: null`, `shuffleMode: 'Random'`).
-- [ ] **1.2.3** Implement `read(): FightTest` — reads from `localStorage` using `FIGHT_TEST` key, validates that the parsed object has all required fields, returns `DEFAULT` on absence or corruption.
-- [ ] **1.2.4** Implement `write(ft: FightTest): void` — serialises to `localStorage`; swallows `SecurityError` silently.
-- [ ] **1.2.5** Implement `reset(): FightTest` — calls `write(DEFAULT)` and returns `DEFAULT`.
-- [ ] **1.2.6** Verify TypeScript compiles with no errors.
+- [x] **1.2.3** Implement `read(): FightTest` — reads from `localStorage` using `FIGHT_TEST` key, validates that the parsed object has all required fields, returns `DEFAULT` on absence or corruption.
+- [x] **1.2.4** Implement `write(ft: FightTest): void` — serialises to `localStorage`; swallows `SecurityError` silently.
+- [x] **1.2.5** Implement `reset(): FightTest` — calls `write(DEFAULT)` and returns `DEFAULT`.
+- [x] **1.2.6** Verify TypeScript compiles with no errors.
 
 **Acceptance criteria:** Req 5.2, 6.1–6.3, 6.5
 

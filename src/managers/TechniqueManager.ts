@@ -170,12 +170,39 @@ export class TechniqueManager {
 
           { name: 'Left Attacker Attacks From Side  Bottom Behind', modes: [MODES.RESPONDING], file: 'smol-tokef-me-ha-tsad-tkifat-sakin-meahor-me-lemata.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
           { name: 'Right Attacker Attacks From Side  Bottom Behind', modes: [MODES.RESPONDING], file: 'yamin-tokef-me-ha-tsad-tkifat-sakin-meahor-me-lemata.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
-          
+
+
+          { name: 'Left Attacker Attacks From Side. Straight Attack', modes: [MODES.RESPONDING], file: 'smol-tkifa-mehtsad-dkira-yashara.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
+          { name: 'Right Attacker Attacks From Side. Straight Attack', modes: [MODES.RESPONDING], file: 'yamin-tkifa-mehtsad-dkira-yashara.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
+
+
           { name: 'Right Hand Knife Threat To Left Neck Next to Wall', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
           { name: 'Left Hand Knife Threat To Right Neck Next To Wall', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-leorek-smol-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
 
           { name: 'Left Hand Knife Threat Blade To Throat', modes:[MODES.RESPONDING], file: 'smol-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
           { name: 'Right Hand Knife Threat To Right Neck', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-lahav-legurgoret-yad-kfufa-leyad-akir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
+          { name: 'Left Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-dkira-yashara-mehatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-dkira-yashara-mehatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+          { name: 'Left Defence Against Straight Attack From Side. Live Side', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-dkira-yashara-mehatsad-tsad-hay.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Defence Against Straight Attack From Side. Live Side', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-dkira-yashara-mehatsad-tsad-hay.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+
+          { name: 'Left Defence Against Oriental Knife Attack. Hands', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-dkira-mizrahit-yad.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
+          { name: 'Right Defence Against Oriental Knife Attack. Hands', modes: [MODES.PERFORMING], file: 'yamin-hagana-neged-dkira-mizrahit-yad.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
+
+          { name: 'Left Defence Against Straight Bottom Attack', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-dkira-yashara-nemuha.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
+          { name: 'Right Defence Against Straight Bottom Attack', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-dkira-yashara-nemuha.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
+
+          { name: 'Left Internal Defence Against Straight Attack From Side. Live Side', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-hay.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Straight Attack From Side. Live Side', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-hay.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+          { name: 'Left Internal Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+
+          //Knife Threats
 
           { name: 'Left Hand Knife Threat Blade To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-samin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
           { name: 'Right Hand Knife Threat Blade To Right Neck.Straight Hand', modes:[MODES.RESPONDING], file: 'yamin-iyum-sakin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
@@ -185,16 +212,24 @@ export class TechniqueManager {
 
 
           { name: 'Left Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'smol-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
-          { name: 'Right Hand Knife Oriental Back Attack', modes:[MODES.RESPONDING], file: 'yamin-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
-      
+          { name: 'Right Hand Knife Oriental Back Attack', modes: [MODES.RESPONDING], file: 'yamin-dkira-mizrahit-mi-ahor.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },
 
-      // Hand-Grip
+         
+
+          { name: 'Left Straight Bottom Attack', modes: [MODES.RESPONDING], file: 'smol-dkira-yashara-nemuha.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
+          { name: 'Right Straight Bottom Attack', modes: [MODES.RESPONDING], file: 'yamin-dkira-yashara-nemuha.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
+
+          // Hand-Grip
       { name: 'Left Hand Grip', modes:[MODES.RESPONDING], file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       { name: 'Right Hand Grip', modes:[MODES.RESPONDING], file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
       { name: 'Laying Both Hands Grip', modes: [MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
           { name: 'Left Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'smol-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
           { name: 'Right Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'yamin-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
+          //Kick Defence
+
+          { name: 'Left External Defence Against Kick. Breakthrough', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-pritsa.wav', category: 'Defence', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right External Defence Against Kick. Breakthrough', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-pritsa.wav', category: 'Defence', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
      //Knee-Defence
           { name: 'Left Defend Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },

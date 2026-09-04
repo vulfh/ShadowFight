@@ -8,7 +8,7 @@ Phase 1 (Tab Bar Infrastructure)
        └─ ✅ 1.2 FightTestService (2.3)
             └─ ✅ 1.3 AdhocFilterEngine (3.1)
                  └─ ✅ 1.4 FightTestFilterForm (4.1)
-                      └─ 1.5 FightTestTabPane (4.2)
+                      └─ ✅ 1.5 FightTestTabPane (4.2)
                            └─ 1.6 TabBar Component (1.1)
                                 └─ 1.7 HTML + FightListUIManager integration (1.2, 1.3, 4.3)
                                      └─ 1.8 app.ts session wiring (5.1–5.3)
@@ -102,23 +102,23 @@ Phase 1 (Tab Bar Infrastructure)
 
 ---
 
-### Task 1.5 — Create `FightTestTabPane`
+### Task 1.5 — Create `FightTestTabPane` — COMPLETED ✅
 
-- [ ] **1.5.1** Create `src/components/FightTestTabPane.ts`.
-- [ ] **1.5.2** Implement constructor accepting `service: FightTestService` and `catalogue: Technique[]`.
-- [ ] **1.5.3** Implement `mount(container: HTMLElement): void`:
+- [x] **1.5.1** Create `src/components/FightTestTabPane.ts`.
+- [x] **1.5.2** Implement constructor accepting `service: FightTestService` and `catalogue: Technique[]`.
+- [x] **1.5.3** Implement `mount(container: HTMLElement): void`:
   - Creates the outer pane `<div>` with an inner `formContainer` div and a `#ft-match-count` div.
   - Instantiates `FightTestFilterForm` and calls `form.mount(formContainer, onChange)`.
   - `onChange` handler: merges `FightTestService.ADHOC_ID`/`ADHOC_NAME` with the new values, calls `service.write(ft)`, calls `updateMatchCount(ft)`.
   - After mount: calls `form.populate(service.read())` and `updateMatchCount(service.read())`.
-- [ ] **1.5.4** Implement `updateMatchCount(ft: FightTest): void` (private):
+- [x] **1.5.4** Implement `updateMatchCount(ft: FightTest): void` (private):
   - `ft.mode === null` → `text-muted fst-italic`, text "Select a mode to see matches".
   - `count === 0` → `text-danger`, text "0 techniques matched".
   - `count > 0` → `text-success`, text `"${count} techniques matched"`.
-- [ ] **1.5.5** Implement `getElement(): HTMLElement` — returns the pane's root element (for registration with `TabBar`).
-- [ ] **1.5.6** Implement `getCurrentFightTest(): FightTest` — returns `{ id: ADHOC_ID, name: ADHOC_NAME, ...form.getValues() }`.
-- [ ] **1.5.7** Implement `showModeError(): void` and `clearModeError(): void` — delegate to the inner `FightTestFilterForm`.
-- [ ] **1.5.8** Verify TypeScript compiles with no errors.
+- [x] **1.5.5** Implement `getElement(): HTMLElement` — returns the pane's root element (for registration with `TabBar`).
+- [x] **1.5.6** Implement `getCurrentFightTest(): FightTest` — returns `{ id: ADHOC_ID, name: ADHOC_NAME, ...form.getValues() }`.
+- [x] **1.5.7** Implement `showModeError(): void` and `clearModeError(): void` — delegate to the inner `FightTestFilterForm`.
+- [x] **1.5.8** Verify TypeScript compiles with no errors.
 
 **Acceptance criteria:** Req 6.1–6.3, 11.1–11.7
 

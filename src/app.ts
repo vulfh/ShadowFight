@@ -1,4 +1,5 @@
 import { Technique,
+        FightList,
         SessionConfig, 
         NotificationOptions,
         FightListManagerCallbacks } from './types'
@@ -12,6 +13,7 @@ import { FightListUIManager } from './managers/FightListUIManager'
 import { MigrationService } from './services/MigrationService'
 import { VoiceNoteService } from './services/VoiceNoteService'
 import { ConfirmModal } from './components/ConfirmModal'
+import { AdhocFilterEngine } from './utils/AdhocFilterEngine'
 import { 
   UI_ELEMENTS, 
   NOTIFICATION_TYPES, 
@@ -409,88 +411,12 @@ export class KravMagaTrainerApp {
 
   private async handleStartSession(): Promise<void> {
     try {
-      const sessionConfig = this.configManager.getSessionConfig()
-      
-      // Get current fight list right before we need it to ensure we have the latest selection
-      const currentFightList = this.fightListManager.getCurrentFightList()
-
-      // Check if we have a current fight list
-      if (currentFightList) {
-        // Validate fight list has selected techniques
-        if (!this.sessionManager.isReadyToStartWithFightList(currentFightList)) {
-          this.showNotification({
-            message: `Please select at least one technique in ${currentFightList.name}`,
-            type: NOTIFICATION_TYPES.ERROR
-          })
-          return
-        }
-
-        // Start session with fight list — read play mode from selector or fall back to persisted value
-        const playModeSvc = new PlayModeSelectorService()
-        const playMode = (
-          document.querySelector(`#play-mode-select-${currentFightList.id}`) as HTMLSelectElement | null
-        )?.value as PlayMode ?? playModeSvc.read(currentFightList.id)
-        await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList, playMode)
-        this.fightListUIManager.updatePlayModeSelectorState(currentFightList.id, false)
+      const activeTab = this.fightListUIManager.getTabBar().getActiveTabId()
+      if (activeTab === 'fight-test') {
+        await this.handleStartFightTestSession()
       } else {
-        // No current fight list - show fallback prompt
-        const modal = new ConfirmModal({
-          title: 'No Fight List Selected',
-          message: 'There is no selected fight list. Do you want to run over all available techniques?',
-          confirmButtonText: 'Use All Techniques',
-          cancelButtonText: 'Cancel',
-          confirmButtonClass: 'primary',
-          onConfirm: async () => {
-            // Validate regular session
-            if (!this.sessionManager.isReadyToStart(sessionConfig)) {
-              this.showNotification({
-                message: ERROR_MESSAGES.CONFIGURE_SESSION,
-                type: NOTIFICATION_TYPES.ERROR
-              })
-              return
-            }
-
-            // Start regular session with all techniques
-            await this.sessionManager.startSession(sessionConfig)
-            
-            // Update UI to reflect session state
-            this.updateSessionUI()
-            this.disableConfigurationControls()
-
-            // Start the technique announcement loop (no instruction audio for regular sessions)
-            this.startTechniqueAnnouncementLoop(sessionConfig)
-
-            this.showNotification({
-              message: SUCCESS_MESSAGES.SESSION_STARTED,
-              type: NOTIFICATION_TYPES.SUCCESS
-            })
-          },
-          onCancel: () => {
-            this.showNotification({
-              message: 'Please select a fight list first',
-              type: NOTIFICATION_TYPES.INFO
-            })
-          }
-        })
-        modal.show()
-        return
+        await this.handleStartFightListSession()
       }
-
-      // Update UI to reflect session state
-      this.updateSessionUI()
-      this.disableConfigurationControls()
-
-      // Start the technique announcement loop only if no instruction audio is playing
-      // If instruction audio is playing, the loop will be started by the completion callback
-      if (!this.sessionManager.isPlayingInstructionAudio() && !this.sessionManager.isWaitingForInstructionCompletion()) {
-        this.startTechniqueAnnouncementLoop(sessionConfig)
-      }
-
-      this.showNotification({
-        message: SUCCESS_MESSAGES.SESSION_STARTED,
-        type: NOTIFICATION_TYPES.SUCCESS
-      })
-
     } catch (error) {
       console.error('Failed to start session:', error)
       this.showNotification({
@@ -498,6 +424,127 @@ export class KravMagaTrainerApp {
         type: NOTIFICATION_TYPES.ERROR
       })
     }
+  }
+
+  /** 1.8.1 — extracted fight-list branch; zero behaviour change. */
+  private async handleStartFightListSession(): Promise<void> {
+    const sessionConfig = this.configManager.getSessionConfig()
+    const currentFightList = this.fightListManager.getCurrentFightList()
+
+    if (currentFightList) {
+      if (!this.sessionManager.isReadyToStartWithFightList(currentFightList)) {
+        this.showNotification({
+          message: `Please select at least one technique in ${currentFightList.name}`,
+          type: NOTIFICATION_TYPES.ERROR
+        })
+        return
+      }
+
+      const playModeSvc = new PlayModeSelectorService()
+      const playMode = (
+        document.querySelector(`#play-mode-select-${currentFightList.id}`) as HTMLSelectElement | null
+      )?.value as PlayMode ?? playModeSvc.read(currentFightList.id)
+      await this.sessionManager.startSessionWithFightList(sessionConfig, currentFightList, playMode)
+      this.fightListUIManager.updatePlayModeSelectorState(currentFightList.id, false)
+    } else {
+      const modal = new ConfirmModal({
+        title: 'No Fight List Selected',
+        message: 'There is no selected fight list. Do you want to run over all available techniques?',
+        confirmButtonText: 'Use All Techniques',
+        cancelButtonText: 'Cancel',
+        confirmButtonClass: 'primary',
+        onConfirm: async () => {
+          if (!this.sessionManager.isReadyToStart(sessionConfig)) {
+            this.showNotification({
+              message: ERROR_MESSAGES.CONFIGURE_SESSION,
+              type: NOTIFICATION_TYPES.ERROR
+            })
+            return
+          }
+          await this.sessionManager.startSession(sessionConfig)
+          this.updateSessionUI()
+          this.disableConfigurationControls()
+          this.startTechniqueAnnouncementLoop(sessionConfig)
+          this.showNotification({
+            message: SUCCESS_MESSAGES.SESSION_STARTED,
+            type: NOTIFICATION_TYPES.SUCCESS
+          })
+        },
+        onCancel: () => {
+          this.showNotification({
+            message: 'Please select a fight list first',
+            type: NOTIFICATION_TYPES.INFO
+          })
+        }
+      })
+      modal.show()
+      return
+    }
+
+    this.updateSessionUI()
+    this.disableConfigurationControls()
+
+    if (!this.sessionManager.isPlayingInstructionAudio() && !this.sessionManager.isWaitingForInstructionCompletion()) {
+      this.startTechniqueAnnouncementLoop(sessionConfig)
+    }
+
+    this.showNotification({
+      message: SUCCESS_MESSAGES.SESSION_STARTED,
+      type: NOTIFICATION_TYPES.SUCCESS
+    })
+  }
+
+  /** 1.8.3 — Adhoc Fight Test session path. */
+  private async handleStartFightTestSession(): Promise<void> {
+    const ft = this.fightListUIManager.getFightTestTabPane().getCurrentFightTest()
+
+    // Validate mode selected
+    if (ft.mode === null) {
+      this.fightListUIManager.getFightTestTabPane().showModeError()
+      return
+    }
+
+    // Filter catalogue
+    const techniques = AdhocFilterEngine.filter(this.techniqueManager.getTechniques(), ft)
+
+    // Validate at least one match
+    if (techniques.length === 0) {
+      this.showNotification({
+        message: 'No techniques match the selected filters. Adjust your filters and try again.',
+        type: NOTIFICATION_TYPES.ERROR
+      })
+      return
+    }
+
+    // Build synthetic fight list from filtered techniques
+    const syntheticFightList: FightList = {
+      id: ft.id,
+      name: ft.name,
+      mode: ft.mode,
+      techniques: techniques.map((t, idx) => ({
+        id: `adhoc-${idx}`,
+        techniqueId: t.name,
+        priority: 3,
+        selected: true,
+      })),
+      createdAt: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+    }
+
+    const sessionConfig = this.configManager.getSessionConfig()
+    await this.sessionManager.startSessionWithFightList(sessionConfig, syntheticFightList, ft.shuffleMode)
+
+    this.updateSessionUI()
+    this.disableConfigurationControls()
+
+    if (!this.sessionManager.isPlayingInstructionAudio() && !this.sessionManager.isWaitingForInstructionCompletion()) {
+      this.startTechniqueAnnouncementLoop(sessionConfig)
+    }
+
+    this.showNotification({
+      message: SUCCESS_MESSAGES.SESSION_STARTED,
+      type: NOTIFICATION_TYPES.SUCCESS
+    })
   }
 
   private handlePauseSession(): void {
@@ -638,6 +685,9 @@ export class KravMagaTrainerApp {
     if (delaySlider) delaySlider.disabled = true
     if (volumeSlider) volumeSlider.disabled = true
     if (timeConfigForm) timeConfigForm.style.pointerEvents = 'none'
+
+    // 1.8.4 — lock tab switching during session
+    this.fightListUIManager.getTabBar().setDisabled(true)
   }
 
   private enableConfigurationControls(): void {
@@ -650,6 +700,9 @@ export class KravMagaTrainerApp {
     if (delaySlider) delaySlider.disabled = false
     if (volumeSlider) volumeSlider.disabled = false
     if (timeConfigForm) timeConfigForm.style.pointerEvents = 'auto'
+
+    // 1.8.5 — unlock tab switching after session
+    this.fightListUIManager.getTabBar().setDisabled(false)
   }
 
   private async startTechniqueAnnouncementLoop(config: SessionConfig): Promise<void> {

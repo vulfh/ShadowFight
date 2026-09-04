@@ -11,7 +11,7 @@ Phase 1 (Tab Bar Infrastructure)
                       └─ ✅ 1.5 FightTestTabPane (4.2)
                            └─ ✅ 1.6 TabBar Component (1.1)
                                 └─ ✅ 1.7 HTML + FightListUIManager integration (1.2, 1.3, 4.3)
-                                     └─ 1.8 app.ts session wiring (5.1–5.3)
+                                     └─ ✅ 1.8 app.ts session wiring (5.1–5.3)
                                           └─ 1.9 Tests (2.4, 3.2, all PBT)
 ```
 
@@ -175,10 +175,10 @@ Phase 1 (Tab Bar Infrastructure)
 
 ---
 
-### Task 1.8 — Wire session start in `app.ts`
+### Task 1.8 — Wire session start in `app.ts` — COMPLETED ✅
 
-- [ ] **1.8.1** Extract the existing fight-list branch of `handleStartSession()` into a private method `handleStartFightListSession()` — pure extraction, zero behaviour change.
-- [ ] **1.8.2** Update `handleStartSession()` to query the active tab:
+- [x] **1.8.1** Extract the existing fight-list branch of `handleStartSession()` into a private method `handleStartFightListSession()` — pure extraction, zero behaviour change.
+- [x] **1.8.2** Update `handleStartSession()` to query the active tab:
   ```typescript
   const activeTab = this.tabBar.getActiveTabId()
   if (activeTab === 'fight-test') {
@@ -187,7 +187,7 @@ Phase 1 (Tab Bar Infrastructure)
     await this.handleStartFightListSession()
   }
   ```
-- [ ] **1.8.3** Implement `handleStartFightTestSession()`:
+- [x] **1.8.3** Implement `handleStartFightTestSession()`:
   - Reads `getCurrentFightTest()` from `FightTestTabPane`.
   - Validates `ft.mode !== null`; if null → calls `fightTestTabPane.showModeError()` and returns.
   - Calls `AdhocFilterEngine.filter(catalogue, ft)`.
@@ -197,10 +197,10 @@ Phase 1 (Tab Bar Infrastructure)
   - Calls `this.updateSessionUI()` and `this.disableConfigurationControls()`.
   - Starts `startTechniqueAnnouncementLoop` if instruction audio is not playing.
   - Shows success notification.
-- [ ] **1.8.4** In `disableConfigurationControls()`, add `this.tabBar.setDisabled(true)`.
-- [ ] **1.8.5** In `enableConfigurationControls()`, add `this.tabBar.setDisabled(false)`.
-- [ ] **1.8.6** Add `fightTestTabPane.clearModeError()` call in the onChange path (e.g. via `FightTestTabPane` internal wiring already handles this via `FightTestFilterForm.clearModeError()`; verify the wiring is complete).
-- [ ] **1.8.7** Verify TypeScript compiles with no errors.
+- [x] **1.8.4** In `disableConfigurationControls()`, add `this.tabBar.setDisabled(true)`.
+- [x] **1.8.5** In `enableConfigurationControls()`, add `this.tabBar.setDisabled(false)`.
+- [x] **1.8.6** Add `fightTestTabPane.clearModeError()` call in the onChange path (e.g. via `FightTestTabPane` internal wiring already handles this via `FightTestFilterForm.clearModeError()`; verify the wiring is complete).
+- [x] **1.8.7** Verify TypeScript compiles with no errors.
 
 **Acceptance criteria:** Req 7.1–7.6, 8.1–8.4, 10.4
 

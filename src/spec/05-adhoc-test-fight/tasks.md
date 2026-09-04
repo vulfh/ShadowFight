@@ -10,7 +10,7 @@ Phase 1 (Tab Bar Infrastructure)
                  └─ ✅ 1.4 FightTestFilterForm (4.1)
                       └─ ✅ 1.5 FightTestTabPane (4.2)
                            └─ ✅ 1.6 TabBar Component (1.1)
-                                └─ 1.7 HTML + FightListUIManager integration (1.2, 1.3, 4.3)
+                                └─ ✅ 1.7 HTML + FightListUIManager integration (1.2, 1.3, 4.3)
                                      └─ 1.8 app.ts session wiring (5.1–5.3)
                                           └─ 1.9 Tests (2.4, 3.2, all PBT)
 ```
@@ -157,19 +157,19 @@ Phase 1 (Tab Bar Infrastructure)
 
 ---
 
-### Task 1.7 — Update `index.html` and `FightListUIManager`
+### Task 1.7 — Update `index.html` and `FightListUIManager` — COMPLETED ✅
 
-- [ ] **1.7.1** In `index.html`, add `<div id="training-tab-bar"></div>` immediately after the `.session-controls` div inside the Training panel card.
-- [ ] **1.7.2** In `index.html`, remove the standalone Fight Lists column (`col-12 col-lg-4` wrapper containing `id="fightListContainer"` or equivalent) from the main row layout.
-- [ ] **1.7.3** In `src/managers/FightListUIManager.ts`, update `init()`:
+- [x] **1.7.1** In `index.html`, add `<div id="training-tab-bar"></div>` immediately after the `.session-controls` div inside the Training panel card.
+- [x] **1.7.2** In `index.html`, remove the standalone Fight Lists column (`col-12 col-lg-4` wrapper containing `id="fightListContainer"` or equivalent) from the main row layout.
+- [x] **1.7.3** In `src/managers/FightListUIManager.ts`, update `init()`:
   - Create a wrapper `<div id="fight-lists-tab-pane">` and move all existing fight-list DOM content into it.
   - Instantiate `FightTestService` and `FightTestTabPane`.
   - Call `ftPane.mount(ftPaneContainer)`.
   - Instantiate `TabBar` with two entries: `{ id: 'fight-lists', label: 'Fight Lists', icon: 'fa-list-ul', paneElement: fightListsWrapper }` and `{ id: 'fight-test', label: 'Fight Test', icon: 'fa-flask', paneElement: ftPane.getElement() }`.
   - Store `tabBar` and `ftPane` as fields.
-- [ ] **1.7.4** In `FightListUIManager`, expose `getTabBar(): TabBar` and `getFightTestTabPane(): FightTestTabPane`.
-- [ ] **1.7.5** Verify the existing Fight Lists workflow still renders correctly in the browser (manual smoke test).
-- [ ] **1.7.6** Verify TypeScript compiles with no errors.
+- [x] **1.7.4** In `FightListUIManager`, expose `getTabBar(): TabBar` and `getFightTestTabPane(): FightTestTabPane`.
+- [x] **1.7.5** Verify the existing Fight Lists workflow still renders correctly in the browser (manual smoke test).
+- [x] **1.7.6** Verify TypeScript compiles with no errors.
 
 **Acceptance criteria:** Req 1.1–1.7, 2.1–2.3, 4.3 (tab registration)
 

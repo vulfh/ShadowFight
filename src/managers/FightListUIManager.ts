@@ -20,6 +20,9 @@ import { TechniqueManager } from './TechniqueManager'
 import { VoiceNoteService } from '../services/VoiceNoteService'
 import { PlayModeSelectorService } from '../services/PlayModeSelectorService'
 import { PlayMode, PLAY_MODES } from '../types/playMode'
+import { TabBar } from '../components/TabBar'
+import { FightTestTabPane } from '../components/FightTestTabPane'
+import { FightTestService } from '../services/FightTestService'
 
 /**
  * Manages the UI components and interactions for fight lists
@@ -40,6 +43,10 @@ export class FightListUIManager {
   // Event flow callbacks
   private managerCallbacks: FightListManagerCallbacks | null = null
   private voiceNoteService: VoiceNoteService
+
+  // TabBar + FightTestTabPane — wired during init()
+  private tabBar: TabBar | null = null
+  private fightTestTabPane: FightTestTabPane | null = null
 
   constructor(
     private readonly fightListManager: FightListManager,
@@ -62,6 +69,7 @@ export class FightListUIManager {
       this.setupEventListeners()
       this.setupResponsiveHandling()
       await this.renderFightLists()
+      this.initTabBar()
       this.isInitialized = true
     } catch (error) {
       console.error('Failed to initialize FightListUIManager:', error)
@@ -74,6 +82,64 @@ export class FightListUIManager {
    */
   setManagerCallbacks(callbacks: FightListManagerCallbacks): void {
     this.managerCallbacks = callbacks
+  }
+
+  /**
+   * Returns the TabBar instance (available after init()).
+   */
+  getTabBar(): TabBar {
+    if (!this.tabBar) throw new Error('TabBar not initialised — call init() first')
+    return this.tabBar
+  }
+
+  /**
+   * Returns the FightTestTabPane instance (available after init()).
+   */
+  getFightTestTabPane(): FightTestTabPane {
+    if (!this.fightTestTabPane) throw new Error('FightTestTabPane not initialised — call init() first')
+    return this.fightTestTabPane
+  }
+
+  /**
+   * Builds the TabBar with two panes and mounts it into #training-tab-bar.
+   * Called once by init() after renderFightLists().
+   */
+  private initTabBar(): void {
+    const anchor = document.getElementById('training-tab-bar')
+    if (!anchor) return // guard for environments without the full HTML
+
+    // Wrap existing fightListContainer in a pane div
+    const fightListsWrapper = document.createElement('div')
+    fightListsWrapper.id = 'fight-lists-tab-pane'
+    const fightListContainer = document.getElementById('fightListContainer')
+    if (fightListContainer) {
+      fightListsWrapper.appendChild(fightListContainer)
+    }
+
+    // Build FightTestTabPane
+    const catalogue = this.techniqueManager.isReady()
+      ? this.techniqueManager.getTechniques()
+      : []
+    const ftPane = new FightTestTabPane(FightTestService, catalogue)
+    const ftPaneContainer = document.createElement('div')
+    ftPane.mount(ftPaneContainer)
+    this.fightTestTabPane = ftPane
+
+    // Build TabBar
+    this.tabBar = new TabBar(anchor, [
+      {
+        id: 'fight-lists',
+        label: 'Fight Lists',
+        icon: 'fa-list-ul',
+        paneElement: fightListsWrapper,
+      },
+      {
+        id: 'fight-test',
+        label: 'Fight Test',
+        icon: 'fa-flask',
+        paneElement: ftPane.getElement(),
+      },
+    ])
   }
 
   /**

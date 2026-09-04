@@ -6,8 +6,8 @@
 Phase 1 (Tab Bar Infrastructure)
   └─ ✅ 1.1 Types & Storage Key (2.1, 2.2)
        └─ ✅ 1.2 FightTestService (2.3)
-            └─ 1.3 AdhocFilterEngine (3.1)
-                 └─ 1.4 FightTestFilterForm (4.1)
+            └─ ✅ 1.3 AdhocFilterEngine (3.1)
+                 └─ ✅ 1.4 FightTestFilterForm (4.1)
                       └─ 1.5 FightTestTabPane (4.2)
                            └─ 1.6 TabBar Component (1.1)
                                 └─ 1.7 HTML + FightListUIManager integration (1.2, 1.3, 4.3)
@@ -63,26 +63,26 @@ Phase 1 (Tab Bar Infrastructure)
 
 ---
 
-### Task 1.3 — Create `AdhocFilterEngine`
+### Task 1.3 — Create `AdhocFilterEngine` — COMPLETED ✅
 
-- [ ] **1.3.1** Create `src/utils/AdhocFilterEngine.ts`.
-- [ ] **1.3.2** Implement static method `filter(catalogue: Technique[], ft: FightTest): Technique[]` applying the four filter dimensions in order:
+- [x] **1.3.1** Create `src/utils/AdhocFilterEngine.ts`.
+- [x] **1.3.2** Implement static method `filter(catalogue: Technique[], ft: FightTest): Technique[]` applying the four filter dimensions in order:
   1. Mode — `t.modes?.includes(ft.mode!)` (caller ensures `ft.mode` is non-null).
   2. Target levels — skip if `ft.targetLevels` is empty; otherwise `ft.targetLevels.includes(t.targetLevel)`.
   3. Categories — skip if `ft.categories` is empty; otherwise `ft.categories.includes(t.category)`.
   4. Side — skip if `ft.side` is `null` or `'BOTH'`; otherwise `t.side === ft.side`.
-- [ ] **1.3.3** Ensure method has no side effects, no DOM references, and no state.
-- [ ] **1.3.4** Verify TypeScript compiles with no errors.
+- [x] **1.3.3** Ensure method has no side effects, no DOM references, and no state.
+- [x] **1.3.4** Verify TypeScript compiles with no errors.
 
 **Acceptance criteria:** Req 4.1–4.3, 11.3
 
 ---
 
-### Task 1.4 — Create `FightTestFilterForm`
+### Task 1.4 — Create `FightTestFilterForm` — COMPLETED ✅
 
-- [ ] **1.4.1** Create `src/components/FightTestFilterForm.ts`.
-- [ ] **1.4.2** Implement constructor accepting `catalogue: Technique[]`.
-- [ ] **1.4.3** Implement `mount(container: HTMLElement, onChange: (values: FightTestFilterValues) => void): void` — renders the full filter form HTML using Bootstrap 5 only:
+- [x] **1.4.1** Create `src/components/FightTestFilterForm.ts`.
+- [x] **1.4.2** Implement constructor accepting `catalogue: Technique[]`.
+- [x] **1.4.3** Implement `mount(container: HTMLElement, onChange: (values: FightTestFilterValues) => void): void` — renders the full filter form HTML using Bootstrap 5 only:
   - Mode toggle group (`btn-group` with two radio `btn-check` inputs, `min-height: 44px`).
   - Target Levels multi-select toggle group (one `btn-check` per `TargetLevel` value from constants).
   - Categories multi-select toggle group (one `btn-check` per `TechniqueCategory` value from constants).
@@ -91,12 +91,12 @@ Phase 1 (Tab Bar Infrastructure)
   - Mode error `<div id="ft-mode-error" class="invalid-feedback">` adjacent to the Mode selector.
   - All interactive elements set to `min-height: 44px` for touch targets (Req 3.7, 9.3).
   - Attach change listeners to each control; each fires `onChange(this.getValues())`.
-- [ ] **1.4.4** Implement `populate(values: FightTestFilterValues): void` — sets every control to reflect the passed values (Mode radio, Target Levels checkboxes, Category checkboxes, Side radio, Shuffle Mode select).
-- [ ] **1.4.5** Implement `getValues(): FightTestFilterValues` — reads current control state and returns a snapshot with no side effects.
-- [ ] **1.4.6** Implement `showModeError(): void` — adds `is-invalid` class to the mode `btn-group` wrapper and makes `#ft-mode-error` visible.
-- [ ] **1.4.7** Implement `clearModeError(): void` — removes `is-invalid` and hides the error element.
-- [ ] **1.4.8** Add accessibility attributes: `role="group"` and `aria-label` on each toggle group; `aria-required="true"` on the Mode group.
-- [ ] **1.4.9** Verify TypeScript compiles with no errors.
+- [x] **1.4.4** Implement `populate(values: FightTestFilterValues): void` — sets every control to reflect the passed values (Mode radio, Target Levels checkboxes, Category checkboxes, Side radio, Shuffle Mode select).
+- [x] **1.4.5** Implement `getValues(): FightTestFilterValues` — reads current control state and returns a snapshot with no side effects.
+- [x] **1.4.6** Implement `showModeError(): void` — adds `is-invalid` class to the mode `btn-group` wrapper and makes `#ft-mode-error` visible.
+- [x] **1.4.7** Implement `clearModeError(): void` — removes `is-invalid` and hides the error element.
+- [x] **1.4.8** Add accessibility attributes: `role="group"` and `aria-label` on each toggle group; `aria-required="true"` on the Mode group.
+- [x] **1.4.9** Verify TypeScript compiles with no errors.
 
 **Acceptance criteria:** Req 3.1–3.8, 8.1–8.2, 9.2–9.4
 

@@ -12,8 +12,13 @@ Phase 1 (Tab Bar Infrastructure)
                            └─ ✅ 1.6 TabBar Component (1.1)
                                 └─ ✅ 1.7 HTML + FightListUIManager integration (1.2, 1.3, 4.3)
                                      └─ ✅ 1.8 app.ts session wiring (5.1–5.3)
-                                          └─ 1.9 Tests (2.4, 3.2, all PBT)
+                                          └─ ✅ 1.9 Tests (2.4, 3.2, all PBT)
 ```
+
+### Task 1.9 — Tests — COMPLETED ✅
+
+- [x] Implemented automated unit tests and property-based checks for AdhocFilterEngine and FightTestService. Ran targeted tests: src/tests/AdhocFilterEngine.test.ts, src/tests/FightTestService.test.ts.
+
 
 ---
 

@@ -9,7 +9,7 @@ Phase 1 (Tab Bar Infrastructure)
             └─ ✅ 1.3 AdhocFilterEngine (3.1)
                  └─ ✅ 1.4 FightTestFilterForm (4.1)
                       └─ ✅ 1.5 FightTestTabPane (4.2)
-                           └─ 1.6 TabBar Component (1.1)
+                           └─ ✅ 1.6 TabBar Component (1.1)
                                 └─ 1.7 HTML + FightListUIManager integration (1.2, 1.3, 4.3)
                                      └─ 1.8 app.ts session wiring (5.1–5.3)
                                           └─ 1.9 Tests (2.4, 3.2, all PBT)
@@ -124,10 +124,10 @@ Phase 1 (Tab Bar Infrastructure)
 
 ---
 
-### Task 1.6 — Create `TabBar` component
+### Task 1.6 — Create `TabBar` component — COMPLETED ✅
 
-- [ ] **1.6.1** Create `src/components/TabBar.ts`.
-- [ ] **1.6.2** Define `TabConfig` interface:
+- [x] **1.6.1** Create `src/components/TabBar.ts`.
+- [x] **1.6.2** Define `TabConfig` interface:
   ```typescript
   interface TabConfig {
     id: string
@@ -137,21 +137,21 @@ Phase 1 (Tab Bar Infrastructure)
     onActivate?: (id: string) => void
   }
   ```
-- [ ] **1.6.3** Implement `constructor(containerEl: HTMLElement, tabs: TabConfig[])`:
+- [x] **1.6.3** Implement `constructor(containerEl: HTMLElement, tabs: TabConfig[])`:
   - Renders `<ul class="nav nav-tabs" role="tablist">` with one `<li role="presentation">` + `<button role="tab">` per tab.
   - Renders `<div class="tab-content">` with one `<div role="tabpanel">` per tab, inserting each `TabConfig.paneElement`.
   - Activates the first tab by default (adds `active`/`aria-selected="true"`; shows first pane, hides others).
   - Attaches click listeners that call the private `activate(id)` method.
-- [ ] **1.6.4** Implement `getActiveTabId(): string` — returns the currently active tab id.
-- [ ] **1.6.5** Implement `setDisabled(disabled: boolean): void`:
+- [x] **1.6.4** Implement `getActiveTabId(): string` — returns the currently active tab id.
+- [x] **1.6.5** Implement `setDisabled(disabled: boolean): void`:
   - `true` → adds `pe-none opacity-50` to the `<ul>`; sets `aria-disabled="true"` on each tab button.
   - `false` → removes those classes/attributes.
-- [ ] **1.6.6** Implement private `activate(id: string): void`:
+- [x] **1.6.6** Implement private `activate(id: string): void`:
   - Iterates all registered tabs, applies `active`/`aria-selected` to the target tab, removes from all others.
   - Shows/hides corresponding pane elements.
   - Calls `onActivate(id)` for the activated tab config if provided.
-- [ ] **1.6.7** Add full ARIA: `role="tablist"` on `<ul>`, `role="tab"` + `aria-controls` + `aria-selected` on each button, `role="tabpanel"` + `aria-labelledby` on each pane.
-- [ ] **1.6.8** Verify TypeScript compiles with no errors.
+- [x] **1.6.7** Add full ARIA: `role="tablist"` on `<ul>`, `role="tab"` + `aria-controls` + `aria-selected` on each button, `role="tabpanel"` + `aria-labelledby` on each pane.
+- [x] **1.6.8** Verify TypeScript compiles with no errors.
 
 **Acceptance criteria:** Req 1.1–1.8, 10.1–10.4
 

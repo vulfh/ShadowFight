@@ -116,7 +116,7 @@ export class FightListUIManager {
     toolbar.className = 'fight-lists-toolbar d-flex justify-content-end align-items-center px-2 py-2 border-bottom'
     toolbar.innerHTML = `
       <button type="button" class="btn btn-primary btn-sm" id="newFightListBtn" title="New Fight List">
-        <i class="fas fa-plus me-1"></i>New List
+        <i class="fas fa-plus me-1"></i>New Fight List
       </button>
     `
     fightListsWrapper.appendChild(toolbar)

@@ -111,6 +111,19 @@ export class FightListUIManager {
     // Wrap existing fightListContainer in a pane div
     const fightListsWrapper = document.createElement('div')
     fightListsWrapper.id = 'fight-lists-tab-pane'
+
+    const toolbar = document.createElement('div')
+    toolbar.className = 'fight-lists-toolbar d-flex justify-content-end align-items-center px-2 py-2 border-bottom'
+    toolbar.innerHTML = `
+      <button type="button" class="btn btn-primary btn-sm" id="newFightListBtn" title="New Fight List">
+        <i class="fas fa-plus me-1"></i>New List
+      </button>
+    `
+    fightListsWrapper.appendChild(toolbar)
+    toolbar.querySelector('#newFightListBtn')?.addEventListener('click', () => {
+      this.showCreateFightListModal()
+    })
+
     const fightListContainer = document.getElementById('fightListContainer')
     if (fightListContainer) {
       fightListsWrapper.appendChild(fightListContainer)
@@ -324,25 +337,27 @@ export class FightListUIManager {
       </span>` : ''
     
     element.innerHTML = `
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">
-          <button class="btn btn-link text-decoration-none" type="button">
-            <i class="fas fa-chevron-${isExpanded ? 'down' : 'right'} me-2"></i>
-            ${fightList.name}
-          </button>
-          ${modeBadge}
-        </h5>
-        <div class="btn-group">
-          ${isCurrent ? 
-            '<span class="badge bg-success me-2">Current</span>' : 
-            '<button class="btn btn-sm btn-outline-primary set-current">Set Current</button>'}
-          <button class="btn btn-sm btn-outline-secondary edit">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-danger delete">
-            <i class="fas fa-trash"></i>
-          </button>
+      <div class="card-header fight-list-card-header">
+        <div class="fight-list-card-header__row d-flex justify-content-between align-items-center gap-2">
+          <h5 class="mb-0 fight-list-card-header__title flex-grow-1 min-w-0">
+            <button class="btn btn-link text-decoration-none fight-list-card-header__toggle p-0" type="button">
+              <i class="fas fa-chevron-${isExpanded ? 'down' : 'right'} me-1"></i>
+              <span class="fight-list-card-header__name">${fightList.name}</span>
+            </button>
+          </h5>
+          <div class="btn-group fight-list-card-header__actions flex-shrink-0">
+            ${isCurrent ?
+              '<span class="badge bg-success">Current</span>' :
+              '<button class="btn btn-sm btn-outline-primary set-current" title="Set Current"><span class="set-current-label">Set</span></button>'}
+            <button class="btn btn-sm btn-outline-secondary edit" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
         </div>
+        ${modeBadge ? `<div class="fight-list-card-header__badges mt-1">${modeBadge}</div>` : ''}
       </div>
       <div class="card-body collapse ${isExpanded ? 'show' : ''}" id="techniques-${fightList.id}">
         ${this.renderTechniquesList(fightList.techniques, fightList.mode)}

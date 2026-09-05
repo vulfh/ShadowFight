@@ -357,6 +357,15 @@ footer {
     padding: 12px;
   }
 
+  /* Compact exceptions — card/toolbar controls must not inherit 44px sizing */
+  .card-header .btn-group .btn,
+  .fight-list-card-header__actions .btn,
+  .fight-lists-toolbar .btn {
+    min-height: unset;
+    min-width: unset;
+    padding: 0.25rem 0.5rem;
+  }
+
   .form-range {
     height: var(--touch-target-size);
   }

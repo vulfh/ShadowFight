@@ -1381,7 +1381,7 @@
 .play-mode-selector__label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #495057;
   white-space: nowrap;
   letter-spacing: 0.3px;
 }
@@ -1422,5 +1422,114 @@
 @media (prefers-reduced-motion: reduce) {
   .play-mode-selector__select {
     transition: none;
+  }
+}
+
+/* ============================================================
+   Training Tab Bar (Fight Lists / Fight Test)
+   ============================================================ */
+
+#training-tab-bar .nav-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  border-bottom: 2px solid #dee2e6;
+}
+
+#training-tab-bar .nav-tabs .nav-item {
+  flex: 1;
+}
+
+#training-tab-bar .nav-tabs .nav-link {
+  width: 100%;
+  text-align: center;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.25rem;
+  white-space: nowrap;
+}
+
+#training-tab-bar .tab-content {
+  max-height: none;
+}
+
+.fight-lists-toolbar .btn {
+  min-width: unset;
+}
+
+/* ============================================================
+   Fight List Card — mobile-friendly header layout
+   ============================================================ */
+
+.fight-list-card-header__title {
+  overflow: hidden;
+}
+
+.fight-list-card-header__name {
+  word-break: break-word;
+}
+
+.fight-list-card-header__actions .btn {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.4rem;
+}
+
+.fight-list-card-header__badges .badge {
+  font-size: 0.7rem;
+}
+
+@media (max-width: 767px) {
+  #training-tab-bar .nav-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #fff;
+  }
+
+  #training-tab-bar .nav-tabs .nav-link {
+    font-size: 0.8rem;
+    padding: 0.625rem 0.25rem;
+  }
+
+  .fight-list-container {
+    padding: 0.25rem;
+  }
+
+  .fight-list-item .card-header {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .fight-list-card-header__row {
+    align-items: flex-start;
+  }
+
+  .play-mode-selector {
+    flex-wrap: wrap;
+    padding: 0.5rem 0.75rem;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .play-mode-selector__select {
+    max-width: none;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .fight-lists-toolbar {
+    position: sticky;
+    top: 2.75rem;
+    z-index: 15;
+    background: #fff;
+  }
+
+  .fight-lists-toolbar .btn {
+    min-height: unset;
+  }
+}
+
+@media (min-width: 576px) {
+  .fight-list-card-header__actions .set-current .set-current-label::after {
+    content: ' Current';
   }
 }

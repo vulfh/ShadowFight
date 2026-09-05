@@ -131,6 +131,14 @@ describe('FightListUIManager — TabBar integration (task 1.7)', () => {
     expect(fightListsPanel!.querySelector('#fightListContainer')).not.toBeNull()
   })
 
+  it('renders #newFightListBtn inside the fight-lists tab pane toolbar', async () => {
+    await manager.init()
+    const anchor = document.getElementById('training-tab-bar')!
+    const btn = anchor.querySelector('#newFightListBtn')
+    expect(btn).not.toBeNull()
+    expect(btn!.closest('#fight-lists-tab-pane')).not.toBeNull()
+  })
+
   // ── FightTestTabPane pane present ─────────────────────────────────────────
 
   it('fight-test pane contains the FightTestTabPane root element', async () => {

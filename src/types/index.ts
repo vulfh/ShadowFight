@@ -1,4 +1,5 @@
 import { Mode } from '../constants/modes'
+import { PlayMode } from './playMode'
 
 // Re-export Mode type for convenience
 export type { Mode }
@@ -52,6 +53,37 @@ export type FightListTechnique = {
   priority: number // 1-5 scale
   selected: boolean
 }
+
+/**
+ * Represents a single named fight-test configuration (adhoc today, named list in future).
+ * The 'adhoc' record has id='adhoc' and name='Adhoc'.
+ *
+ * Migration note: when named Fight Tests are introduced, this type is unchanged —
+ * a FightTestManager will manage a list of these records.
+ */
+export interface FightTest {
+  /** Unique identifier. 'adhoc' for the single adhoc configuration. */
+  id: string
+  /** Display name. 'Adhoc' for the single adhoc configuration. */
+  name: string
+  /** Selected training mode. null means not yet chosen. */
+  mode: Mode | null
+  /** Empty array means "any target level". */
+  targetLevels: TargetLevel[]
+  /** Empty array means "any category". */
+  categories: TechniqueCategory[]
+  /** null or 'BOTH' means no side restriction. */
+  side: Side | 'BOTH' | null
+  /** Technique ordering strategy for the session. Defaults to 'Random'. */
+  shuffleMode: PlayMode
+}
+
+/**
+ * The subset of FightTest that the filter form owns.
+ * Excludes identity fields (id, name) so the form has no opinion about record identity.
+ * Converting form values to a FightTest is a trivial spread: { id, name, ...values }.
+ */
+export type FightTestFilterValues = Omit<FightTest, 'id' | 'name'>
 
 export interface VoiceNote {
   id: string

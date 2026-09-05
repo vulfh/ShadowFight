@@ -58,7 +58,15 @@ export const STORAGE_KEYS = {
    * @type {string}
    * @constant
    */
-  PLAY_MODE: 'kravMagaPlayMode'
+  PLAY_MODE: 'kravMagaPlayMode',
+  /**
+   * Key for storing the single adhoc FightTest configuration object.
+   * Future: a FIGHT_TESTS_LIST key will be added alongside this one when
+   * the multi-named Fight Tests feature is built; no migration needed now.
+   * @type {string}
+   * @constant
+   */
+  FIGHT_TEST: 'kravMagaFightTest'
 } as const;
 
 /**

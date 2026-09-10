@@ -201,7 +201,7 @@ export class TechniqueManager {
           { name: 'Left Internal Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Internal Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
-
+        
           //Knife Threats
 
           { name: 'Left Hand Knife Threat Blade To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-samin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
@@ -227,10 +227,10 @@ export class TechniqueManager {
           { name: 'Right Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'yamin-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
           //Kick Defence
-
+/*
           { name: 'Left External Defence Against Kick. Breakthrough', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-pritsa.wav', category: 'Defence', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right External Defence Against Kick. Breakthrough', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-pritsa.wav', category: 'Defence', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-
+*/
      //Knee-Defence
           { name: 'Left Defend Against Left Round Knee', modes: [MODES.PERFORMING], file: 'smol-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'LEFT' },
           { name: 'Right Protect Against Left Round Knee', modes: [MODES.PERFORMING], file: 'yamin-hagana-neged-beitat-bereh-mi-ha-tsad.wav', category: 'Knee-Protection', priority: 'high', selected: true, weight: 1, targetLevel: 'BACK', side: 'RIGHT' },

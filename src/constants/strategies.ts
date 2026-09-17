@@ -22,7 +22,8 @@ export const TECHNIQUE_CATEGORIES = {
   DEFENCE: 'Defence',
   KNEE_PROTECTION: 'Knee-Protection',
   TAKE_DOWN: 'Take Down',
-  ELBOW_STRIKE: 'Elbow Strike'
+  ELBOW_STRIKE: 'Elbow Strike',
+  CHOKE: 'Choke'
 } as const
 
 // Priority levels

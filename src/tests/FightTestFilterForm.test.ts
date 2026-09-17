@@ -34,7 +34,7 @@ const ALL_TARGET_LEVELS: TargetLevel[] = [
 const ALL_CATEGORIES: TechniqueCategory[] = [
   'Punches', 'Strikes', 'Kicks', 'Knees', 'Defenses/Grabs',
   'Weapons', 'Hand-Grip', 'Knife', 'Slip', 'Defence',
-  'Knee-Protection', 'Take Down', 'Elbow Strike',
+  'Knee-Protection', 'Take Down', 'Elbow Strike', 'Choke',
 ]
 
 const ALL_PLAY_MODES: PlayMode[] = ['Random', 'Unified Random', 'Ordered', 'Prioritized']

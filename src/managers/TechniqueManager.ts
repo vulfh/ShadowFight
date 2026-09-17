@@ -222,9 +222,14 @@ export class TechniqueManager {
           // Hand-Grip
       { name: 'Left Hand Grip', modes:[MODES.RESPONDING], file: 'smol-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
       { name: 'Right Hand Grip', modes:[MODES.RESPONDING], file: 'yamin-tfisat-yad-mul-yad.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-      { name: 'Laying Both Hands Grip', modes: [MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+    
           { name: 'Left Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'smol-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
           { name: 'Right Release From A Side Neck Grab And Take Down', modes: [MODES.PERFORMING], file: 'yamin-shihrur-me-tfisat-tsavar-me-ha-tsad-ve-apala.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
+          //On the ground
+            { name: 'Laying Both Hands Grip', modes: [MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+            { name: 'Release from choke on the ground. Straight hands', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-beshkiva-yadaim-yasharot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+              { name: 'Choke on the ground. Straight hands', modes: [MODES.RESPONDING], file: 'shihrur-me-hanika-beshkiva-yadaim-yasharot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
           //Kick Defence
 /*

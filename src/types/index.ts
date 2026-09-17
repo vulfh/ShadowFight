@@ -35,6 +35,7 @@ export type TechniqueCategory =
   | 'Knee-Protection'
   | 'Take Down'
   | 'Elbow Strike'
+  | 'Choke'
 export type PriorityLevel = 'high' | 'medium' | 'low'
 
 // Fight List Types

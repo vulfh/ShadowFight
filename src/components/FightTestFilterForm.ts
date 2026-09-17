@@ -28,7 +28,7 @@ const TARGET_LEVELS: TargetLevel[] = [
 const CATEGORIES: TechniqueCategory[] = [
   'Punches', 'Strikes', 'Kicks', 'Knees', 'Defenses/Grabs',
   'Weapons', 'Hand-Grip', 'Knife', 'Slip', 'Defence',
-  'Knee-Protection', 'Take Down', 'Elbow Strike',
+  'Knee-Protection', 'Take Down', 'Elbow Strike', 'Choke',
 ]
 
 /** Side options shown in the UI. 'BOTH' is the first and default selection. */

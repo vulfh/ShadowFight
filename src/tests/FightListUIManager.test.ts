@@ -61,6 +61,32 @@ describe('FightListUIManager', () => {
     expect(mockContainer.querySelector('.fight-list-item')).toBeTruthy()
   })
 
+  it('renders fight lists alphabetically by name', async () => {
+    const makeFightList = (id: string, name: string): FightList => ({
+      id,
+      name,
+      techniques: [],
+      createdAt: `${id}-created`,
+      lastModified: `${id}-modified`,
+    })
+    const mockFightLists = [
+      makeFightList('2', 'Zeta'),
+      makeFightList('1', 'Alpha'),
+      makeFightList('3', 'Bravo'),
+    ]
+
+    vi.mocked(mockFightListManager.getFightLists).mockReturnValue(mockFightLists)
+    vi.mocked(mockFightListManager.getCurrentFightList).mockReturnValue(null)
+
+    await fightListUIManager.init()
+
+    const names = Array.from(
+      mockContainer.querySelectorAll('.fight-list-card-header__name'),
+      element => element.textContent,
+    )
+    expect(names).toEqual(['Alpha', 'Bravo', 'Zeta'])
+  })
+
   it('should handle fight list expansion', async () => {
     const mockFightLists: FightList[] = [{
       id: '1',

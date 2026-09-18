@@ -233,7 +233,15 @@ export class FightListUIManager {
     const container = document.getElementById(UI.CONTAINER)
     if (!container) return
 
-    const fightLists = this.fightListManager.getFightLists()
+    const fightLists = [...this.fightListManager.getFightLists()].sort((left, right) => {
+      const nameOrder = left.name.localeCompare(right.name, undefined, { sensitivity: 'base' })
+      if (nameOrder !== 0) return nameOrder
+
+      const createdOrder = left.createdAt.localeCompare(right.createdAt)
+      if (createdOrder !== 0) return createdOrder
+
+      return left.id.localeCompare(right.id)
+    })
     const currentFightList = this.fightListManager.getCurrentFightList()
 
     container.innerHTML = ''

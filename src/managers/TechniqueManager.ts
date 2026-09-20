@@ -228,8 +228,15 @@ export class TechniqueManager {
 
           //On the ground
             { name: 'Laying Both Hands Grip', modes: [MODES.PERFORMING], file: 'shihrur-me-tfisat-yadaim-be-shkiva.wav', category: 'Hand-Grip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-            { name: 'Release from choke on the ground. Straight hands', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-beshkiva-yadaim-yasharot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
-              { name: 'Choke on the ground. Straight hands', modes: [MODES.RESPONDING], file: 'shihrur-me-hanika-beshkiva-yadaim-yasharot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Release From Choke on the ground. Straight Arms', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-beshkiva-yadaim-yasharot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Choke on the ground. Straight Arms', modes: [MODES.RESPONDING], file: 'hanika-beshkiva-yadaim yasharot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Release From Choke on the ground. Bent Arms', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-be-shkiva-yadaim-kfufot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Choke on the ground. Bent Arms', modes: [MODES.RESPONDING], file: 'hanika-be-shkiva-yadaim-kfufot.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Tight Choke on the ground.', modes: [MODES.RESPONDING], file: 'hanika-tsnuda-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Release From Tight Choke on the ground.', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-tsnuda-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Release From Side Choke on the ground.', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-me-hatsad-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+            { name: 'Side Choke on the ground.', modes: [MODES.RESPONDING], file: 'hanika-me-hatsad-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+
 
           //Kick Defence
 /*

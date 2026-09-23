@@ -64,12 +64,16 @@ export class TechniqueManager {
           { name: 'Left Round Kick High ', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Low Kick ',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'yamin-beitat-magal-hitsonit-nemuha.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HIP', side: 'RIGHT' },
           { name: 'Left Low Kick ', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-nitsonit-nemuha.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HIP', side: 'LEFT' },
+          
+          
+
+          //Defence from kicks
           { name: 'Left Slipping Against Front Kick In Dead Zone', modes: [MODES.PERFORMING], file: 'smol-agana-neged-beita-regila-tsad-met.wav', category: 'Slip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Left Slipping Against Front Kick In Live Zone', modes: [MODES.PERFORMING], file: 'smol-agana-neged-beita-regila-tsad-hay.wav', category: 'Slip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Slipping Against Front Kick In Live Zone', modes: [MODES.PERFORMING], file: 'yamin-agana-neged-beita-regila-tsad-hay.wav', category: 'Slip', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
 
           { name: 'Left Internal Defence Against Round Kick - Side Kick', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-magal-1.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
-          { name: 'Right Internal Defence Against Round Kick - Side Kick', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-magal-1.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Round Kick - Side Kick', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-magal-1.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
 
           { name: 'Left Internal Defence Against Front Kick To Chin', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-beita-le-santer.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
@@ -85,6 +89,10 @@ export class TechniqueManager {
 
           { name: 'Left External Defence Against Front Kick. Break Through', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-regila-pritsa.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'LEFT' },
           { name: 'Right External Defence Against Front Kick. Break Through', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-regila-pritsa.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'STOMACH', side: 'RIGHT' },
+
+
+          { name: 'Left Internal Defence Against Front Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-regila-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Front Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-regila-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
 
           { name: 'Left Question Mark Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },

@@ -94,6 +94,10 @@ export class TechniqueManager {
           { name: 'Left Internal Defence Against Front Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-regila-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Internal Defence Against Front Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-regila-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
+          { name: 'Left External Defence Against Front Kick - Short Sweep', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-regila-tatua.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Front Kick - Short Sweep', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-regila-tatua.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+          ///Kicks
 
           { name: 'Left Question Mark Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Question Mark Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },

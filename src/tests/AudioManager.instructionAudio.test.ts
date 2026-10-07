@@ -358,4 +358,36 @@ describe('AudioManager - Instruction Audio', () => {
       expect(audioManager.isPlaying()).toBe(false)
     })
   })
+
+  describe('playBlob', () => {
+    beforeEach(async () => {
+      await audioManager.init()
+    })
+
+    it('should decode and play a blob through Web Audio', async () => {
+      const blob = {
+        arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8))
+      } as unknown as Blob
+      const playPromise = audioManager.playBlob(blob)
+
+      await vi.waitFor(() => {
+        expect(mockAudioContext.decodeAudioData).toHaveBeenCalled()
+        expect(mockBufferSource.start).toHaveBeenCalledWith(0)
+      })
+
+      if (mockBufferSource.onended) {
+        mockBufferSource.onended()
+      }
+
+      await playPromise
+    })
+
+    it('should throw if AudioContext is not initialized', async () => {
+      const uninitialized = new AudioManager()
+      const blob = {
+        arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8))
+      } as unknown as Blob
+      await expect(uninitialized.playBlob(blob)).rejects.toThrow('AudioContext not initialized')
+    })
+  })
 })

@@ -147,7 +147,10 @@ export class TechniqueAddModal {
     const handleTouchMove = (e: Event) => {
       const touchEvent = e as TouchEvent;
       const deltaY = touchEvent.touches[0].clientY - startY;
-      if (deltaY > 100) {
+      // Only dismiss on swipe-down (deltaY < -100 = finger moved UP = swipe down gesture)
+      // AND only when list is already scrolled to top
+      const atTop = this.techniqueList.scrollTop === 0;
+      if (deltaY < -100 && atTop) {
         this.close();
       }
     };

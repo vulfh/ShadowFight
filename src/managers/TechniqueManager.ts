@@ -21,12 +21,17 @@ export class TechniqueManager {
 
           { name: 'Left Straight Punch', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-egrof-lefanim.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Straight Punch', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-egrof-lefanim.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
-          { name: 'Left Back Fist',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makat-gav-yad.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
-          { name: 'Right Back Fist', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-gav-yad.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+        
           { name: 'Head Left Right', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'rosh-smol-yamin.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
-           { name: 'Head Left Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
-            { name: 'Head Right Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+//Strikes
+
+          { name: 'Head Left Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Head Right Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Back Fist',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makt-gav-yad-be-hatslafa.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Back Fist', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makt-gav-yad-be-hatslafa.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Back Fist.Rotational Motion',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makat-gav-yad-be-hatslafa-be-sivuv.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Back Fist. Rotational Motion', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-gav-yad-be-hatslafa-be-sivuv.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           // { name: 'Cross Body Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           // { name: 'Hook Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           // { name: 'Uppercut Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },

@@ -108,6 +108,9 @@ export class TechniqueManager {
           { name: 'Left Defence From The Round House Kick. Break Through', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-beitat-magal-pritsa.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Defence From The Round House Kick. Break Through', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-beitat-magal-pritsa.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
+          { name: 'Left External Defence Afainst The Round House Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beitat-magal-lefanim-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right External Defence Against The Round House Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beitat-magal-lefanim-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
           ///Kicks
 
           { name: 'Left Question Mark Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },

@@ -26,6 +26,12 @@ export class AudioManager {
       this.gainNode.connect(this.audioContext.destination)
       this.gainNode.gain.value = this.volume
       this.isInitialized = true
+
+      this.audioContext.onstatechange = () => {
+        if (this.audioContext?.state === 'suspended' && this.currentSource) {
+          void this.audioContext.resume()
+        }
+      }
       
       // Preload instruction audio files
       await this.preloadInstructionAudio()
@@ -246,28 +252,69 @@ export class AudioManager {
     }
 
     try {
-      this.stopCurrentAudio()
       const audioBuffer = await this.loadAudio(filename)
-      
-      this.currentSource = this.audioContext.createBufferSource()
-      this.currentSource.buffer = audioBuffer
-      this.currentSource.connect(this.gainNode)
-
-      return new Promise((resolve) => {
-        if (!this.currentSource) {
-          resolve()
-          return
-        }
-        this.currentSource.onended = () => {
-          this.currentSource = null
-          resolve()
-        }
-        this.currentSource.start(0)
-      })
+      await this.playBuffer(audioBuffer)
     } catch (error) {
       console.error(`Failed to play audio ${filename}:`, error)
       throw error
     }
+  }
+
+  /**
+   * Play a recorded blob through the same Web Audio graph as technique audio.
+   * HTMLAudioElement playback stalls on many phones when the screen locks.
+   */
+  async playBlob(blob: Blob): Promise<void> {
+    if (!this.audioContext || !this.gainNode) {
+      throw new Error('AudioContext not initialized')
+    }
+
+    try {
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume()
+      }
+      const arrayBuffer = await blob.arrayBuffer()
+      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer.slice(0))
+      await this.playBuffer(audioBuffer)
+    } catch (error) {
+      console.error('Failed to play audio blob:', error)
+      throw error
+    }
+  }
+
+  private playBuffer(audioBuffer: AudioBuffer): Promise<void> {
+    if (!this.audioContext || !this.gainNode) {
+      throw new Error('AudioContext not initialized')
+    }
+
+    this.stopCurrentAudio()
+    this.currentSource = this.audioContext.createBufferSource()
+    this.currentSource.buffer = audioBuffer
+    this.currentSource.connect(this.gainNode)
+
+    return new Promise((resolve, reject) => {
+      if (!this.currentSource) {
+        resolve()
+        return
+      }
+
+      const source = this.currentSource
+      source.onended = () => {
+        if (this.currentSource === source) {
+          this.currentSource = null
+        }
+        resolve()
+      }
+
+      try {
+        if (this.audioContext!.state === 'suspended') {
+          void this.audioContext!.resume()
+        }
+        source.start(0)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 
   stopCurrentAudio(): void {

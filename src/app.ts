@@ -61,6 +61,7 @@ export class KravMagaTrainerApp {
       // Initialize managers in order
       await this.techniqueManager.init()
       await this.audioManager.init()
+      this.voiceNoteService.setBlobPlayer(blob => this.audioManager.playBlob(blob))
       await this.configManager.init()
       await this.sessionManager.init()
       await this.uiManager.init()
@@ -397,7 +398,8 @@ export class KravMagaTrainerApp {
       // Page is hidden, save session state
       console.log('Page hidden, saving session state')
     } else if (!document.hidden && this.sessionManager.isActive) {
-      // Page is visible again, update UI
+      void this.audioManager.resumeAudioContext()
+      this.voiceNoteService.resumePlayback()
       this.updateSessionUI()
     }
   }
@@ -571,6 +573,8 @@ export class KravMagaTrainerApp {
 
   private handleStopSession(): void {
     const stoppedFightList = this.fightListManager.getCurrentFightList()
+    this.voiceNoteService.stopPlayback()
+    this.audioManager.stopCurrentAudio()
     this.sessionManager.stopSession()
     this.enableConfigurationControls()
     this.updateSessionUI()

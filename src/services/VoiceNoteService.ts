@@ -1,6 +1,7 @@
 import { VoiceNote } from '../types/index';
 import { Mode } from '../constants/modes';
 import { STORAGE_KEYS } from '../constants/storage';
+import { waitForHtmlAudioPlayback } from '../utils/waitForHtmlAudioPlayback';
 
 /**
  * Structured log entry for voice note actions
@@ -55,6 +56,12 @@ export class VoiceNoteService {
   
   private db: IDBDatabase | null = null;
   private initPromise: Promise<void> | null = null;
+  private blobPlayer: ((blob: Blob) => Promise<void>) | null = null;
+  private htmlAudio: HTMLAudioElement | null = null;
+  private objectUrl: string | null = null;
+  private playbackAbort: AbortController | null = null;
+  private playbackIntended = false;
+  private playbackStopped = false;
 
   constructor() {
     this.initPromise = this.initDB();
@@ -420,6 +427,77 @@ export class VoiceNoteService {
   }
 
   /**
+   * Prefer Web Audio (same graph as technique announcements) so notes keep
+   * progressing when the screen is locked on mobile.
+   */
+  public setBlobPlayer(player: (blob: Blob) => Promise<void>): void {
+    this.blobPlayer = player;
+  }
+
+  public resumePlayback(): void {
+    if (this.playbackIntended && this.htmlAudio?.paused) {
+      void this.htmlAudio.play().catch(() => undefined);
+    }
+  }
+
+  public stopPlayback(): void {
+    this.playbackStopped = true;
+    this.playbackIntended = false;
+    this.playbackAbort?.abort();
+    this.playbackAbort = null;
+    if (this.htmlAudio) {
+      this.htmlAudio.pause();
+    }
+  }
+
+  private getHtmlAudio(): HTMLAudioElement {
+    if (this.htmlAudio) {
+      return this.htmlAudio;
+    }
+
+    const audio = document.createElement('audio');
+    audio.setAttribute('playsinline', 'true');
+    audio.setAttribute('webkit-playsinline', 'true');
+    audio.preload = 'auto';
+    audio.style.display = 'none';
+    document.body.appendChild(audio);
+    this.htmlAudio = audio;
+    return audio;
+  }
+
+  private async playWithHtmlAudio(blob: Blob): Promise<void> {
+    this.playbackAbort?.abort();
+    this.playbackAbort = new AbortController();
+    this.playbackIntended = true;
+
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl);
+      this.objectUrl = null;
+    }
+
+    const audio = this.getHtmlAudio();
+    const audioUrl = URL.createObjectURL(blob);
+    this.objectUrl = audioUrl;
+    audio.src = audioUrl;
+    audio.load();
+
+    try {
+      const waitPromise = waitForHtmlAudioPlayback(audio, {
+        isPlaybackIntended: () => this.playbackIntended,
+        signal: this.playbackAbort.signal
+      });
+      await audio.play();
+      await waitPromise;
+    } finally {
+      this.playbackIntended = false;
+      if (this.objectUrl === audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+        this.objectUrl = null;
+      }
+    }
+  }
+
+  /**
    * Play a voice note
    * @param noteId - ID of the note to play
    * @returns Promise that resolves when playback completes or rejects on error
@@ -438,25 +516,20 @@ export class VoiceNoteService {
         throw new Error(`Audio blob not found for note ${noteId}`);
       }
 
-      return new Promise((resolve, reject) => {
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        const startTime = Date.now();
+      const startTime = Date.now();
 
-        audio.onended = () => {
-          URL.revokeObjectURL(audioUrl);
+      if (this.blobPlayer) {
+        try {
+          await this.blobPlayer(audioBlob);
           logNoteAction({ action: 'play', noteId, techniqueId: note.techniqueId, mode: note.mode, title: note.title, durationMs: Date.now() - startTime, timestamp: new Date().toISOString() });
-          resolve();
-        };
+          return;
+        } catch (error) {
+          console.warn(`[VoiceNote:PLAY] Web Audio playback failed, falling back to HTML audio: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      }
 
-        audio.onerror = (error) => {
-          URL.revokeObjectURL(audioUrl);
-          logNoteAction({ action: 'play', noteId, techniqueId: note.techniqueId, mode: note.mode, title: note.title, error: String(error), timestamp: new Date().toISOString() });
-          reject(error);
-        };
-
-        audio.play().catch(reject);
-      });
+      await this.playWithHtmlAudio(audioBlob);
+      logNoteAction({ action: 'play', noteId, techniqueId: note.techniqueId, mode: note.mode, title: note.title, durationMs: Date.now() - startTime, timestamp: new Date().toISOString() });
     } catch (error) {
       logNoteAction({ action: 'play', noteId, error: error instanceof Error ? error.message : String(error), timestamp: new Date().toISOString() });
       throw error;
@@ -469,8 +542,12 @@ export class VoiceNoteService {
    * @returns Promise that resolves when all notes have been played
    */
   public async playNotesSequentially(noteIds: string[]): Promise<void> {
+    this.playbackStopped = false;
     logNoteAction({ action: 'play_sequential', noteCount: noteIds.length, timestamp: new Date().toISOString() });
     for (const noteId of noteIds) {
+      if (this.playbackStopped) {
+        return;
+      }
       await this.playNote(noteId);
     }
   }

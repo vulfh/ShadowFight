@@ -21,9 +21,17 @@ export class TechniqueManager {
 
           { name: 'Left Straight Punch', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-egrof-lefanim.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Straight Punch', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-egrof-lefanim.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
-          { name: 'Left Back Fist',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makat-gav-yad.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
-          { name: 'Right Back Fist', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-gav-yad.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+        
           { name: 'Head Left Right', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'rosh-smol-yamin.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+
+//Strikes
+
+          { name: 'Head Left Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Head Right Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Back Fist',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makt-gav-yad-be-hatslafa.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Back Fist', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makt-gav-yad-be-hatslafa.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Back Fist.Rotational Motion',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makat-gav-yad-be-hatslafa-be-sivuv.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right Back Fist. Rotational Motion', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-gav-yad-be-hatslafa-be-sivuv.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           // { name: 'Cross Body Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           // { name: 'Hook Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           // { name: 'Uppercut Punch', file: 'smol-beitat-magal-gvoa.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
@@ -94,6 +102,16 @@ export class TechniqueManager {
           { name: 'Left Internal Defence Against Front Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-regila-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Internal Defence Against Front Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-regila-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
+          { name: 'Left External Defence Against Front Kick - Short Sweep', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beita-regila-tatua.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Internal Defence Against Front Kick - Short Sweep', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beita-regila-tatua.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+          { name: 'Left Defence From The Round House Kick. Break Through', modes: [MODES.PERFORMING], file: 'smol-hagan-neged-beitat-magal-pritsa.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
+          { name: 'Right Defence From The Round House Kick. Break Through', modes: [MODES.PERFORMING], file: 'yamin-hagan-neged-beitat-magal-pritsa.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+
+          { name: 'Left External Defence Afainst The Round House Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'smol-hagana-hitsonit-neged-beitat-magal-lefanim-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+          { name: 'Right External Defence Against The Round House Kick - Leg Sweep', modes: [MODES.PERFORMING], file: 'yamin-hagana-hitsonit-neged-beitat-magal-lefanim-gziza.wav', category: 'Defence', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+
+          ///Kicks
 
           { name: 'Left Question Mark Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Question Mark Kick', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beitat-magal-be-hataya.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },

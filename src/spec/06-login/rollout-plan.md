@@ -274,3 +274,45 @@ Before the pipeline is active, the following one-time setup is needed:
   "migrate:prod": "supabase db push --db-url $SFT_DB_URL"
 }
 ```
+
+---
+
+## Managing Credentials on Vercel
+
+Credentials (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) are set directly in Vercel — no commit, no push, no `.env` file in the repository.
+
+### Via the Vercel Dashboard
+
+1. Go to [vercel.com](https://vercel.com) → your project → **Settings** → **Environment Variables**
+2. Add or update the variables, selecting which environments they apply to (**Production**, **Preview**, **Development**)
+3. Click **Save**
+4. **Redeploy** — env vars only take effect on the next deployment. Go to **Deployments** → latest → **⋯** → **Redeploy**
+
+### Via the Vercel CLI
+
+```powershell
+# Install once if not already present
+npm i -g vercel
+
+# Authenticate
+vercel login
+
+# Add or update a variable (prompts for value — never written to any file)
+vercel env add VITE_SUPABASE_URL production
+vercel env add VITE_SUPABASE_ANON_KEY production
+
+# Redeploy to production
+vercel --prod
+```
+
+### How Vite Picks Them Up at Build Time
+
+Vercel runs `npm run build` during deployment. Vite replaces every `import.meta.env.VITE_*` reference with the literal value from the environment at build time. The values are baked into the built JS bundle — they never exist as a `.env` file in the repository.
+
+The local `.env.development` file (gitignored) is only used when running `npm run dev` locally. Vercel never reads it.
+
+### Why the Anon Key Is Safe to Store in Vercel
+
+`VITE_SUPABASE_ANON_KEY` is the **anon** key — it is designed to be public-facing. It identifies the Supabase project but carries no elevated privileges. All access control is enforced by RLS policies in the database (see `deployment-investigation.md` — RLS Deep Dive). An attacker with the anon key can only read public reference data and their own user row — nothing else.
+
+The **service role key** bypasses RLS entirely and must never be used in the client or stored in Vercel env vars. It belongs only in server-side tooling (GitHub Actions secrets for `supabase db push`).

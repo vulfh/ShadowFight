@@ -90,3 +90,100 @@ supabase/migrations/<timestamp>_create_users_roles_permissions.sql
 ```
 
 This is an update to the migration file already specified in the design document (`design.md` §15.1).
+
+---
+
+## RLS Deep Dive
+
+### What RLS Is
+
+RLS (Row Level Security) is a PostgreSQL feature that attaches a SQL condition to a table evaluated on **every query** — SELECT, INSERT, UPDATE, DELETE. If the condition returns false for a row, that row is invisible (or unwritable) for that request.
+
+It is the security layer that makes "client talks directly to the database" safe. Without it, anyone with the Supabase anon key could read every row in every table.
+
+### The Mental Model
+
+Think of it as an invisible `WHERE` clause that PostgreSQL adds automatically to every query:
+
+```sql
+-- What the client sends:
+SELECT * FROM users
+
+-- What PostgreSQL actually executes (with RLS active):
+SELECT * FROM users WHERE auth.uid() = id
+```
+
+The user never sees or controls that extra condition — it is enforced at the database level, not in application code.
+
+### The Two Steps — Always Both
+
+**Step 1: Enable RLS on the table** (off by default)
+```sql
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+```
+With RLS enabled but no policies, **nobody can read anything** — not even authenticated users. The table goes dark.
+
+**Step 2: Write policies that re-open specific access**
+```sql
+CREATE POLICY "users: own row only"
+  ON users
+  FOR ALL                          -- SELECT, INSERT, UPDATE, DELETE
+  USING (auth.uid() = id)          -- row is visible only if this is true
+  WITH CHECK (auth.uid() = id);    -- row can only be written if this is true
+```
+
+`USING` = filter for reads. `WITH CHECK` = filter for writes.
+
+### How `auth.uid()` Gets Its Value
+
+```
+Browser                          Supabase
+  │                                 │
+  ├─ signInWithOAuth() ────────────►│
+  │◄── JWT token ───────────────────┤  (contains user UUID, signed by Supabase)
+  │                                 │
+  ├─ supabase.from('users')         │
+  │   .select(...)  ───────────────►│
+  │   [JWT sent in Authorization    │  PostgreSQL calls auth.uid()
+  │    header automatically]        │  → extracts UUID from JWT
+  │                                 │  → evaluates USING clause
+  │◄── only matching rows ──────────┤
+```
+
+The JWT is cryptographically signed by Supabase. A client cannot forge a different `auth.uid()` value — if the signature does not match, the JWT is rejected before any SQL runs.
+
+### The Two Policy Patterns Used in This Project
+
+**Pattern 1: Public read-only** (reference data — roles, permissions, role_permissions, and future techniques table)
+
+Anyone, authenticated or not, can read. Nobody can write via the client.
+```sql
+ALTER TABLE techniques ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "techniques: read by all"
+  ON techniques FOR SELECT USING (true);
+```
+No INSERT/UPDATE/DELETE policy means those operations are blocked for everyone using the anon key. Data is written only via migrations or the Supabase dashboard (which uses the service role key that bypasses RLS entirely).
+
+**Pattern 2: Own row only** (user-specific data — the `users` table, and future `user_technique_settings`)
+
+```sql
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "users: own row only"
+  ON users FOR ALL
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
+```
+
+Guest requests have no JWT, so `auth.uid()` returns `null`, and `null = id` is always false — guests cannot read any user rows.
+
+### RLS Policy Summary for This Project
+
+| Table | Policy | Reason |
+|---|---|---|
+| `techniques` | `FOR SELECT USING (true)` | Reference data, all users need it |
+| `roles` | `FOR SELECT USING (true)` | Reference data |
+| `permissions` | `FOR SELECT USING (true)` | Reference data |
+| `role_permissions` | `FOR SELECT USING (true)` | Reference data |
+| `users` | `FOR ALL USING (auth.uid() = id)` | Private — each user owns their row |
+
+The rule: **reference data → public SELECT, no writes. User data → own row only.**

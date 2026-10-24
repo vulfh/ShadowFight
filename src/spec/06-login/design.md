@@ -1249,3 +1249,97 @@ Pin to exact version (verify current stable at implementation time). In `depende
 | **L — Liskov Substitution** | All concrete classes typed against their interfaces; test doubles can substitute any injected dependency without altering behaviour | No concrete LSP violation in draft, but no interfaces were defined, making substitution impossible |
 | **I — Interface Segregation** | `IAuthReader` / `IAuthCommands`; `IPermissionReader` / `IPermissionWriter`; `IAuthProvider` / `IUserRepository` | `AuthService` exposed `getSupabaseClient()` — callers had to know about Supabase internals; single `PermissionService` export gave all callers write access |
 | **D — Dependency Inversion** | `AuthService` depends on `IAuthProvider`, `UserService`, `AuthEventBus` — no concrete imports; `UserService` depends on `IUserRepository` + `IPermissionWriter`; `app.ts` only imports factory + interfaces | `LoginModal` imported concrete `AuthService`; `AuthService` imported `PermissionService` concrete singleton directly |
+
+---
+
+## 20. RLS Mechanics — How the Security Boundary Works
+
+Section §15.1 specifies the RLS policies. This section explains the underlying mechanism so the intent of each policy is clear during implementation and review.
+
+### What RLS Does at the Database Level
+
+RLS attaches an invisible `WHERE` clause to every query PostgreSQL executes. The application code never sees or controls it.
+
+```sql
+-- Client sends:
+SELECT * FROM users
+
+-- PostgreSQL executes (with RLS active):
+SELECT * FROM users WHERE auth.uid() = id
+```
+
+If no policy matches a row, that row is invisible. If RLS is enabled on a table with no policies at all, the table returns nothing for any client request.
+
+### How `auth.uid()` Is Populated
+
+```
+Browser                          Supabase Auth
+  ├─ signInWithOAuth() ─────────►
+  │◄── JWT token ────────────────   (contains user UUID, signed by Supabase)
+
+  ├─ supabase.from('users').select()
+  │   [JWT in Authorization header, sent automatically by the JS client]
+  │                                PostgreSQL: auth.uid() = UUID from JWT
+  │◄── only rows where id = uid ──
+```
+
+The JWT is cryptographically signed by Supabase. A client cannot forge a different `auth.uid()` value — a tampered JWT is rejected before any SQL runs.
+
+Guest requests carry no JWT. `auth.uid()` returns `null`. `null = id` is never true, so guests cannot read any row in the `users` table.
+
+### The Two Policy Shapes Used Here
+
+**Public read (reference tables):**
+```sql
+CREATE POLICY "roles: read by all" ON roles FOR SELECT USING (true);
+```
+`true` always passes. Every row is readable by everyone, including unauthenticated guests. No INSERT/UPDATE/DELETE policy means those operations are denied for anon-key clients.
+
+**Own row only (user data):**
+```sql
+CREATE POLICY "users: own row only" ON users FOR ALL
+  USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+```
+`USING` filters reads. `WITH CHECK` filters writes. The user can only touch the row whose `id` matches their JWT UUID.
+
+### Why the Upsert Still Works Post-OAuth
+
+`SupabaseUserRepository.upsertUser()` runs after the OAuth redirect completes and `onAuthStateChange` fires `SIGNED_IN`. At that point the Supabase session is active and `auth.uid()` returns the user's UUID — the `WITH CHECK` clause passes for their own row.
+
+### Service Role Key vs Anon Key
+
+| Key | Bypasses RLS | Where It Lives |
+|---|---|---|
+| **Anon key** | No — RLS fully enforced | Vercel env vars, baked into bundle |
+| **Service role key** | Yes — unrestricted access | GitHub Actions secrets only, never in client code |
+
+The anon key is safe to store in Vercel environment variables because RLS limits what it can do. The service role key must never appear in client-side code or in Vercel env vars.
+
+---
+
+## 21. Vercel Credentials Management
+
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set directly in Vercel — no `.env` file is committed, no push is required.
+
+### Via the Vercel Dashboard
+
+1. Vercel project → **Settings** → **Environment Variables**
+2. Add or update each variable, select environments (**Production** / **Preview** / **Development**)
+3. **Save**
+4. Redeploy: **Deployments** → latest → **⋯** → **Redeploy**
+
+### Via the Vercel CLI
+
+```powershell
+vercel env add VITE_SUPABASE_URL production
+vercel env add VITE_SUPABASE_ANON_KEY production
+vercel --prod   # redeploy
+```
+
+### How Vite Uses Them
+
+Vercel runs `npm run build` on every deploy. Vite replaces every `import.meta.env.VITE_*` reference with the literal value from the Vercel environment at build time. The values are baked into the static bundle — there is no `.env` file in the repository and no server reading env vars at runtime.
+
+The local `.env.development` file (gitignored) is used only by `npm run dev`. Vercel never reads it.
+
+**Cross-reference:** `SupabaseClientFactory` (§3) validates that both vars are present and throws a descriptive error at startup if either is missing.

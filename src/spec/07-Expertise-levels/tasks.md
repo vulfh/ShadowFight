@@ -26,7 +26,7 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
 **Blocked by:** Nothing  
 **Files:** `src/types/index.ts`
 
-- [ ] **1.1** Add the `ExpertiseLevel` union type:
+- [x] **1.1** Add the `ExpertiseLevel` union type:
   ```typescript
   export type ExpertiseLevel =
     | 'yellow'
@@ -36,23 +36,23 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
     | 'brown'
     | 'black-dan-1'
   ```
-- [ ] **1.2** Add the `EXPERTISE_LEVELS` ordered constant array immediately after the type:
+- [x] **1.2** Add the `EXPERTISE_LEVELS` ordered constant array immediately after the type:
   ```typescript
   export const EXPERTISE_LEVELS: readonly ExpertiseLevel[] = [
     'yellow', 'orange', 'green', 'blue', 'brown', 'black-dan-1',
   ]
   ```
-- [ ] **1.3** Add the `expertiseLevelRank` helper function:
+- [x] **1.3** Add the `expertiseLevelRank` helper function:
   ```typescript
   export function expertiseLevelRank(level: ExpertiseLevel | string): number {
     const idx = EXPERTISE_LEVELS.indexOf(level as ExpertiseLevel)
     return idx === -1 ? 0 : idx
   }
   ```
-- [ ] **1.4** Add `expertiseLevel: ExpertiseLevel` as a **required** field to the `Technique` interface.
+- [x] **1.4** Add `expertiseLevel: ExpertiseLevel` as a **required** field to the `Technique` interface.
   > After this step the TypeScript build will fail — every technique in `TechniqueManager`
   > is missing the field. This is intentional. Task 8 (developer task) resolves it.
-- [ ] **1.5** Add two new fields to the `FightTest` interface:
+- [x] **1.5** Add two new fields to the `FightTest` interface:
   ```typescript
   expertiseLevel: ExpertiseLevel | null        // null = no restriction
   expertiseLevelMode: 'strict' | 'cumulative'  // ignored when expertiseLevel is null

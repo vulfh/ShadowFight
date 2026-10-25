@@ -4,7 +4,42 @@ import { PlayMode } from './playMode'
 // Re-export Mode type for convenience
 export type { Mode }
 
+// ---------------------------------------------------------------------------
+// Expertise Level — Req 1.1, 1.2, 1.3
+// ---------------------------------------------------------------------------
+
+/** Ordered belt-grade progression from beginner to advanced. */
+export type ExpertiseLevel =
+  | 'yellow'
+  | 'orange'
+  | 'green'
+  | 'blue'
+  | 'brown'
+  | 'black-dan-1'
+
+/**
+ * Authoritative ordered list of expertise levels — lowest first.
+ * All rank comparisons, filter predicates, badge renderers, and UI option
+ * lists MUST derive their data from this array (Req 10.1).
+ */
+export const EXPERTISE_LEVELS: readonly ExpertiseLevel[] = [
+  'yellow', 'orange', 'green', 'blue', 'brown', 'black-dan-1',
+]
+
+/**
+ * Returns the 0-based rank of `level` within `EXPERTISE_LEVELS`.
+ * Returns 0 (yellow rank) for any unrecognised / missing value so that
+ * defensive code paths treat unknown techniques as the lowest grade (Req 2.3).
+ */
+export function expertiseLevelRank(level: ExpertiseLevel | string): number {
+  const idx = EXPERTISE_LEVELS.indexOf(level as ExpertiseLevel)
+  return idx === -1 ? 0 : idx
+}
+
+// ---------------------------------------------------------------------------
 // Technique-related types
+// ---------------------------------------------------------------------------
+
 export interface Technique {
   name: string
   file: string
@@ -15,6 +50,8 @@ export interface Technique {
   targetLevel: TargetLevel
   side: Side
   modes?: Mode[]
+  /** Belt/grade level at which this technique is introduced — Req 2.1 */
+  expertiseLevel: ExpertiseLevel
 }
 
 export type TargetLevel = 'HEAD' | 'NECK' | 'CHEST' | 'STOMACH' | 'GROIN' | 'HIP' | 'SHIN' | 'BACK' | 'FOOT'
@@ -77,6 +114,17 @@ export interface FightTest {
   side: Side | 'BOTH' | null
   /** Technique ordering strategy for the session. Defaults to 'Random'. */
   shuffleMode: PlayMode
+  /**
+   * Selected expertise-level filter. null means "any level" (no restriction) — Req 3.5 / 1.5.
+   */
+  expertiseLevel: ExpertiseLevel | null
+  /**
+   * Filter mode used when expertiseLevel is non-null.
+   * 'strict'     — match only the selected level exactly.
+   * 'cumulative' — match the selected level and all levels ranked below it.
+   * Ignored when expertiseLevel is null.
+   */
+  expertiseLevelMode: 'strict' | 'cumulative'
 }
 
 /**

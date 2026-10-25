@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '../constants/storage'
-import { FightTest } from '../types/index'
+import { FightTest, EXPERTISE_LEVELS } from '../types/index'
 
 /**
  * Persistence service for the single adhoc FightTest configuration.
@@ -24,6 +24,7 @@ export class FightTestService {
   /**
    * Immutable default state used when localStorage is empty or corrupt.
    * Mode intentionally null so the user must make an explicit choice.
+   * expertiseLevel null = "any level" (no restriction). Req 3.6, 5.1.
    */
   static readonly DEFAULT: Readonly<FightTest> = Object.freeze({
     id: FightTestService.ADHOC_ID,
@@ -33,6 +34,8 @@ export class FightTestService {
     categories: [],
     side: null,
     shuffleMode: 'Random',
+    expertiseLevel: null,
+    expertiseLevelMode: 'cumulative',
   } satisfies FightTest)
 
   // -------------------------------------------------------------------------
@@ -54,7 +57,22 @@ export class FightTestService {
       if (!FightTestService.isValidFightTest(parsed)) {
         return { ...FightTestService.DEFAULT }
       }
-      return parsed
+
+      // Validate / normalise expertise-level fields (Req 8.2, 8.3, 5.2–5.4).
+      // These fields may be absent in data written before this feature was added.
+      const obj = parsed as unknown as Record<string, unknown>
+
+      const rawLevel = obj['expertiseLevel']
+      const expertiseLevel =
+        rawLevel === null || EXPERTISE_LEVELS.includes(rawLevel as never)
+          ? (rawLevel as FightTest['expertiseLevel'])
+          : null
+
+      const rawMode = obj['expertiseLevelMode']
+      const expertiseLevelMode: FightTest['expertiseLevelMode'] =
+        rawMode === 'strict' || rawMode === 'cumulative' ? rawMode : 'cumulative'
+
+      return { ...parsed, expertiseLevel, expertiseLevelMode }
     } catch {
       return { ...FightTestService.DEFAULT }
     }

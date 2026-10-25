@@ -342,7 +342,8 @@ describe('UIManager - Instruction Audio UI Integration', () => {
         selected: true,
         weight: 1,
         targetLevel: 'HEAD' as const,
-        side: 'LEFT' as const
+        side: 'LEFT' as const,
+        expertiseLevel: 'yellow' as const,
       }
 
       uiManager.updateSessionDisplay(mockSessionStatus)

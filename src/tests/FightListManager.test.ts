@@ -119,7 +119,8 @@ describe('FightListManager', () => {
       selected: true,
       weight: 1,
       targetLevel: 'CHEST',
-      side: 'RIGHT'
+      side: 'RIGHT',
+      expertiseLevel: 'yellow',
     }
 
     beforeEach(() => {
@@ -253,7 +254,8 @@ describe('FightListManager', () => {
         selected: true,
         weight: 1,
         targetLevel: 'HEAD',
-        side: 'LEFT'
+        side: 'LEFT',
+        expertiseLevel: 'yellow',
       }
 
       const respondingOnlyTechnique: Technique = {
@@ -265,7 +267,8 @@ describe('FightListManager', () => {
         selected: true,
         weight: 1,
         targetLevel: 'CHEST',
-        side: 'RIGHT'
+        side: 'RIGHT',
+        expertiseLevel: 'yellow',
       }
 
       fightListManager['fightLists'] = [performingFightList]
@@ -305,7 +308,8 @@ describe('FightListManager', () => {
         selected: true,
         weight: 1,
         targetLevel: 'GROIN',
-        side: 'LEFT'
+        side: 'LEFT',
+        expertiseLevel: 'yellow',
       }
 
       const performingOnlyTechnique: Technique = {
@@ -317,7 +321,8 @@ describe('FightListManager', () => {
         selected: true,
         weight: 1,
         targetLevel: 'STOMACH',
-        side: 'RIGHT'
+        side: 'RIGHT',
+        expertiseLevel: 'yellow',
       }
 
       fightListManager['fightLists'] = [respondingFightList]
@@ -365,7 +370,8 @@ describe('per-FightList priority', () => {
     selected: true,
     weight: 1,
     targetLevel: 'CHEST',
-    side: 'RIGHT'
+    side: 'RIGHT',
+    expertiseLevel: 'yellow',
   })
 
   // Maps the global PriorityLevel string to the numeric seed — mirrors globalPriorityToNumber
@@ -533,7 +539,8 @@ describe('healFightListPriorities', () => {
     selected: true,
     weight: 1,
     targetLevel: 'CHEST',
-    side: 'RIGHT'
+    side: 'RIGHT',
+    expertiseLevel: 'yellow',
   })
 
   const makeFightList = (techniques: ReturnType<typeof makeEntry>[]): FightList => ({

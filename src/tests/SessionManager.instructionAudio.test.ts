@@ -44,7 +44,8 @@ describe('SessionManager - Instruction Audio Integration', () => {
         weight: 1,
         targetLevel: 'HEAD' as const,
         side: 'LEFT' as const,
-        modes: [MODES.PERFORMING]
+        modes: [MODES.PERFORMING],
+        expertiseLevel: 'yellow' as const,
       },
       {
         name: 'Test Technique 2',
@@ -55,7 +56,8 @@ describe('SessionManager - Instruction Audio Integration', () => {
         weight: 1,
         targetLevel: 'CHEST' as const,
         side: 'RIGHT' as const,
-        modes: [MODES.RESPONDING]
+        modes: [MODES.RESPONDING],
+        expertiseLevel: 'yellow' as const,
       }
     ]
 

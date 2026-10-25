@@ -72,6 +72,8 @@ function makeFilterValues(overrides: Partial<FightTestFilterValues> = {}): Fight
     categories: [],
     side: null,
     shuffleMode: 'Random',
+    expertiseLevel: null,
+    expertiseLevelMode: 'cumulative',
     ...overrides,
   }
 }
@@ -113,6 +115,8 @@ function randomFilterValues(rand: () => number): FightTestFilterValues {
     categories: pickSubset(ALL_CATEGORIES, rand),
     side: pickRandom(sideOptions, rand),
     shuffleMode: pickRandom(ALL_PLAY_MODES, rand),
+    expertiseLevel: null,
+    expertiseLevelMode: 'cumulative',
   }
 }
 
@@ -363,6 +367,8 @@ describe('FightTestFilterForm — populate() + getValues() round-trip', () => {
       categories: ['Kicks', 'Knife', 'Defence'],
       side: 'LEFT',
       shuffleMode: 'Prioritized',
+      expertiseLevel: null,
+      expertiseLevelMode: 'cumulative',
     }
     form.populate(values)
     const result = form.getValues()

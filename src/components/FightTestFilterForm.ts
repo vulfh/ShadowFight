@@ -98,6 +98,9 @@ export class FightTestFilterForm {
   /**
    * Reads current control state and returns a snapshot.
    * No side effects — DOM is not modified.
+   *
+   * Note: expertiseLevel fields return their defaults here until
+   * ExpertiseLevelFilterControl is mounted in Task 5.
    */
   getValues(): FightTestFilterValues {
     return {
@@ -108,6 +111,9 @@ export class FightTestFilterForm {
       shuffleMode: this.shuffleSelect
         ? (this.shuffleSelect.value as FightTestFilterValues['shuffleMode'])
         : 'Random',
+      // Task 5 will replace these with values from ExpertiseLevelFilterControl.
+      expertiseLevel: null,
+      expertiseLevelMode: 'cumulative',
     }
   }
 

@@ -140,6 +140,7 @@ describe('KravMagaTrainerApp — fight-test session wiring (task 1.8)', () => {
     vi.spyOn(ftPane, 'getCurrentFightTest').mockReturnValue({
       id: 'adhoc', name: 'Adhoc',
       mode: 'PERFORMING', targetLevels: [], categories: [], side: null, shuffleMode: 'Random',
+      expertiseLevel: null, expertiseLevelMode: 'cumulative',
     })
 
     const showNotification = vi.spyOn(app as any, 'showNotification')
@@ -164,13 +165,15 @@ describe('KravMagaTrainerApp — fight-test session wiring (task 1.8)', () => {
     vi.spyOn(ftPane, 'getCurrentFightTest').mockReturnValue({
       id: 'adhoc', name: 'Adhoc',
       mode: 'PERFORMING', targetLevels: [], categories: [], side: null, shuffleMode: 'Random',
+      expertiseLevel: null, expertiseLevelMode: 'cumulative',
     })
 
     // AdhocFilterEngine returns real results from the loaded catalogue
     const { AdhocFilterEngine } = await import('../utils/AdhocFilterEngine')
     vi.spyOn(AdhocFilterEngine, 'filter').mockReturnValue([
       { name: 't1', file: 't1.wav', category: 'Kicks', priority: 'medium',
-        selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT', modes: ['PERFORMING'] },
+        selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT', modes: ['PERFORMING'],
+        expertiseLevel: 'yellow' },
     ])
 
     const startSpy = vi.spyOn(app['sessionManager'], 'startSessionWithFightList')
@@ -200,11 +203,13 @@ describe('KravMagaTrainerApp — fight-test session wiring (task 1.8)', () => {
     vi.spyOn(ftPane, 'getCurrentFightTest').mockReturnValue({
       id: 'adhoc', name: 'Adhoc',
       mode: 'PERFORMING', targetLevels: [], categories: [], side: null, shuffleMode: 'Random',
+      expertiseLevel: null, expertiseLevelMode: 'cumulative',
     })
     const { AdhocFilterEngine } = await import('../utils/AdhocFilterEngine')
     vi.spyOn(AdhocFilterEngine, 'filter').mockReturnValue([
       { name: 't1', file: 't1.wav', category: 'Kicks', priority: 'medium',
-        selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT', modes: ['PERFORMING'] },
+        selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT', modes: ['PERFORMING'],
+        expertiseLevel: 'yellow' },
     ])
     vi.spyOn(app['sessionManager'], 'startSessionWithFightList').mockResolvedValue(undefined as any)
     vi.spyOn(app['sessionManager'], 'isPlayingInstructionAudio').mockReturnValue(false)

@@ -69,11 +69,11 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
 **Blocked by:** Task 1  
 **Files:** `src/services/FightTestService.ts`
 
-- [ ] **2.1** Add `expertiseLevel: null` and `expertiseLevelMode: 'cumulative'` to the `DEFAULT` constant.
-- [ ] **2.2** In `read()`, after parsing the stored JSON, add validation for the two new fields:
+- [x] **2.1** Add `expertiseLevel: null` and `expertiseLevelMode: 'cumulative'` to the `DEFAULT` constant.
+- [x] **2.2** In `read()`, after parsing the stored JSON, add validation for the two new fields:
   - If `parsed.expertiseLevel` is not `null` and not a member of `EXPERTISE_LEVELS`, replace it with `null`.
   - If `parsed.expertiseLevelMode` is not `'strict'` and not `'cumulative'`, replace it with `'cumulative'`.
-- [ ] **2.3** Verify TypeScript compiles for this file (other files may still fail due to Task 8 being pending).
+- [x] **2.3** Verify TypeScript compiles for this file (other files may still fail due to Task 8 being pending).
 
 **Acceptance criteria:** Req 5.1–5.5, Req 8.2–8.3
 

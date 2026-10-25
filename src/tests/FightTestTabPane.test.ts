@@ -45,6 +45,7 @@ function makeTechnique(overrides: Partial<Technique> = {}): Technique {
     targetLevel: 'HEAD',
     side: 'LEFT',
     modes: ['PERFORMING', 'RESPONDING'],
+    expertiseLevel: 'yellow',
     ...overrides,
   }
 }

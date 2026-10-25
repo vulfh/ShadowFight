@@ -26,6 +26,8 @@ function makeFightTest(overrides: Partial<FightTest> = {}): FightTest {
     categories: [],
     side: null,
     shuffleMode: 'Random',
+    expertiseLevel: null,
+    expertiseLevelMode: 'cumulative',
     ...overrides,
   }
 }

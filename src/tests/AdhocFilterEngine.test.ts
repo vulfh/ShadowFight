@@ -63,6 +63,7 @@ function makeTechnique(overrides: Partial<Technique> = {}): Technique {
     targetLevel: 'HEAD',
     side: 'LEFT',
     modes: ['PERFORMING', 'RESPONDING'],
+    expertiseLevel: 'yellow',
     ...overrides,
   }
 }
@@ -80,6 +81,8 @@ function makeFightTest(overrides: Partial<FightTest> = {}): FightTest {
     categories: [],
     side: null,
     shuffleMode: 'Random',
+    expertiseLevel: null,
+    expertiseLevelMode: 'cumulative',
     ...overrides,
   }
 }

@@ -26,7 +26,8 @@ describe('SessionManager - Play Mode', () => {
         weight: 3,
         targetLevel: 'HEAD' as const,
         side: 'LEFT' as const,
-        modes: [MODES.PERFORMING]
+        modes: [MODES.PERFORMING],
+        expertiseLevel: 'yellow' as const,
       }
     ]
 

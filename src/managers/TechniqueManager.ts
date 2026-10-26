@@ -156,6 +156,8 @@ export class TechniqueManager {
           { name: 'Right Front Kick Left Round House Jump Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-u-beitat-nagal-benitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Front Kick Right Round House Jump Kick', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-u-beitat-nagal-benitur.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
+          { name: 'Right Front Kick And Round House Kick. Same Leg', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-beita-regila-ubeitat-magal-beota-regel.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
+          { name: 'Left Front Kick And Round House Kick. Same Leg', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-beita-regila-ubeitat-magal-beota-regel.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
           // { name: 'Heel Kick', file: 'smol-beitat-magal-gvoa.wav', category: 'Kicks', priority: 'medium', selected: true, weight: 1, targetLevel: 'SHIN', side: 'RIGHT' },
 

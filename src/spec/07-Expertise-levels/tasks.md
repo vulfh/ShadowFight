@@ -6,7 +6,7 @@
 Task 1 — Type foundation (types, constants, FightTest extension) ✅
   └─ Task 2 — FightTestService update ✅
        └─ Task 3 — AdhocFilterEngine extension ✅
-  └─ Task 4 — ExpertiseLevelFilterControl (shared UI + badge helper)  [parallel with 3]
+  └─ Task 4 — ExpertiseLevelFilterControl (shared UI + badge helper) ✅ [parallel with 3]
        └─ Task 5 — FightTestFilterForm integration
        └─ Task 6 — TechniqueAddModal integration
        └─ Task 7 — FightListUIManager badge integration
@@ -105,20 +105,20 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
 
 ---
 
-## Task 4 — Create `ExpertiseLevelFilterControl`
+## Task 4 — Create `ExpertiseLevelFilterControl` ✅
 
 **Owner:** Agent  
 **Blocked by:** Task 1  
 **Files:** `src/components/ExpertiseLevelFilterControl.ts` *(new file)*
 
-- [ ] **4.1** Create the file and export the `ExpertiseLevelFilterValues` interface:
+- [x] **4.1** Create the file and export the `ExpertiseLevelFilterValues` interface:
   ```typescript
   export interface ExpertiseLevelFilterValues {
     expertiseLevel: ExpertiseLevel | null
     expertiseLevelMode: 'strict' | 'cumulative'
   }
   ```
-- [ ] **4.2** Export the `ExpertiseLevelFilterControl` interface:
+- [x] **4.2** Export the `ExpertiseLevelFilterControl` interface:
   ```typescript
   export interface ExpertiseLevelFilterControl {
     element: HTMLElement
@@ -126,7 +126,7 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
     populate(values: ExpertiseLevelFilterValues): void
   }
   ```
-- [ ] **4.3** Implement and export `buildExpertiseLevelFilterControl(onChange: (values: ExpertiseLevelFilterValues) => void): ExpertiseLevelFilterControl`:
+- [x] **4.3** Implement and export `buildExpertiseLevelFilterControl(onChange: (values: ExpertiseLevelFilterValues) => void): ExpertiseLevelFilterControl`:
   - Render a `<div class="mb-3">` wrapper containing:
     - A `<label class="form-label fw-semibold">` reading "Expertise Level" with a `<small class="text-muted fw-normal">(none = any)</small>` hint.
     - A level selector `btn-group`: one `btn-check` radio for "Any" (value `""`, checked by default) followed by one `btn-check` radio per entry in `EXPERTISE_LEVELS` (generated from the array — no hard-coded list). All label elements set `style="min-height:44px"`.
@@ -136,7 +136,7 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
   - Wire `change` event on both groups to call `onChange(getValues())` after updating disabled state.
   - `getValues()`: reads checked level radio (empty string → `null`) and checked mode radio (`'strict'` or `'cumulative'`).
   - `populate({ expertiseLevel, expertiseLevelMode })`: checks the matching level radio (null → "Any"), checks the matching mode radio, then calls the disabled-state sync helper.
-- [ ] **4.4** Implement and export `expertiseLevelBadgeHtml(level: ExpertiseLevel | undefined): string`:
+- [x] **4.4** Implement and export `expertiseLevelBadgeHtml(level: ExpertiseLevel | undefined): string`:
   - Use `EXPERTISE_LEVELS.includes(...)` to guard against undefined/invalid levels (fall back to `'yellow'`).
   - Build a `classMap` keyed on `ExpertiseLevel` (no switch statement — derive from the array or a plain object literal):
     - `yellow`: `bg-warning text-dark`
@@ -146,7 +146,7 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
     - `brown`: `bg-secondary text-white`
     - `black-dan-1`: `bg-dark text-white`
   - Return `<span class="badge ${classes} ms-1">${displayLabel}</span>` where the display label capitalises the first letter and replaces hyphens with spaces.
-- [ ] **4.5** Verify TypeScript compiles for this file.
+- [x] **4.5** Verify TypeScript compiles for this file.
 
 **Acceptance criteria:** Req 3.1, Req 6.5, Req 7.3–7.4, Req 9.1–9.5
 

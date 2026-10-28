@@ -529,3 +529,193 @@ describe('AdhocFilterEngine.filter — PBT #6: side BOTH ≡ null', () => {
     }
   })
 })
+
+// ---------------------------------------------------------------------------
+// Task 3 — Expertise Level filter (Req 4.1–4.6)
+// ---------------------------------------------------------------------------
+
+import { EXPERTISE_LEVELS } from '../types/index'
+import type { ExpertiseLevel } from '../types/index'
+
+const ALL_EXPERTISE_LEVELS: readonly ExpertiseLevel[] = EXPERTISE_LEVELS
+
+// ---------------------------------------------------------------------------
+// Req 4.1 — expertiseLevel null = no restriction (pass all)
+// ---------------------------------------------------------------------------
+
+describe('AdhocFilterEngine.filter — expertiseLevel (null = any)', () => {
+  it('includes all techniques when expertiseLevel is null', () => {
+    const cat = ALL_EXPERTISE_LEVELS.map(el => makeTechnique({ expertiseLevel: el }))
+    const result = AdhocFilterEngine.filter(cat, makeFightTest({ expertiseLevel: null }))
+    expect(result).toHaveLength(cat.length)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Req 4.2 — strict mode: only exact level matches
+// ---------------------------------------------------------------------------
+
+describe('AdhocFilterEngine.filter — expertiseLevel (strict mode)', () => {
+  it('includes only techniques whose expertiseLevel exactly matches the filter', () => {
+    const cat = [
+      makeTechnique({ expertiseLevel: 'yellow' }),
+      makeTechnique({ expertiseLevel: 'green' }),
+      makeTechnique({ expertiseLevel: 'blue' }),
+    ]
+    const result = AdhocFilterEngine.filter(
+      cat,
+      makeFightTest({ expertiseLevel: 'green', expertiseLevelMode: 'strict' })
+    )
+    expect(result).toHaveLength(1)
+    expect(result[0].expertiseLevel).toBe('green')
+  })
+
+  it('returns empty array when no technique matches the exact level', () => {
+    const cat = [
+      makeTechnique({ expertiseLevel: 'yellow' }),
+      makeTechnique({ expertiseLevel: 'orange' }),
+    ]
+    const result = AdhocFilterEngine.filter(
+      cat,
+      makeFightTest({ expertiseLevel: 'black-dan-1', expertiseLevelMode: 'strict' })
+    )
+    expect(result).toHaveLength(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Req 4.3 — cumulative mode: level and all levels ranked below it
+// ---------------------------------------------------------------------------
+
+describe('AdhocFilterEngine.filter — expertiseLevel (cumulative mode)', () => {
+  it('includes techniques at the selected level and all lower-ranked levels', () => {
+    const cat = ALL_EXPERTISE_LEVELS.map(el => makeTechnique({ expertiseLevel: el }))
+    // Filter for 'green' (rank 2) — should include yellow(0), orange(1), green(2)
+    const result = AdhocFilterEngine.filter(
+      cat,
+      makeFightTest({ expertiseLevel: 'green', expertiseLevelMode: 'cumulative' })
+    )
+    expect(result).toHaveLength(3)
+    result.forEach(t => expect(['yellow', 'orange', 'green']).toContain(t.expertiseLevel))
+  })
+
+  it('includes only the lowest level when "yellow" is selected', () => {
+    const cat = ALL_EXPERTISE_LEVELS.map(el => makeTechnique({ expertiseLevel: el }))
+    const result = AdhocFilterEngine.filter(
+      cat,
+      makeFightTest({ expertiseLevel: 'yellow', expertiseLevelMode: 'cumulative' })
+    )
+    expect(result).toHaveLength(1)
+    expect(result[0].expertiseLevel).toBe('yellow')
+  })
+
+  it('includes all techniques when "black-dan-1" (highest) is selected', () => {
+    const cat = ALL_EXPERTISE_LEVELS.map(el => makeTechnique({ expertiseLevel: el }))
+    const result = AdhocFilterEngine.filter(
+      cat,
+      makeFightTest({ expertiseLevel: 'black-dan-1', expertiseLevelMode: 'cumulative' })
+    )
+    expect(result).toHaveLength(ALL_EXPERTISE_LEVELS.length)
+  })
+
+  it('excludes techniques ranked above the selected level', () => {
+    const cat = [
+      makeTechnique({ expertiseLevel: 'blue' }),
+      makeTechnique({ expertiseLevel: 'brown' }),
+      makeTechnique({ expertiseLevel: 'black-dan-1' }),
+    ]
+    const result = AdhocFilterEngine.filter(
+      cat,
+      makeFightTest({ expertiseLevel: 'blue', expertiseLevelMode: 'cumulative' })
+    )
+    expect(result).toHaveLength(1)
+    expect(result[0].expertiseLevel).toBe('blue')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Req 4.4 — Expertise level is the fifth conjunctive dimension
+// A technique must pass ALL five filters to appear in the result.
+// ---------------------------------------------------------------------------
+
+describe('AdhocFilterEngine.filter — expertiseLevel conjunctive with other dimensions', () => {
+  it('expertise level filter stacks with mode, category, side, and targetLevel filters', () => {
+    const pass = makeTechnique({
+      modes: ['PERFORMING'],
+      category: 'Punches',
+      side: 'LEFT',
+      targetLevel: 'HEAD',
+      expertiseLevel: 'orange',
+    })
+    const failExpertise = makeTechnique({
+      modes: ['PERFORMING'],
+      category: 'Punches',
+      side: 'LEFT',
+      targetLevel: 'HEAD',
+      expertiseLevel: 'blue',       // above 'orange' cumulative threshold
+    })
+    const failMode = makeTechnique({
+      modes: ['RESPONDING'],
+      category: 'Punches',
+      side: 'LEFT',
+      targetLevel: 'HEAD',
+      expertiseLevel: 'yellow',
+    })
+
+    const ft = makeFightTest({
+      mode: 'PERFORMING',
+      categories: ['Punches'],
+      side: 'LEFT',
+      targetLevels: ['HEAD'],
+      expertiseLevel: 'orange',
+      expertiseLevelMode: 'cumulative',
+    })
+
+    const result = AdhocFilterEngine.filter([pass, failExpertise, failMode], ft)
+    expect(result).toHaveLength(1)
+    expect(result[0]).toBe(pass)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Req 4.5 — Existing four predicates are unchanged
+// A FightTest with expertiseLevel=null produces identical results to before
+// ---------------------------------------------------------------------------
+
+describe('AdhocFilterEngine.filter — no regression on expertiseLevel null', () => {
+  it('filter with expertiseLevel=null does not alter results compared to before the feature', () => {
+    const cat = [
+      makeTechnique({ modes: ['PERFORMING'], category: 'Kicks', side: 'RIGHT', expertiseLevel: 'black-dan-1' }),
+      makeTechnique({ modes: ['PERFORMING'], category: 'Punches', side: 'LEFT', expertiseLevel: 'yellow' }),
+      makeTechnique({ modes: ['RESPONDING'], category: 'Kicks', side: 'RIGHT', expertiseLevel: 'green' }),
+    ]
+    const ft = makeFightTest({ mode: 'PERFORMING', categories: ['Kicks'], expertiseLevel: null })
+    const result = AdhocFilterEngine.filter(cat, ft)
+    // Only PERFORMING + Kicks passes; expertiseLevel=null means no restriction
+    expect(result).toHaveLength(1)
+    expect(result[0].category).toBe('Kicks')
+    expect(result[0].modes).toContain('PERFORMING')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// PBT — null level is a superset of any non-null level (Req 4.6)
+// ---------------------------------------------------------------------------
+
+describe('AdhocFilterEngine.filter — PBT: null level is superset', () => {
+  it('result with expertiseLevel=null is a superset of result with any non-null level for 50 pairs', () => {
+    const rand = makeLcg(2048)
+    const modes: Array<'strict' | 'cumulative'> = ['strict', 'cumulative']
+    for (let i = 0; i < 50; i++) {
+      const cat = randomCatalogue(rand)
+      const ft = randomFightTest(rand)
+      const level = pickRandom([...ALL_EXPERTISE_LEVELS], rand)
+      const filterMode = pickRandom(modes, rand)
+
+      const withLevel = AdhocFilterEngine.filter(cat, { ...ft, expertiseLevel: level, expertiseLevelMode: filterMode })
+      const withoutLevel = AdhocFilterEngine.filter(cat, { ...ft, expertiseLevel: null })
+
+      withLevel.forEach(t => expect(withoutLevel).toContain(t))
+    }
+  })
+})

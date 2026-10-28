@@ -1,4 +1,5 @@
 import type { Technique, FightTest } from '../types/index'
+import { expertiseLevelRank } from '../types/index'
 
 /**
  * AdhocFilterEngine — pure, stateless filtering of a technique catalogue
@@ -26,8 +27,10 @@ export class AdhocFilterEngine {
    *                    technique.targetLevel must be in ft.targetLevels.
    *   3. Category    — skipped when ft.categories is empty; otherwise
    *                    technique.category must be in ft.categories.
-   *   4. Side        — skipped when ft.side is null or 'BOTH'; otherwise
-   *                    technique.side must equal ft.side.
+   *   4. Side          — skipped when ft.side is null or 'BOTH'; otherwise
+   *                      technique.side must equal ft.side.
+   *   5. ExpertiseLevel — skipped when ft.expertiseLevel is null; otherwise
+   *                       evaluated per ft.expertiseLevelMode (strict | cumulative).
    */
   static filter(catalogue: Technique[], ft: FightTest): Technique[] {
     return catalogue.filter(
@@ -35,7 +38,8 @@ export class AdhocFilterEngine {
         AdhocFilterEngine.passesMode(t, ft) &&
         AdhocFilterEngine.passesTargetLevel(t, ft) &&
         AdhocFilterEngine.passesCategory(t, ft) &&
-        AdhocFilterEngine.passesSide(t, ft)
+        AdhocFilterEngine.passesSide(t, ft) &&
+        AdhocFilterEngine.passesExpertiseLevel(t, ft)
     )
   }
 
@@ -64,5 +68,28 @@ export class AdhocFilterEngine {
   private static passesSide(t: Technique, ft: FightTest): boolean {
     if (ft.side === null || ft.side === 'BOTH') return true
     return t.side === ft.side
+  }
+
+  /**
+   * Dimension 5: expertise level.
+   * - null = no restriction (pass all).
+   * - 'strict'     — technique.expertiseLevel must equal ft.expertiseLevel exactly.
+   * - 'cumulative' — technique rank must be ≤ the filter's rank (i.e. the
+   *                  technique is at or below the selected belt grade).
+   *
+   * Falls back to 'yellow' rank (0) for any unrecognised technique level so
+   * that techniques without a valid level are treated as beginner-grade and
+   * only filtered out when the cumulative threshold is below yellow — which
+   * can never happen since yellow is rank 0.
+   *
+   * Req 4.1–4.4
+   */
+  private static passesExpertiseLevel(t: Technique, ft: FightTest): boolean {
+    if (ft.expertiseLevel === null) return true
+    const techRank = expertiseLevelRank(t.expertiseLevel ?? 'yellow')
+    if (ft.expertiseLevelMode === 'strict') {
+      return t.expertiseLevel === ft.expertiseLevel
+    }
+    return techRank <= expertiseLevelRank(ft.expertiseLevel)
   }
 }

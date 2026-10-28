@@ -3,9 +3,9 @@
 ## Task Dependency Graph
 
 ```
-Task 1 — Type foundation (types, constants, FightTest extension)
-  └─ Task 2 — FightTestService update
-       └─ Task 3 — AdhocFilterEngine extension
+Task 1 — Type foundation (types, constants, FightTest extension) ✅
+  └─ Task 2 — FightTestService update ✅
+       └─ Task 3 — AdhocFilterEngine extension ✅
   └─ Task 4 — ExpertiseLevelFilterControl (shared UI + badge helper)  [parallel with 3]
        └─ Task 5 — FightTestFilterForm integration
        └─ Task 6 — TechniqueAddModal integration
@@ -79,14 +79,14 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
 
 ---
 
-## Task 3 — Extend `AdhocFilterEngine`
+## Task 3 — Extend `AdhocFilterEngine` ✅
 
 **Owner:** Agent  
 **Blocked by:** Task 1  
 **Files:** `src/utils/AdhocFilterEngine.ts`
 
-- [ ] **3.1** Import `expertiseLevelRank` and `EXPERTISE_LEVELS` from `src/types/index.ts`.
-- [ ] **3.2** Add a new private static predicate method `passesExpertiseLevel(t: Technique, ft: FightTest): boolean`:
+- [x] **3.1** Import `expertiseLevelRank` from `src/types/index.ts`.
+- [x] **3.2** Add a new private static predicate method `passesExpertiseLevel(t: Technique, ft: FightTest): boolean`:
   ```typescript
   private static passesExpertiseLevel(t: Technique, ft: FightTest): boolean {
     if (ft.expertiseLevel === null) return true
@@ -97,9 +97,9 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
     return techRank <= expertiseLevelRank(ft.expertiseLevel)
   }
   ```
-- [ ] **3.3** Wire `passesExpertiseLevel` into `filter()` as the fifth conjunctive dimension, after `passesSide`.
-- [ ] **3.4** Verify no changes are made to any of the existing four predicate methods.
-- [ ] **3.5** Verify TypeScript compiles for this file.
+- [x] **3.3** Wire `passesExpertiseLevel` into `filter()` as the fifth conjunctive dimension, after `passesSide`.
+- [x] **3.4** Verify no changes are made to any of the existing four predicate methods.
+- [x] **3.5** Verify TypeScript compiles for this file.
 
 **Acceptance criteria:** Req 4.1–4.6, Req 8.1
 

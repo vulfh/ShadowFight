@@ -1,0 +1,3 @@
+-- Migration: 20261026120000_create_users_roles_permissions
+-- Feature 06: Supabase Login & RBAC
+-- DDL and RLS policies will be added in S1.2 and S1.3

@@ -24,7 +24,7 @@ Phase 3: Supabase Project Config         Phase 4 (parallel): Services + UI
 
 These tasks produce everything needed in Supabase's PostgreSQL before any frontend code runs.
 
-#### S1.1 — Create migration file skeleton
+#### S1.1 — Create migration file skeleton ✅
 - Create `supabase/migrations/20261026120000_create_users_roles_permissions.sql`
 - Confirm the `supabase/` directory exists in the repo root; create it if not
 - Add `supabase/` to `.gitignore` exclusion allowlist (i.e. **do not** gitignore it — migrations are committed)
@@ -112,7 +112,7 @@ CREATE POLICY "users: own row only" ON users FOR ALL
 
 These tasks create the type contracts and pure-logic utilities before anything touches Supabase.
 
-#### P2.1 — Create `src/types/auth.ts`
+#### P2.1 — Create `src/types/auth.ts` ✅ COMPLETED
 Implement all types and interfaces as defined in `design.md §2`:
 - `AuthState` type
 - `Permission` union type
@@ -127,6 +127,7 @@ Implement all types and interfaces as defined in `design.md §2`:
 - `IUserRepository` interface
 - `IAuthProvider` interface
 - **Deliverable:** `src/types/auth.ts` compiles with zero errors; `npm run type-check` passes
+- **Implementation:** `src/types/auth.ts` — 38 tests in `src/tests/auth.types.test.ts` (all passing)
 
 #### P2.2 — Create `PermissionService` (`src/services/PermissionService.ts`)
 - Implement `PermissionServiceImpl` (private class)

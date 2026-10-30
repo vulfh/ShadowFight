@@ -214,11 +214,21 @@ P4 tasks can start before S3.2/S3.3 — production Supabase config is only neede
 
 #### P4.8 — Create `LoginButton` component (`src/components/LoginButton.ts`)
 - Guest state: `btn btn-outline-light btn-sm` with "Sign In" + `fa-sign-in-alt` icon
-- Authenticated state: display name (max 16 chars + ellipsis) + `fa-user-circle` + "Sign Out" button
+- Authenticated state: display name (max 16 chars + ellipsis) + `fa-user-circle` icon (no sign-out button here — that is handled by `LogoutButton`)
 - Max 200px width; `position: absolute; top: 50%; left: 1rem; transform: translateY(-50%)`
 - `aria-label` reflects current state
 - Implements `AuthStateObserver`
 - **Deliverable:** button renders correctly in both states; updates without page reload
+
+#### P4.8b — Create `LogoutButton` component (`src/components/LogoutButton.ts`)
+- Rendered in the top-right corner of `<header>` via the `#logout-button-container` hook element
+- Visible only when auth state is `authenticated`; renders empty (`innerHTML = ''`) when guest
+- Markup: `btn btn-outline-light btn-sm` + `fa-sign-out-alt` icon + "Logout" text label
+- `aria-label="Log out"` for screen reader accessibility
+- Max 120px width; positioning controlled by `#logout-button-container` inline styles in `index.html` (`position: absolute; top: 50%; right: 1rem; transform: translateY(-50%)`)
+- On click: calls `IAuthCommands.signOut()` via injected `onLogout` callback
+- Implements `AuthStateObserver`: `show()` on `authenticated`, `hide()` on `guest`
+- **Deliverable:** button appears immediately after sign-in and disappears immediately after sign-out, without a page reload; hidden on all guest states
 
 #### P4.9 — Create `GuestPromoBar` component (`src/components/GuestPromoBar.ts`)
 - Full-width bar below `<header>`: `alert alert-info alert-dismissible text-center`, zero border-radius
@@ -228,17 +238,19 @@ P4 tasks can start before S3.2/S3.3 — production Supabase config is only neede
 - **Deliverable:** bar renders when guest; disappears on sign-in without reload
 
 #### P4.10 — Create `AuthUIManager` (`src/managers/AuthUIManager.ts`)
-- Constructs `LoginModal`, `LoginButton`, `GuestPromoBar` from DOM hook elements
-- Registers all three as observers on `AuthEventBus`
-- Reads initial auth state from `IAuthReader` for first render
+- Constructs `LoginModal`, `LoginButton`, `LogoutButton`, and `GuestPromoBar` from DOM hook elements
+- Registers all four components as observers on `AuthEventBus`
+- Reads initial auth state from `IAuthReader` for first render (LoginButton and LogoutButton both call their `render()` on init)
 - Exposes `showLoginModal()` for `app.ts` to call post-init
-- **Deliverable:** `authUIManager.init()` wires all components without errors
+- **Deliverable:** `authUIManager.init()` wires all components without errors; LogoutButton is hidden on first render when auth state is guest
 
 #### P4.11 — Update `index.html`
-- Add `<div id="auth-controls"></div>` inside `<header>`
+- Add `<div id="auth-controls"></div>` inside `<header>` with left-anchor inline styles
+- Add `<div id="logout-button-container"></div>` inside `<header>` with right-anchor inline styles (`position: absolute; top: 50%; right: 1rem; transform: translateY(-50%); max-width: 120px`)
 - Add `<div id="guest-promo-bar"></div>` immediately below `<header>`
 - Add `<div id="login-modal-container"></div>` anywhere in `<body>`
-- **Deliverable:** `index.html` has the three hook elements; existing layout unchanged
+- Add `style="position: relative;"` to the `<header>` element to anchor both absolute-positioned containers
+- **Deliverable:** `index.html` has all four hook elements; existing centered title layout unchanged on desktop and mobile
 
 #### P4.12 — Update `src/app.ts`
 - Import `AuthServiceFactory` and `AuthUIManager`
@@ -263,7 +275,9 @@ Dependencies: Phases 2, 3 (S1.5 + S3.1), and 4 all complete.
 - Confirm: LoginModal does NOT appear; LoginButton shows authenticated state immediately
 
 #### I5.3 — Sign-out flow
-- Click Sign Out → LoginButton reverts to "Sign In" → promo bar re-appears
+- Click the **Logout** button in the top-right corner of the header
+- Confirm: `LogoutButton` disappears immediately, `LoginButton` reverts to "Sign In" state, promo bar re-appears
+- Confirm: no page reload required
 
 #### I5.4 — Guest flow
 - Open in incognito (fresh session)
@@ -361,7 +375,8 @@ Dependencies: Phase 6 complete, SFT has schema and Google OAuth (S3.2, S3.3).
 | P4.5 | P4.2, P4.4, P2.3 |
 | P4.6 | P4.1, P4.2, P4.3, P4.4, P4.5 |
 | P4.7–P4.9 | P2.1, P2.3 |
-| P4.10 | P4.7, P4.8, P4.9, P4.6 |
+| P4.8b | P2.1, P2.3 |
+| P4.10 | P4.7, P4.8, P4.8b, P4.9, P4.6 |
 | P4.11, P4.12 | P4.10 |
 | I5.1–I5.6 | S1.5, S3.1, P4.12 |
 | C6.1 | P2.1 (types exist for mock test writing) |
@@ -389,7 +404,8 @@ Day 3
                   Can test P4.3 interactively against SFT-DEV
 
 Day 4
-  └── P4.7–P4.12  Build UI components + AuthUIManager + wire app.ts + update index.html
+  └── P4.7–P4.12  Build UI components (LoginModal, LoginButton, LogoutButton, GuestPromoBar)
+                  + AuthUIManager + wire app.ts + update index.html
 
 Day 5
   └── I5.1–I5.6   Full integration test on localhost against SFT-DEV

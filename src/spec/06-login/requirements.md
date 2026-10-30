@@ -139,6 +139,24 @@ Two Vite environment variable files control which Supabase project is targeted:
 
 ---
 
+### Requirement 13: Logout Button (Top-Right Corner)
+
+**User Story:** As a logged-in user, I want a small, always-visible Logout button in the top-right corner of the header so that I can sign out quickly without searching for a menu or control.
+
+#### Acceptance Criteria
+
+1. WHEN auth state is `authenticated`, A `LogoutButton` SHALL be rendered in the top-right corner of the `<header>`, using `position: absolute; top: 50%; right: 1rem; transform: translateY(-50%)` so it does not disturb the existing centered title layout.
+2. THE `LogoutButton` SHALL render as a small Bootstrap `btn btn-outline-light btn-sm` button labelled "Logout" with a `fa-sign-out-alt` icon to its left.
+3. WHEN auth state is `guest`, THE `LogoutButton` SHALL be hidden (not rendered or set to `display: none`) — it is visible only to authenticated users.
+4. WHEN the user clicks the `LogoutButton`, THE `AuthService.signOut()` SHALL be called. After sign-out completes, auth state SHALL revert to `guest`, the `LogoutButton` SHALL be hidden, and the `LoginButton` SHALL update to the "Sign In" state.
+5. THE `LogoutButton` SHALL be reactive — it shows or hides automatically whenever auth state changes, without a page reload.
+6. THE `LogoutButton` SHALL use `btn btn-outline-light btn-sm` to match the header's `bg-dark` background and remain visually consistent with the `LoginButton`.
+7. THE `LogoutButton` SHALL have `aria-label="Log out"` for screen reader accessibility.
+8. THE `LogoutButton` SHALL be keyboard-operable (reachable via Tab, activatable with Enter/Space).
+9. THE `LogoutButton` width SHALL not exceed 120px to avoid overlapping the centered title on small viewports.
+
+---
+
 ### Requirement 5: Google OAuth Flow
 
 **User Story:** As a user, I want to authenticate with my Google account so that my identity is verified without managing a separate password.
@@ -261,7 +279,8 @@ Two Vite environment variable files control which Supabase project is targeted:
 | `src/services/UserService.ts` | `ensureUser()`, `loadGuestRole()`, permission loading |
 | `src/services/PermissionService.ts` | In-memory permission set, `hasPermission()` |
 | `src/components/LoginModal.ts` | Bootstrap modal for Google sign-in |
-| `src/components/LoginButton.ts` | Header sign-in/out button, reactive to auth state |
+| `src/components/LoginButton.ts` | Header sign-in button (top-left), reactive to auth state |
+| `src/components/LogoutButton.ts` | Small logout button in top-right corner; visible only when authenticated |
 | `src/components/GuestPromoBar.ts` | Top-docked "Please log in" banner, shown only when guest |
 | `src/types/auth.ts` | `AuthState`, `AppUser`, `Permission`, `Role` types |
 | `supabase/migrations/<ts>_create_users_roles_permissions.sql` | Schema creation |
@@ -271,7 +290,7 @@ Two Vite environment variable files control which Supabase project is targeted:
 | Modified File | Change |
 |---|---|
 | `src/app.ts` | Call `AuthService.init()` early; show `LoginModal` post-init |
-| `index.html` | Add `<div id="auth-controls"></div>` in header; `<div id="guest-promo-bar"></div>` below header |
+| `index.html` | Add `<div id="auth-controls"></div>` and `<div id="logout-button-container"></div>` in header; `<div id="guest-promo-bar"></div>` below header |
 | `package.json` | Add `@supabase/supabase-js` pinned dependency |
 | `.gitignore` | Add `.env.development`, `.env.production` |
 | `src/constants/storage.ts` | No new keys needed (Supabase manages its own session storage) |

@@ -43,9 +43,10 @@ main.ts
         ├── ... existing managers (unchanged) ...
         │
         └── AuthUIManager.init()               ← SRP: owns all auth UI wiring
-              ├── LoginButton (IAuthReader)
+              ├── LoginButton  (top-left,  IAuthReader)   — sign-in for guests, name display when auth'd
+              ├── LogoutButton (top-right, IAuthCommands) — logout button; visible only when auth'd
               ├── GuestPromoBar (IAuthReader)
-              └── LoginModal (IAuthCommands)
+              └── LoginModal   (IAuthCommands)
                     registered as AuthStateObservers on AuthEventBus
 ```
 
@@ -705,9 +706,11 @@ import { IAuthReader, IAuthCommands } from '../types/auth'
 import { LoginButton } from '../components/LoginButton'
 import { GuestPromoBar } from '../components/GuestPromoBar'
 import { LoginModal } from '../components/LoginModal'
+import { LogoutButton } from '../components/LogoutButton'
 
 export class AuthUIManager {
   private loginButton: LoginButton | null = null
+  private logoutButton: LogoutButton | null = null
   private guestPromoBar: GuestPromoBar | null = null
   private loginModal: LoginModal | null = null
 
@@ -722,7 +725,7 @@ export class AuthUIManager {
     const loginModalEl = this.ensureElement('login-modal-container')
     this.loginModal = new LoginModal(loginModalEl, this.authCommands)
 
-    // 2. Build LoginButton
+    // 2. Build LoginButton (top-left — sign-in for guests, name display when authenticated)
     const authControlsEl = this.ensureElement('auth-controls')
     this.loginButton = new LoginButton(
       authControlsEl,
@@ -734,7 +737,15 @@ export class AuthUIManager {
       this.authReader.getDisplayName()
     )
 
-    // 3. Build GuestPromoBar
+    // 3. Build LogoutButton (top-right — visible only when authenticated)
+    const logoutContainerEl = this.ensureElement('logout-button-container')
+    this.logoutButton = new LogoutButton(
+      logoutContainerEl,
+      { onLogout: () => this.authCommands.signOut() }
+    )
+    this.logoutButton.render(this.authReader.getAuthState())
+
+    // 4. Build GuestPromoBar
     const promoBarEl = this.ensureElement('guest-promo-bar')
     this.guestPromoBar = new GuestPromoBar(
       promoBarEl,
@@ -744,8 +755,9 @@ export class AuthUIManager {
       this.guestPromoBar.show()
     }
 
-    // 4. Register all components as Observers on AuthEventBus (Observer pattern)
+    // 5. Register all components as Observers on AuthEventBus (Observer pattern)
     this.eventBus.subscribe(this.loginButton)
+    this.eventBus.subscribe(this.logoutButton)
     this.eventBus.subscribe(this.guestPromoBar)
     this.eventBus.subscribe(this.loginModal)
   }
@@ -982,12 +994,93 @@ export class LoginButton implements AuthStateObserver {
   <span class="text-white-50 small">
     <i class="fas fa-user-circle me-1" aria-hidden="true"></i>John D...
   </span>
-  <button type="button" class="btn btn-outline-light btn-sm"
-          aria-label="Signed in as John D..., click to sign out">
-    Sign Out
-  </button>
 </span>
 ```
+
+Note: In the authenticated state the `LoginButton` only shows the user's name. The dedicated `LogoutButton` (§12.4) in the top-right corner handles the sign-out action, so no "Sign Out" button is needed here.
+
+---
+
+### 12.4 `LogoutButton` — `src/components/LogoutButton.ts`
+
+**Pattern: Observer (implements `AuthStateObserver`)**
+**DIP:** Receives a `onLogout: () => void` callback — never a reference to concrete `AuthService`.
+**SRP:** Sole responsibility — render the logout button in the top-right corner, visible only when authenticated.
+
+```typescript
+export interface LogoutButtonCallbacks {
+  onLogout: () => void
+}
+
+export class LogoutButton implements AuthStateObserver {
+  constructor(
+    private readonly hostEl: HTMLElement,
+    private readonly callbacks: LogoutButtonCallbacks
+  ) {}
+
+  /** AuthStateObserver — shows when authenticated, hides when guest. */
+  onAuthStateChanged({ state }: AuthStateChangedPayload): void {
+    if (state === 'authenticated') {
+      this.show()
+    } else {
+      this.hide()
+    }
+  }
+
+  /** Initial render — called once by AuthUIManager after construction. */
+  render(state: AuthState): void {
+    if (state === 'authenticated') {
+      this.show()
+    } else {
+      this.hide()
+    }
+  }
+
+  private show(): void {
+    this.hostEl.innerHTML = `
+      <button type="button"
+              class="btn btn-outline-light btn-sm"
+              aria-label="Log out">
+        <i class="fas fa-sign-out-alt me-1" aria-hidden="true"></i>Logout
+      </button>`
+    this.hostEl
+      .querySelector('button')!
+      .addEventListener('click', () => this.callbacks.onLogout())
+  }
+
+  private hide(): void {
+    this.hostEl.innerHTML = ''
+  }
+}
+```
+
+**Positioning** (applied to `#logout-button-container` in `index.html`):
+```css
+position: absolute;
+top: 50%;
+right: 1rem;
+transform: translateY(-50%);
+max-width: 120px;
+```
+
+**HTML when visible:**
+```html
+<button type="button"
+        class="btn btn-outline-light btn-sm"
+        aria-label="Log out">
+  <i class="fas fa-sign-out-alt me-1" aria-hidden="true"></i>Logout
+</button>
+```
+
+**Design decisions:**
+- `btn btn-outline-light btn-sm` — consistent with the `LoginButton` and the header's `bg-dark` background.
+- Icon + label: the icon (`fa-sign-out-alt`) provides quick visual recognition; the text label ensures clarity.
+- `aria-label="Log out"` — unambiguous screen-reader label (Req 13.7).
+- Max 120px width — prevents overlap with the centered title on small viewports (Req 13.9).
+- Hidden (empty `hostEl`) when guest — no `display: none` style leaks; the element simply has no children.
+
+**Why a separate component instead of reusing `LoginButton`:**
+The `LoginButton` (top-left) serves the sign-in discovery use case: guests see it and know they can log in. The `LogoutButton` (top-right) serves the post-login use case: authenticated users need a persistent, obvious escape hatch. Separating them honours SRP and avoids a single component handling two distinct user intents. The top-right position is a widely-recognised convention for account/session controls.
 
 ---
 
@@ -1042,10 +1135,17 @@ async init(): Promise<void> {
 <!-- CHANGE 1: position: relative on header to anchor the absolute auth-controls -->
 <header class="row bg-dark text-white py-3" style="position: relative;">
 
-  <!-- auth-controls hook — LoginButton is injected here by AuthUIManager -->
+  <!-- auth-controls hook — LoginButton is injected here by AuthUIManager (top-left) -->
   <div id="auth-controls"
        style="position: absolute; top: 50%; left: 1rem;
               transform: translateY(-50%); max-width: 200px;">
+  </div>
+
+  <!-- logout-button-container hook — LogoutButton injected here (top-right) -->
+  <!-- Visible only when authenticated; empty when guest -->
+  <div id="logout-button-container"
+       style="position: absolute; top: 50%; right: 1rem;
+              transform: translateY(-50%); max-width: 120px;">
   </div>
 
   <div class="col-12 text-center">
@@ -1062,6 +1162,10 @@ async init(): Promise<void> {
 
 <main class="row">...</main>
 ```
+
+**Layout notes:**
+- Both `#auth-controls` (left) and `#logout-button-container` (right) use `position: absolute` anchored to the `position: relative` header. The centered title `<h1>` in the `col-12` div is unaffected because absolutely-positioned elements are taken out of normal flow.
+- `#logout-button-container` is always present in the DOM but renders empty (no children) when the user is a guest — the `LogoutButton` component's `hide()` method clears `innerHTML` rather than toggling CSS visibility, keeping the DOM minimal.
 
 ---
 
@@ -1229,12 +1333,13 @@ Pin to exact version (verify current stable at implementation time). In `depende
 | `src/managers/AuthUIManager.ts` | **New** | Auth UI orchestration — builds components, registers as observers |
 | `src/components/LoginModal.ts` | **New** | Observer — Bootstrap 5 modal, `IAuthCommands` |
 | `src/components/GuestPromoBar.ts` | **New** | Observer — alert bar, session-only dismiss |
-| `src/components/LoginButton.ts` | **New** | Observer — header sign-in/out control |
+| `src/components/LoginButton.ts` | **New** | Observer — top-left header sign-in control (name display when authenticated) |
+| `src/components/LogoutButton.ts` | **New** | Observer — top-right header logout button; visible only when authenticated |
 | `supabase/migrations/<ts>_create_users_roles_permissions.sql` | **New** | Schema |
 | `supabase/seed.sql` | **New** | Roles, permissions, role_permissions |
 | `.env.example` | **New** | Documents required env vars |
 | `src/app.ts` | **Modified** | Add `AuthServiceFactory.create()` + `AuthUIManager.init()` |
-| `index.html` | **Modified** | `#auth-controls`, `#guest-promo-bar`, `#login-modal-container` |
+| `index.html` | **Modified** | `#auth-controls` (left), `#logout-button-container` (right), `#guest-promo-bar`, `#login-modal-container` |
 | `package.json` | **Modified** | Add `@supabase/supabase-js` pinned |
 | `.gitignore` | **Modified** | Add `.env.development`, `.env.production` |
 

@@ -232,7 +232,7 @@ export class TechniqueManager {
           { name: 'Left Internal Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'smol-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
           { name: 'Right Internal Defence Against Straight Attack From Side. Dead Side', modes: [MODES.PERFORMING], file: 'yamin-hagana-pnimit-neged-dkira-yashara-meatsad-tsad-met.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
-        
+          
           //Knife Threats
 
           { name: 'Left Hand Knife Threat Blade To Throat.Straight Hand', modes:[MODES.RESPONDING], file: 'smol-iyum-samin-hod-lagugoret-leyad-kir.wav', category: 'Knife', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
@@ -268,6 +268,8 @@ export class TechniqueManager {
             { name: 'Release From Side Choke on the ground.', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-me-hatsad-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
             { name: 'Side Choke on the ground.', modes: [MODES.RESPONDING], file: 'hanika-me-hatsad-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
 
+            { name: 'Release From Choke Next To Wall Not Tight', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-la-kir-lo-tsmuda.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
+            { name: 'Release From Tight Choke Next To Wall', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-la-kir-tsmuda-me-lefanim.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
           //Kick Defence
 /*

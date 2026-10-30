@@ -1,4 +1,6 @@
 import { Technique, FightListTechnique, Mode } from '../types';
+import { buildExpertiseLevelFilterControl, expertiseLevelBadgeHtml, ExpertiseLevelFilterControl } from './ExpertiseLevelFilterControl';
+import { expertiseLevelRank } from '../types/index';
 
 export interface TechniqueAddModalOptions {
   onTechniqueSelect: (technique: FightListTechnique) => void;
@@ -33,6 +35,7 @@ export class TechniqueAddModal {
   private techniques: Technique[];
   private filteredTechniques: Technique[];
   private options: TechniqueAddModalOptions;
+  private elControl: ExpertiseLevelFilterControl | null = null;
 
   constructor(techniques: Technique[], options: TechniqueAddModalOptions) {
     this.techniques = techniques;
@@ -78,6 +81,7 @@ export class TechniqueAddModal {
               `<option value="${category}">${category}</option>`
             ).join('')}
           </select>
+          <div class="technique-add-modal__el-filter"></div>
           <button type="button" class="technique-add-modal__add-all" aria-label="Add all filtered">
             Add All
           </button>
@@ -95,7 +99,14 @@ export class TechniqueAddModal {
 
     // Add event listeners
     this.setupEventListeners();
-    
+
+    // Mount expertise-level filter control
+    const elContainer = this.modal.querySelector('.technique-add-modal__el-filter') as HTMLElement;
+    const elCtrl = buildExpertiseLevelFilterControl(() => this.filterTechniques());
+    this.elControl = elCtrl;
+    elCtrl.populate({ expertiseLevel: null, expertiseLevelMode: 'cumulative' });
+    elContainer.appendChild(elCtrl.element);
+
     // Initial render
     this.renderTechniqueList();
   }
@@ -170,11 +181,22 @@ export class TechniqueAddModal {
   private filterTechniques(): void {
     const searchTerm = this.searchInput.value.toLowerCase();
     const categoryFilter = this.categoryFilter.value;
+    const elValues = this.elControl?.getValues()
+                   ?? { expertiseLevel: null, expertiseLevelMode: 'cumulative' as const };
 
     this.filteredTechniques = this.techniques.filter(technique => {
       const matchesSearch = technique.name.toLowerCase().includes(searchTerm);
       const matchesCategory = !categoryFilter || technique.category === categoryFilter;
-      return matchesSearch && matchesCategory;
+      let matchesLevel = true;
+      if (elValues.expertiseLevel !== null) {
+        if (elValues.expertiseLevelMode === 'strict') {
+          matchesLevel = technique.expertiseLevel === elValues.expertiseLevel;
+        } else {
+          matchesLevel = expertiseLevelRank(technique.expertiseLevel)
+                      <= expertiseLevelRank(elValues.expertiseLevel);
+        }
+      }
+      return matchesSearch && matchesCategory && matchesLevel;
     });
 
     this.renderTechniqueList();
@@ -203,6 +225,7 @@ export class TechniqueAddModal {
         <div class="technique-item__info">
           <h3>${technique.name}</h3>
           <span class="technique-category">${technique.category}</span>
+          ${expertiseLevelBadgeHtml(technique.expertiseLevel)}
         </div>
         <div class="technique-item__actions">
           ${isExisting ? `

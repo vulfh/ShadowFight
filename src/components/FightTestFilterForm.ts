@@ -1,6 +1,7 @@
 import type { Technique, FightTestFilterValues, TargetLevel, TechniqueCategory, Side } from '../types/index'
 import type { Mode } from '../constants/modes'
 import { PLAY_MODES } from '../types/playMode'
+import { buildExpertiseLevelFilterControl, ExpertiseLevelFilterControl } from './ExpertiseLevelFilterControl'
 
 /**
  * FightTestFilterForm — renders the Adhoc Fight Test filter form and manages
@@ -93,6 +94,12 @@ export class FightTestFilterForm {
     if (this.shuffleSelect) {
       this.shuffleSelect.value = values.shuffleMode
     }
+
+    // Expertise Level
+    this.elControl?.populate({
+      expertiseLevel:     values.expertiseLevel,
+      expertiseLevelMode: values.expertiseLevelMode,
+    })
   }
 
   /**
@@ -111,9 +118,7 @@ export class FightTestFilterForm {
       shuffleMode: this.shuffleSelect
         ? (this.shuffleSelect.value as FightTestFilterValues['shuffleMode'])
         : 'Random',
-      // Task 5 will replace these with values from ExpertiseLevelFilterControl.
-      expertiseLevel: null,
-      expertiseLevelMode: 'cumulative',
+      ...( this.elControl?.getValues() ?? { expertiseLevel: null, expertiseLevelMode: 'cumulative' } ),
     }
   }
 
@@ -150,6 +155,7 @@ export class FightTestFilterForm {
   private sideGroup: HTMLElement | null = null
   private shuffleSelect: HTMLSelectElement | null = null
   private modeError: HTMLElement | null = null
+  private elControl: ExpertiseLevelFilterControl | null = null
 
   // -------------------------------------------------------------------------
   // Build helpers
@@ -186,6 +192,11 @@ export class FightTestFilterForm {
 
     // Shuffle Mode
     form.appendChild(this.buildShuffleSelect(notify))
+
+    // Expertise Level
+    const elSection = buildExpertiseLevelFilterControl(notify)
+    this.elControl = elSection
+    form.appendChild(elSection.element)
 
     return form
   }

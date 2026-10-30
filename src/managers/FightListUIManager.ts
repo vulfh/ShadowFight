@@ -23,6 +23,7 @@ import { PlayMode, PLAY_MODES } from '../types/playMode'
 import { TabBar } from '../components/TabBar'
 import { FightTestTabPane } from '../components/FightTestTabPane'
 import { FightTestService } from '../services/FightTestService'
+import { expertiseLevelBadgeHtml } from '../components/ExpertiseLevelFilterControl'
 
 /**
  * Manages the UI components and interactions for fight lists
@@ -429,10 +430,13 @@ export class FightListUIManager {
               </div>`;
 
           const isLongName = technique.techniqueId.length > 15;
+          const fullTechnique = this.techniqueManager.getTechniques()
+                                  .find(t => t.name === technique.techniqueId);
           return `
             <div class="list-group-item" data-id="${technique.id}" data-technique-id="${technique.techniqueId}">
               <div class="d-flex align-items-center" style="gap:0.5rem;">
                 <span class="technique-name${isLongName ? ' technique-name--long' : ''}">${technique.techniqueId}</span>
+                ${expertiseLevelBadgeHtml(fullTechnique?.expertiseLevel)}
                 <div class="technique-actions">
                   <button class="btn btn-sm btn-outline-primary add-note-btn"
                           title="Add Voice Note">

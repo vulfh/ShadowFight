@@ -7,9 +7,9 @@ Task 1 — Type foundation (types, constants, FightTest extension) ✅
   └─ Task 2 — FightTestService update ✅
        └─ Task 3 — AdhocFilterEngine extension ✅
   └─ Task 4 — ExpertiseLevelFilterControl (shared UI + badge helper) ✅ [parallel with 3]
-       └─ Task 5 — FightTestFilterForm integration
-       └─ Task 6 — TechniqueAddModal integration
-       └─ Task 7 — FightListUIManager badge integration
+       └─ Task 5 — FightTestFilterForm integration ✅
+       └─ Task 6 — TechniqueAddModal integration ✅
+       └─ Task 7 — FightListUIManager badge integration ✅
 Task 8 — Developer: assign expertiseLevel on all techniques  [unblocks build]
   └─ Task 9 — Build verification + smoke test
 ```
@@ -158,27 +158,27 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
 **Blocked by:** Task 4  
 **Files:** `src/components/FightTestFilterForm.ts`
 
-- [ ] **5.1** Import `buildExpertiseLevelFilterControl` and `ExpertiseLevelFilterControl` from `./ExpertiseLevelFilterControl`.
-- [ ] **5.2** Add a private field `private elControl: ExpertiseLevelFilterControl | null = null`.
-- [ ] **5.3** At the end of `buildForm()`, mount the expertise level section:
+- [x] **5.1** Import `buildExpertiseLevelFilterControl` and `ExpertiseLevelFilterControl` from `./ExpertiseLevelFilterControl`.
+- [x] **5.2** Add a private field `private elControl: ExpertiseLevelFilterControl | null = null`.
+- [x] **5.3** At the end of `buildForm()`, mount the expertise level section:
   ```typescript
   const elSection = buildExpertiseLevelFilterControl(notify)
   this.elControl = elSection
   form.appendChild(elSection.element)
   ```
-- [ ] **5.4** Extend `getValues()` to spread in the expertise-level values:
+- [x] **5.4** Extend `getValues()` to spread in the expertise-level values:
   ```typescript
   ...( this.elControl?.getValues() ?? { expertiseLevel: null, expertiseLevelMode: 'cumulative' } ),
   ```
-- [ ] **5.5** Extend `populate()` to restore expertise-level state:
+- [x] **5.5** Extend `populate()` to restore expertise-level state:
   ```typescript
   this.elControl?.populate({
     expertiseLevel:     values.expertiseLevel,
     expertiseLevelMode: values.expertiseLevelMode,
   })
   ```
-- [ ] **5.6** Verify that no existing form section is modified; all changes are additive.
-- [ ] **5.7** Verify TypeScript compiles for this file.
+- [x] **5.6** Verify that no existing form section is modified; all changes are additive.
+- [x] **5.7** Verify TypeScript compiles for this file.
 
 **Acceptance criteria:** Req 3.1–3.9, Req 5.1–5.2
 
@@ -190,14 +190,14 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
 **Blocked by:** Task 4  
 **Files:** `src/components/TechniqueAddModal.ts`
 
-- [ ] **6.1** Import `buildExpertiseLevelFilterControl`, `expertiseLevelBadgeHtml`, and `ExpertiseLevelFilterControl` from `./ExpertiseLevelFilterControl`.
+- [x] **6.1** Import `buildExpertiseLevelFilterControl`, `expertiseLevelBadgeHtml`, and `ExpertiseLevelFilterControl` from `./ExpertiseLevelFilterControl`.
   Also import `expertiseLevelRank` from `../types/index`.
-- [ ] **6.2** Add a private field `private elControl: ExpertiseLevelFilterControl | null = null`.
-- [ ] **6.3** In the modal's search bar HTML template (inside `initializeModal()`), add a container div after the category `<select>` and before the "Add All" button:
+- [x] **6.2** Add a private field `private elControl: ExpertiseLevelFilterControl | null = null`.
+- [x] **6.3** In the modal's search bar HTML template (inside `initializeModal()`), add a container div after the category `<select>` and before the "Add All" button:
   ```html
   <div class="technique-add-modal__el-filter"></div>
   ```
-- [ ] **6.4** After `this.setupEventListeners()` in `initializeModal()`, mount the control into the container:
+- [x] **6.4** After `this.setupEventListeners()` in `initializeModal()`, mount the control into the container:
   ```typescript
   const elContainer = this.modal.querySelector('.technique-add-modal__el-filter') as HTMLElement
   const elCtrl = buildExpertiseLevelFilterControl(() => this.filterTechniques())
@@ -205,29 +205,10 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
   elCtrl.populate({ expertiseLevel: null, expertiseLevelMode: 'cumulative' }) // reset on open (Req 6.4)
   elContainer.appendChild(elCtrl.element)
   ```
-- [ ] **6.5** Extend `filterTechniques()` to apply the expertise-level predicate after the existing search and category filters:
-  ```typescript
-  const elValues = this.elControl?.getValues()
-                   ?? { expertiseLevel: null, expertiseLevelMode: 'cumulative' }
-
-  // inside the .filter() callback, add:
-  let matchesLevel = true
-  if (elValues.expertiseLevel !== null) {
-    if (elValues.expertiseLevelMode === 'strict') {
-      matchesLevel = technique.expertiseLevel === elValues.expertiseLevel
-    } else {
-      matchesLevel = expertiseLevelRank(technique.expertiseLevel)
-                  <= expertiseLevelRank(elValues.expertiseLevel)
-    }
-  }
-  return matchesSearch && matchesCategory && matchesLevel
-  ```
-- [ ] **6.6** In `renderTechniqueList()`, add the badge after the `<span class="technique-category">` line inside each item's `.technique-item__info` block:
-  ```typescript
-  ${expertiseLevelBadgeHtml(technique.expertiseLevel)}
-  ```
-- [ ] **6.7** Verify the filter resets to "Any level" / "Up to" every time `show()` is called (it does by construction — `initializeModal()` is called in the constructor and `populate()` is called with defaults; `show()` appends the already-reset modal. No additional reset code needed — confirm this by inspection).
-- [ ] **6.8** Verify TypeScript compiles for this file.
+- [x] **6.5** Extend `filterTechniques()` to apply the expertise-level predicate after the existing search and category filters.
+- [x] **6.6** In `renderTechniqueList()`, add the badge after the `<span class="technique-category">` line inside each item's `.technique-item__info` block.
+- [x] **6.7** Verify the filter resets to "Any level" / "Up to" every time `show()` is called (it does by construction — confirmed by inspection).
+- [x] **6.8** Verify TypeScript compiles for this file.
 
 **Acceptance criteria:** Req 6.1–6.4, Req 7.2, Req 9.1
 
@@ -239,19 +220,11 @@ Tasks 5, 6, 7 are independent of each other after Task 4 completes.
 **Blocked by:** Task 4  
 **Files:** `src/managers/FightListUIManager.ts`
 
-- [ ] **7.1** Import `expertiseLevelBadgeHtml` from `../components/ExpertiseLevelFilterControl`.
-- [ ] **7.2** In `renderTechniquesList()`, for each technique entry look up the full `Technique` object from `TechniqueManager`:
-  ```typescript
-  const fullTechnique = this.techniqueManager.getTechniques()
-                          .find(t => t.name === technique.techniqueId)
-  ```
-- [ ] **7.3** In the template string for each list item, insert the badge immediately after the `<span class="technique-name...">` element:
-  ```typescript
-  `<span class="technique-name...">${technique.techniqueId}</span>
-   ${expertiseLevelBadgeHtml(fullTechnique?.expertiseLevel)}`
-  ```
-- [ ] **7.4** Verify no other part of `renderTechniquesList()` is modified.
-- [ ] **7.5** Verify TypeScript compiles for this file.
+- [x] **7.1** Import `expertiseLevelBadgeHtml` from `../components/ExpertiseLevelFilterControl`.
+- [x] **7.2** In `renderTechniquesList()`, for each technique entry look up the full `Technique` object from `TechniqueManager`.
+- [x] **7.3** In the template string for each list item, insert the badge immediately after the `<span class="technique-name...">` element.
+- [x] **7.4** Verify no other part of `renderTechniquesList()` is modified.
+- [x] **7.5** Verify TypeScript compiles for this file.
 
 **Acceptance criteria:** Req 7.1, Req 7.5
 

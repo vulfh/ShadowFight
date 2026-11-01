@@ -271,7 +271,7 @@ export class TechniqueManager {
             { name: 'Release From Tight Choke on the ground.', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-tsnuda-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
             { name: 'Release From Side Choke on the ground.', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-me-hatsad-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
             { name: 'Side Choke on the ground.', modes: [MODES.RESPONDING], file: 'hanika-me-hatsad-be-shkiva.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
-
+//Release from chokes
             { name: 'Release From Choke Next To Wall Not Tight', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-la-kir-lo-tsmuda.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
             { name: 'Release From Tight Choke Next To Wall', modes: [MODES.PERFORMING], file: 'shihrur-me-hanika-la-kir-tsmuda-me-lefanim.wav', category: 'Choke', priority: 'medium', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
 
@@ -292,10 +292,13 @@ export class TechniqueManager {
       // { name: 'Defense Against Bear Hug', file: 'smol-beitat-magal-gvoa.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
       // { name: 'Escape From Mount', file: 'smol-beitat-magal-gvoa.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'LEFT' },
 
-      // // Weapons
-      // { name: 'Defense Against Knife Stab', file: 'smol-beitat-magal-gvoa.wav', category: 'Weapons', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' },
-          // { name: 'Defense Against Gun Front', file: 'smol-beitat-magal-gvoa.wav', category: 'Weapons', priority: 'high', selected: true, weight: 1, targetLevel: 'CHEST', side: 'RIGHT' }
-          { name: 'Fall Prevention Grab Calves In Front To Take Down', modes: [MODES.PERFORMING], file: 'mniat-nefila-ne-havikat-shokaim-melefanim-le-apala.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'HIP', side: 'RIGHT' },
+//Release from Grab
+      { name: 'Fall Prevention Grab Calves In Front To Take Down', modes: [MODES.PERFORMING], file: 'mniat-nefila-ne-havikat-shokaim-melefanim-le-apala.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'HIP', side: 'RIGHT' },
+      { name: 'Left Arm around the neck from behind – a hold on the nape; the defender is bent forward.', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'smol-havikat-tsavar-meahor-batiah-al-haoref-magen-kafuf-lefanim.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'LEFT' },
+       { name: 'Right Arm around the neck from behind – a hold on the nape; the defender is bent forward.', modes: [MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-havikat-tsavar-meahor-batiah-al-haoref-magen-kafuf-lefanim.wav', category: 'Defenses/Grabs', priority: 'high', selected: true, weight: 1, targetLevel: 'NECK', side: 'RIGHT' },
+         
+         
+         //Grabs
           { name: 'Grab Calves In Front To Take Down', modes: [MODES.RESPONDING ],file: 'havikat-shokaim-me-lefanim-le-apala.wav', category: 'Take Down', priority: 'high', selected: true, weight: 1, targetLevel: 'HIP', side: 'RIGHT' },
     ]
   }

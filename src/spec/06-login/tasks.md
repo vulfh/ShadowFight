@@ -30,7 +30,7 @@ These tasks produce everything needed in Supabase's PostgreSQL before any fronte
 - Add `supabase/` to `.gitignore` exclusion allowlist (i.e. **do not** gitignore it — migrations are committed)
 - **Deliverable:** empty migration file at the correct path
 
-#### S1.2 — Write table DDL (users, roles, permissions, role_permissions)
+#### S1.2 — Write table DDL (users, roles, permissions, role_permissions) ✅ COMPLETED
 Implement in the migration file from S1.1:
 - `roles` table: `id uuid PK`, `name text UNIQUE NOT NULL`
 - `permissions` table: `id uuid PK`, `name text UNIQUE NOT NULL`
@@ -38,8 +38,9 @@ Implement in the migration file from S1.1:
 - `users` table: `id uuid PK` (matches `auth.users.id`), `role_id uuid FK→roles ON DELETE SET NULL`, `created_at timestamptz`
 - All tables use `CREATE TABLE IF NOT EXISTS`
 - **Deliverable:** runnable DDL in the migration file
+- **Implementation:** `supabase/migrations/20261026120000_create_users_roles_permissions.sql` — TDD test assertions in `supabase/tests/s1.2-schema.test.sql`
 
-#### S1.3 — Add Row Level Security policies
+#### S1.3 — Add Row Level Security policies ✅ COMPLETED
 Add to the same migration file (after the DDL):
 ```sql
 -- roles, permissions, role_permissions: public SELECT
@@ -129,13 +130,14 @@ Implement all types and interfaces as defined in `design.md §2`:
 - **Deliverable:** `src/types/auth.ts` compiles with zero errors; `npm run type-check` passes
 - **Implementation:** `src/types/auth.ts` — 38 tests in `src/tests/auth.types.test.ts` (all passing)
 
-#### P2.2 — Create `PermissionService` (`src/services/PermissionService.ts`)
+#### P2.2 — Create `PermissionService` (`src/services/PermissionService.ts`) ✅ COMPLETED
 - Implement `PermissionServiceImpl` (private class)
 - Export `permissionReader: IPermissionReader` and `permissionWriter: IPermissionWriter`
 - Both references share the same singleton instance
 - Logic: `setPermissions`, `hasPermission`, `getPermissions`
 - No Supabase imports — pure in-memory
 - **Deliverable:** file compiles; manual smoke-test: `permissionWriter.setPermissions(['play-fight-list'])` → `permissionReader.hasPermission('play-fight-list')` returns `true`
+- **Implementation:** `src/services/PermissionService.ts` — 16 tests in `src/tests/PermissionService.test.ts` (all passing)
 
 #### P2.3 — Create `AuthEventBus` (`src/services/AuthEventBus.ts`)
 - Implement `subscribe(observer): () => void` and `emit(payload)` methods

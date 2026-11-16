@@ -12,9 +12,8 @@ export class TechniqueManager {
 
   private loadTechniques(): void {
       this.techniques = [
-          // Punches
-
-          { name: 'Left Uppercot', modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makat-snukeret.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
+// Punches
+          { name: 'Left Uppercot', modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makat-snukeret.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },         
           { name: 'Right Uppercot', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-snukeret.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Hook', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-magal-la-rosh.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Right Hook', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-magal-la-rosh.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
@@ -25,7 +24,7 @@ export class TechniqueManager {
           { name: 'Head Left Right', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'rosh-smol-yamin.wav', category: 'Punches', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
 
 //Strikes
-
+          { name: 'Palm Heel Left-Right-Left', modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'Makat-pisat-yad-smol-yamin-smol-lefanim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Head Left Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'smol-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
           { name: 'Head Right Palm Heel Strike', modes:[MODES.PERFORMING, MODES.RESPONDING], file: 'yamin-makat-pisat-kaf-yad-le-panim.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'RIGHT' },
           { name: 'Left Back Fist',  modes:[MODES.PERFORMING, MODES.RESPONDING],file: 'smol-makt-gav-yad-be-hatslafa.wav', category: 'Strikes', priority: 'medium', selected: true, weight: 1, targetLevel: 'HEAD', side: 'LEFT' },
